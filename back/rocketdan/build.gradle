@@ -34,3 +34,19 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+task copyPrivate(type: Copy){
+	copy{
+		from '../../final-sub'
+		include '*.yml'
+		into 'src/main/resources'
+	}
+}
+
+task copyPrivateTest(type: Copy){
+	copy{
+		from '../../final-sub'
+		include '*.yml'
+		into 'src/test/resources'
+	}
+}
