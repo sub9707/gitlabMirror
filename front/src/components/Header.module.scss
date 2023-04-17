@@ -1,0 +1,13 @@
+@import "@/styles/colors.scss";
+
+.headerWrap {
+  display: flex;
+  justify-content: space-around;
+  color: $menu-aqua;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  & .linkTag {
+    margin-inline: 2rem;
+  }
+}

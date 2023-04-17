@@ -1,4 +1,5 @@
 import "@/styles/globals.scss";
+import Header from "../components/Header";
 
 export const metadata = {
   title: "Repomon",
@@ -11,8 +12,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="ko">
+      <body>
+        <Header />
+        <main>{children}</main>
+      </body>
     </html>
   );
 }
