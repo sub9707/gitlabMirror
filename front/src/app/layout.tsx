@@ -1,4 +1,6 @@
 import "@/styles/globals.scss";
+import "@/styles/reset.css";
+
 import Header from "../components/Header";
 
 export const metadata = {
