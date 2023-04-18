@@ -1,13 +1,42 @@
 @import "@/styles/colors.scss";
 
+.navContainer {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .headerWrap {
   display: flex;
   justify-content: space-around;
   color: $menu-aqua;
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-top: 2rem;
+  font-size: 1.2rem;
+  font-weight: 700;
   & .linkTag {
     margin-inline: 2rem;
   }
+  & .logoImg {
+    width: 6%;
+    height: 6%;
+    margin-top: 1%;
+    margin-inline: 30%;
+  }
+  & .navIcons {
+    width: 10%;
+    margin-top: 3%;
+  }
+  & .navMenu {
+    width: 10%;
+    margin-top: 3%;
+  }
+}
+
+.divider {
+  width: 85vw;
+  height: 0.2vh;
+  color: white;
+  background: rgb(255, 235, 215);
+  background: $golden-theme;
+  margin-top: 2%;
 }
