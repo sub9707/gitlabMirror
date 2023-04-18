@@ -35,7 +35,7 @@ public class ControllerAop {
 
 		if (returnValue == null) return;
 
-		log.info("\t{}", returnValue.toString());
+		log.info("\t{}", returnValue);
 	}
 
 	// 에러 발생 시 동작
