@@ -22,8 +22,11 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@/styles/*": ["./styles/*"]
-    }
+      "@/styles/*": ["./styles/*"],
+      "@/assets/*": ["./src/assets/*"]
+    },
+    "typeRoots": ["./node_modules/@types", "types"],
+    "types": ["three"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]

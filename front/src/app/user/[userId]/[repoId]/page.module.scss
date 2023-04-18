@@ -1,11 +1,26 @@
 @import "@/styles/colors.scss";
 
 .pageContainer {
-  width: 100%;
+  width: 85vw;
   height: 100vh;
-  color: white;
+  margin: 0 auto;
   background-color: white;
 
-  .repo {
+  .info {
+    display: flex;
+    height: 700px;
+
+    .repo-mon-div {
+      width: 45%;
+      height: 100%;
+    }
+  }
+}
+
+.info {
+  outline: 1px solid red;
+
+  .repo-mon-div {
+    outline: 1px solid orange;
   }
 }
