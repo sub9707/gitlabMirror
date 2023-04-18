@@ -1,6 +1,6 @@
 import styles from "./page.module.scss";
 
-export default function Home() {
+export default function Page({ params }: { params: { slug: string } }) {
   return (
     <>
       <div className={styles.pageContainer}>
