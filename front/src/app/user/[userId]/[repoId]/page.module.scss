@@ -15,8 +15,11 @@
       height: 100%;
 
       .repo-mon {
-        width: 400px;
-        height: 400px;
+        width: 100%;
+        height: 80%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
     }
   }
@@ -27,5 +30,9 @@
 
   .repo-mon-div {
     outline: 1px solid orange;
+
+    .repo-mon {
+      outline: 1px solid greenyellow;
+    }
   }
 }
