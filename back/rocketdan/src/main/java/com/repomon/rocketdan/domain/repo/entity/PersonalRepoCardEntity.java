@@ -18,7 +18,6 @@ public class PersonalRepoCardEntity {
 	@Column(name = "personal_repo_card_id")
 	private Long personalRepoCardId;
 
-	private String personalRepoCardUrl;
 	private Float personalRepoCardAttribute;
 	private Integer personalRepoCardLine;
 

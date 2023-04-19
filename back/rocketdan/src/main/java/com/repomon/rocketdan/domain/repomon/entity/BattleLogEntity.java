@@ -19,6 +19,8 @@ public class BattleLogEntity extends CommonEntity {
 	private Long battleLogId;
 
 	private Boolean isWin;
+	private Integer attackPoint;
+	private Integer defensePoint;
 
 	private Long attackRepoId;
 	private Long defenseRepoId;
