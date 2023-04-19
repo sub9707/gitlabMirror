@@ -13,7 +13,7 @@ import javax.persistence.*;
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class RepomonDetailEntity extends RepoEntity {
+public class RepomonStatusEntity extends RepoEntity {
 
 	private Integer rating;
 	private Integer statPoint;

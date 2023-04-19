@@ -23,6 +23,7 @@ public class UserResponseDto {
 
 	public static List<UserResponseDto> fromEntityList(List<UserEntity> userList) {
 		List<UserResponseDto> result = new ArrayList<>();
+
 		for (UserEntity user : userList) {
 			UserResponseDto userResponseDto = UserResponseDto.fromEntity(user);
 			result.add(userResponseDto);
