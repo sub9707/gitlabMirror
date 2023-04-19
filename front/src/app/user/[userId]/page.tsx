@@ -21,7 +21,17 @@ export default function Page({ params }: { params: { slug: string } }) {
               <div className={styles.leftProfile}>
                 <div className={styles.chracter}></div>
               </div>
-              <div className={styles.description}></div>
+              <div className={styles.description}>
+                <div>
+                  <p className={styles.userId}>Becoding84</p>
+                </div>
+                <div>
+                  <p className={styles.descTxt}>레포지터리 수</p>
+                  <p className={styles.descTxt}>보유 레포몬 수</p>
+                  <p className={styles.descTxt}>경험치 총합</p>
+                  <p className={styles.descTxt}>총 커밋 수</p>
+                </div>
+              </div>
               <div className={styles.ranking}></div>
             </div>
           </div>
