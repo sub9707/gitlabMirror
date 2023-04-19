@@ -21,7 +21,6 @@ public class UserLanguageResponseDto {
 		return new UserLanguageResponseDto();
 	}
 
-
 	public static List<UserLanguageResponseDto> fromEntityList(List<UserLanguageEntity> userLanguageList) {
 		List<UserLanguageResponseDto> result = new ArrayList<>();
 		for (UserLanguageEntity userLanguage : userLanguageList) {
