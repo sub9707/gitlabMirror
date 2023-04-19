@@ -1,5 +1,6 @@
 import "@/styles/globals.scss";
 import "@/styles/globals.css";
+import "@/styles/reset.css";
 
 import Header from "../components/Header";
 
@@ -17,7 +18,7 @@ export default function RootLayout({
     <html lang="ko">
       <body>
         <Header />
-        {children}
+        <main>{children}</main>
       </body>
     </html>
   );
