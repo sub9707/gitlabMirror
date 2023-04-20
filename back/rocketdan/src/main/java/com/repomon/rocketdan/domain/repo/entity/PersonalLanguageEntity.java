@@ -8,7 +8,6 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class PersonalLanguageEntity {
@@ -18,5 +17,8 @@ public class PersonalLanguageEntity {
 	private Long personalLanguageId;
 
 	private String languageCode;
-	private Long personalCardId;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "personal_repo_card_id")
+	private PersonalRepoCardEntity personalRepoCard;
 }

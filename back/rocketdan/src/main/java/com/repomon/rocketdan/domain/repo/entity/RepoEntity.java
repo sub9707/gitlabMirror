@@ -3,15 +3,15 @@ package com.repomon.rocketdan.domain.repo.entity;
 
 import com.repomon.rocketdan.common.entity.CommonEntity;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
 @Getter
-@SuperBuilder
 @Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -30,5 +30,11 @@ public class RepoEntity extends CommonEntity {
 	private LocalDateTime repoStart;
 	private LocalDateTime repoEnd;
 
-	private Long repomonId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="repomon_id")
+	private RepomonEntity repomon;
+
+	@OneToMany(mappedBy = "repo")
+	private List<RepoConventionEntity> repoConventionList = new ArrayList<>();
+
 }

@@ -9,7 +9,6 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class BattleLogEntity extends CommonEntity {
@@ -22,7 +21,12 @@ public class BattleLogEntity extends CommonEntity {
 	private Integer attackPoint;
 	private Integer defensePoint;
 
-	private Long attackRepoId;
-	private Long defenseRepoId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "attack_repo_id")
+	private RepomonStatusEntity attackRepo;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "defense_repo_id")
+	private RepomonStatusEntity defenseRepo;
 
 }

@@ -2,18 +2,17 @@ package com.repomon.rocketdan.domain.user.dto;
 
 
 import com.repomon.rocketdan.domain.user.entity.UserCardEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-@Data
+
+
 @AllArgsConstructor
-@NoArgsConstructor
+@Getter
+@ToString
 @Builder
 public class UserCardResponseDto {
 

@@ -9,7 +9,6 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class RepoHistoryEntity extends CommonEntity {
@@ -22,6 +21,8 @@ public class RepoHistoryEntity extends CommonEntity {
 	private Long repoHistoryExp;
 	private Integer repoHistoryType;
 
-	private Long repoId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "repo_id")
+	private RepoEntity repo;
 
 }
