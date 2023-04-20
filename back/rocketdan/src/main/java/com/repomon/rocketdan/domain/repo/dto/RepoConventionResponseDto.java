@@ -2,18 +2,17 @@ package com.repomon.rocketdan.domain.repo.dto;
 
 
 import com.repomon.rocketdan.domain.repo.entity.RepoConventionEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-@Data
+
+
 @AllArgsConstructor
-@NoArgsConstructor
+@Getter
+@ToString
 @Builder
 public class RepoConventionResponseDto {
 
@@ -28,6 +27,7 @@ public class RepoConventionResponseDto {
 			RepoConventionResponseDto repoConventionResponseDto = RepoConventionResponseDto.fromEntity(repoConvention);
 			result.add(repoConventionResponseDto);
 		}
+
 		return result;
 	}
 }

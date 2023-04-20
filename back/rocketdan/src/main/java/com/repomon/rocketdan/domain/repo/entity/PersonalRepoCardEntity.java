@@ -4,11 +4,12 @@ package com.repomon.rocketdan.domain.repo.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class PersonalRepoCardEntity {
@@ -21,6 +22,11 @@ public class PersonalRepoCardEntity {
 	private Float personalRepoCardAttribute;
 	private Integer personalRepoCardLine;
 
-	private Long repoId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "repo_id")
+	private RepoEntity repo;
+
+	@OneToMany(mappedBy = "personalRepoCard")
+	private List<PersonalLanguageEntity> personalLanguageList = new ArrayList<>();
 
 }
