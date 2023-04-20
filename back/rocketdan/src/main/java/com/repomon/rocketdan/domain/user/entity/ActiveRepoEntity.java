@@ -1,6 +1,7 @@
 package com.repomon.rocketdan.domain.user.entity;
 
 
+import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -8,7 +9,6 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class ActiveRepoEntity {
@@ -20,6 +20,11 @@ public class ActiveRepoEntity {
 
 	private Boolean isActive;
 
-	private Long userId;
-	private Long repoId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	private UserEntity user;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "repo_id")
+	private RepoEntity repo;
 }

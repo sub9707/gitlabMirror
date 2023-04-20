@@ -8,7 +8,6 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class RepoConventionEntity {
@@ -21,5 +20,7 @@ public class RepoConventionEntity {
 	private String repoConventionType;
 	private String repoConventionDes;
 
-	private Long repoId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "repo_id")
+	private RepoEntity repo;
 }
