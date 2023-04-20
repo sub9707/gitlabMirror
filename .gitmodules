@@ -1,0 +1,3 @@
+[submodule "final-sub"]
+	path = final-sub
+	url = https://lab.ssafy.com/rocketdan/final-sub.git
