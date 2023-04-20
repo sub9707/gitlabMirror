@@ -1,0 +1,81 @@
+@import "@/styles/colors.scss";
+
+.pageContainer {
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  & .pageBox {
+    width: 85%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 3px solid transparent;
+    border-image: $golden-theme;
+    border-image-slice: 1;
+    background-color: transparent;
+    margin-bottom: 3%;
+    & .monSelect {
+      width: 70%;
+      height: 60%;
+      margin-top: 3%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      .monFrame {
+        width: 25%;
+        height: 80%;
+        position: relative;
+        display: inline-block;
+        & .monEgg {
+          display: block;
+          scale: 1;
+          transition: scale 0.3s ease-in-out;
+          &:hover {
+            animation: tilt-n-move-shaking 0.3s infinite;
+            background-color: transparent;
+          }
+          &:active {
+            scale: 0.9;
+          }
+        }
+      }
+    }
+    .leftBox {
+      width: 60em;
+      height: 50em;
+      background-color: aliceblue;
+    }
+    .rigthBox {
+      width: 40em;
+      height: 50em;
+      background-color: rgb(231, 146, 107);
+    }
+  }
+}
+
+.selected {
+  filter: drop-shadow(-1px 3px 18px #00baff);
+}
+
+@keyframes tilt-n-move-shaking {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(5px, 5px) rotate(5deg);
+  }
+  50% {
+    transform: translate(0, 0) rotate(0eg);
+  }
+  75% {
+    transform: translate(-5px, 5px) rotate(-5deg);
+  }
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+}

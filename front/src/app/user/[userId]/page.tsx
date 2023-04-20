@@ -1,9 +1,11 @@
+`use-client`;
 import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import styles from "./page.module.scss";
 import Pagination from "components/Pagination";
+import Router from "next/navigation";
 
-export default function Page({ params }: { params: { slug: string } }) {
+export default function Page({ params }: { params: { userId: string } }) {
   return (
     <>
       <div className={styles.pageContainer}>
@@ -24,7 +26,8 @@ export default function Page({ params }: { params: { slug: string } }) {
                 <div
                   className={styles.chracter}
                   style={{
-                    backgroundImage: "url()",
+                    backgroundImage:
+                      "url('https://avatars.githubusercontent.com/u/88614621?v=4')",
                   }}
                 />
               </div>
@@ -58,9 +61,12 @@ export default function Page({ params }: { params: { slug: string } }) {
         <div className={styles.listWrapper}>
           <div className={styles.listHeader}>
             <p className={styles.repoTitle}>등록된 레포지터리 목록</p>
-            <button type="button" className={styles.repoBtn}>
+            <Link
+              href="/user/temp_user/temp_repo/registRepo"
+              className={styles.repoBtn}
+            >
               레포지터리 등록
-            </button>
+            </Link>
           </div>
           <div className={styles.listBox}>
             <div style={{ marginBottom: "5%" }}>

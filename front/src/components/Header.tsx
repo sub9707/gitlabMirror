@@ -29,8 +29,7 @@ export default function Header() {
           </Link>
         </div>
         <div className={styles.navIcons}>
-          <Link href="/">아이콘1</Link>
-          <Link href="/">아이콘2</Link>
+          <Link href="/user/temp_user">샘플 유저 페이지</Link>
         </div>
       </div>
       <div className={styles.divider} />
