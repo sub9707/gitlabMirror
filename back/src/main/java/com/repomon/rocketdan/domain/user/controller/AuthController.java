@@ -1,16 +1,22 @@
 package com.repomon.rocketdan.domain.user.controller;
 
+import com.repomon.rocketdan.domain.user.service.AuthService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 
 @RestController
+@RequiredArgsConstructor
 public class AuthController {
 
-    @PostMapping("/signin")
-    public ResponseEntity login(){
+    private final AuthService authService;
+
+    @GetMapping("/signin")
+    @ResponseBody
+    public ResponseEntity signin(@RequestParam("code") String code) {
+
+        authService.signin(code);
         return ResponseEntity.ok().build();
     }
 
