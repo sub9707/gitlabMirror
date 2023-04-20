@@ -7,9 +7,9 @@ export default function Header() {
   return (
     <header className={styles.navContainer}>
       <div className={styles.headerWrap}>
-        <nav className={styles.navMenu}>
+        <div className={styles.navMenu}>
           <Link href="/" className={styles.linkTag}>
-            home
+            Ranking
           </Link>
           <Link href="/" className={styles.linkTag}>
             about
@@ -17,17 +17,21 @@ export default function Header() {
           <Link href="/" className={styles.linkTag}>
             posts
           </Link>
-        </nav>
-        <Image
-          src={Logo}
-          alt="logo"
-          placeholder="blur"
-          className={styles.logoImg}
-        />
-        <nav className={styles.navIcons}>
+        </div>
+        <div className={styles.logoImg}>
+          <Link href={"/"}>
+            <Image
+              src={Logo}
+              alt="logo"
+              placeholder="blur"
+              className={styles.logoImgDetail}
+            />
+          </Link>
+        </div>
+        <div className={styles.navIcons}>
           <Link href="/">아이콘1</Link>
           <Link href="/">아이콘2</Link>
-        </nav>
+        </div>
       </div>
       <div className={styles.divider} />
     </header>

@@ -21,7 +21,12 @@ export default function Page({ params }: { params: { slug: string } }) {
             </div>
             <div className={styles.downMenu}>
               <div className={styles.leftProfile}>
-                <div className={styles.chracter}></div>
+                <div
+                  className={styles.chracter}
+                  style={{
+                    backgroundImage: "url()",
+                  }}
+                />
               </div>
               <div className={styles.description}>
                 <div style={{ display: "flex" }}>
