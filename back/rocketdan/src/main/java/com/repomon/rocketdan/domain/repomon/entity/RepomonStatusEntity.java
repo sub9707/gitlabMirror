@@ -10,13 +10,14 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class RepomonStatusEntity extends RepoEntity {
 
 	private Integer rating;
 	private Integer statPoint;
+	private Integer winCnt;
+	private Integer loseCnt;
 	
 	// 아래에 스탯 추가 예정
 }
