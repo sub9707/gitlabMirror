@@ -22,9 +22,6 @@ public class AuthController {
     public ResponseEntity handleSuccessfulLogin(@RequestParam(value="access-token") String accessToken,
         @RequestParam(value="refresh-token") String refreshToken) {
 
-        System.out.println("accessToken = " + accessToken);
-        System.out.println("refreshToken = " + refreshToken);
-
         AuthResponseDto authResponseDto = new AuthResponseDto(accessToken, refreshToken);
         return ResponseEntity.ok().headers(httpHeaders -> {
             httpHeaders.add("accessToken", accessToken);
