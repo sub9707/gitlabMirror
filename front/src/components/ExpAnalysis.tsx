@@ -32,12 +32,10 @@ const data = {
   ],
 };
 
-export default function RadarChart() {
+export default function ExpAnalysis() {
   return (
     <Radar
       data={data}
-      width={200}
-      height={200}
       options={{
         maintainAspectRatio: false,
         plugins: {

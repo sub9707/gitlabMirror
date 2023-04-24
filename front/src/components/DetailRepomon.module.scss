@@ -1,0 +1,15 @@
+@import "@/styles/colors.scss";
+
+.repo-mon {
+  margin: 2rem auto 0 auto;
+  width: 90%;
+  height: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 5px solid transparent;
+  border-radius: 100px;
+  border-image: $golden-theme;
+  border-image-slice: 1;
+  background-color: transparent;
+}
