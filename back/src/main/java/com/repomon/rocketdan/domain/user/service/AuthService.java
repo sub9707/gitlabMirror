@@ -1,44 +1,39 @@
 package com.repomon.rocketdan.domain.user.service;
 
 
+import com.repomon.rocketdan.common.service.JwtTokenProvider;
+import com.repomon.rocketdan.common.service.RedisService;
 import com.repomon.rocketdan.domain.user.entity.UserEntity;
 import com.repomon.rocketdan.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 	private final UserRepository userRepository;
+	private final JwtTokenProvider authTokenProvider;
+	private final RedisService redisService;
 
-	@Value("${github.config.client_id}")
-	private String client_id;
+//	@Value("${github.config.client_id}")
+	private String client_id = "asdf";
 
-	@Value("${github.config.client_secret}")
-	private String client_secret;
+//	@Value("${github.config.client_secret}")
+	private String client_secret = "asdf";
 
-	public void signin(String code) {
+	@Value("${jwt.expire.access}")
+	private Long accessExpiry; // 토큰 만료일
+	@Value("${jwt.expire.refresh}")
+	private Long refreshExpiry; // 토큰 만료일
 
-		// 깃허브에 액세스토큰 요청
-		String accessToken = getAcessToken(code);
 
-		// 깃허브에 유저 정보 요청
-		String userName = getUserInfo(accessToken);
+	/**
+	 * 로그인: 깃허브 소셜 로그인
+	 * @param userName
+	 */
+	public Long login(String userName) {
 
 		// 요청받은 user ID 가 DB에 있는지 조회
 		Optional<UserEntity> user = userRepository.findByUserName(userName);
@@ -57,68 +52,41 @@ public class AuthService {
 		}
 
 		System.out.println("userId = " + userId);
-	}
 
-	/**
-	 * gitgub accessToken 요청
-	 *
-	 * @param code
-	 * @return
-	 */
-	private String getAcessToken(String code) {
-		RestTemplate restTemplate = new RestTemplate();
-
-		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add("client_id", client_id);
-		params.add("client_secret", client_secret);
-		params.add("code", code);
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-		HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
-
-		ResponseEntity<String> responseEntity = restTemplate.postForEntity("https://github.com/login/oauth/access_token", requestEntity, String.class);
-		String response = responseEntity.getBody();
-
-		int scopeIndex = response.indexOf("&scope=");
-		String accessToken = response.substring("access_token=".length(), scopeIndex);
-
-		return accessToken;
+		return userId;
 	}
 
 
+
 	/**
-	 * github 로그인 유저정보 요청
-	 *
+	 * 로그아웃: 리프레쉬 토큰 삭제
 	 * @param accessToken
-	 * @return
 	 */
-	private String getUserInfo(String accessToken) {
-		RestTemplate restTemplate = new RestTemplate();
+	public void logout(String accessToken) {
 
-		// MappingJackson2HttpMessageConverter를 사용하기 위해 HttpMessageConverter 리스트에 추가
-		List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
-		messageConverters.add(new MappingJackson2HttpMessageConverter());
-		restTemplate.setMessageConverters(messageConverters);
+		redisService.deleteData(accessToken);
+	}
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.setBearerAuth(accessToken);
 
-		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+	/**
+	 * 리프레쉬: 리프레쉬 토큰 요청
+	 * @param accessToken
+	 */
+	public void refresh(String accessToken) {
 
-		String url = "https://api.github.com/user";
-		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
-		URI uri = builder.build().encode().toUri();
+		String refreshToken = redisService.getData(accessToken);
+		System.out.println("refreshToken = " + refreshToken);
 
-		ResponseEntity<Map<String, String>> responseEntity = restTemplate.exchange(
-			uri,
-			HttpMethod.GET,
-			requestEntity,
-			new ParameterizedTypeReference<Map<String, String>>() {});
+		if (refreshToken == null) {
+			// Todo: 토큰없을때
+		} else {
+			// 리프레쉬 토큰이 있을 때 access 토큰 재생성
+			Long userId = authTokenProvider.getUserId(accessToken);
 
-		Map<String, String> responseBody = responseEntity.getBody();
+			// jwt 토큰 생성
+			authTokenProvider.createToken(userId);
 
-		return responseBody.get("login");
+			// Todo: access 토큰 반환하기
+		}
 	}
 }
