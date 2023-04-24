@@ -2,9 +2,9 @@
 
 .pageContainer {
   width: 85vw;
-  height: 100vh;
+  min-height: 100vh;
   margin: 0 auto;
-  background-color: white;
+  color: white;
 
   .info {
     display: flex;
@@ -14,14 +14,6 @@
       width: 45%;
       height: 100%;
 
-      .repo-mon {
-        width: 100%;
-        height: 80%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-
       .exp {
         display: flex;
         flex-direction: column;
@@ -29,20 +21,20 @@
         align-items: center;
 
         & p {
-          margin-top: 1rem;
-          font-size: 2rem;
+          margin-top: 0.7rem;
+          font-size: 1.75rem;
         }
       }
     }
 
     .default-info-div {
-      width: calc(55% - 2rem);
+      width: calc(55% - 1rem);
       margin: 0 auto;
-      padding: 0.5rem 2rem;
+      padding: 0.5rem 2rem 0.5rem 0;
       font-size: 1.5rem;
-      color: rgb(51, 51, 51);
 
       .first {
+        width: 97%;
         display: flex;
         justify-content: space-between;
 
@@ -69,7 +61,6 @@
 
       .date {
         margin: 1% 0 0 0;
-        color: rgb(75, 75, 75);
       }
 
       .lan-div {
@@ -84,12 +75,13 @@
         }
 
         &::-webkit-scrollbar-thumb {
-          background-color: #2f3542;
+          background-color: rgb(119, 119, 119);
           border-radius: 5px;
         }
 
         &::-webkit-scrollbar-track {
-          background-color: rgb(189, 189, 189);
+          background-color: white;
+          border-radius: 5px;
         }
 
         & span {
@@ -117,12 +109,13 @@
         }
 
         &::-webkit-scrollbar-thumb {
-          background-color: #2f3542;
+          background-color: rgb(119, 119, 119);
           border-radius: 5px;
         }
 
         &::-webkit-scrollbar-track {
-          background-color: rgb(189, 189, 189);
+          background-color: white;
+          border-radius: 5px;
         }
 
         & span {
@@ -141,23 +134,23 @@
 
       .des {
         margin: 2% 0 0 0;
-        color: rgb(75, 75, 75);
         word-wrap: break-word;
       }
 
-      .growth-element-chart-div {
+      .exp-analysis-div {
         position: relative;
         margin: 1rem 0;
         height: 300px;
         padding: 2rem;
-        border: 1px solid gray;
+        border: 2px solid gray;
         border-radius: 5px;
+        background-color: white;
 
-        .growth-element-title {
+        .exp-analysis-title {
           font-size: 1rem;
           position: absolute;
           top: -1%;
-          left: -0.5%;
+          left: 0;
           padding: 0.5rem;
           background-color: rgb(207, 207, 207);
           border-radius: 5px;
@@ -165,16 +158,40 @@
       }
     }
   }
-}
 
-.info {
-  outline: 1px solid red;
+  .extra-div {
+    padding: 1rem 2.5rem;
 
-  .repo-mon-div {
-    outline: 1px solid orange;
+    .growth-chart-div {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      background-color: white;
+      padding: 2rem;
+      border: 2px solid gray;
+      border-radius: 5px;
 
-    .repo-mon {
-      outline: 1px solid greenyellow;
+      .growth-title {
+        font-size: 1rem;
+        position: absolute;
+        top: -1%;
+        left: 0;
+        padding: 0.5rem;
+        background-color: rgb(207, 207, 207);
+        border-radius: 5px;
+      }
     }
   }
 }
+
+// .info {
+//   outline: 1px solid red;
+
+//   .repo-mon-div {
+//     outline: 1px solid orange;
+
+//     .repo-mon {
+//       outline: 1px solid greenyellow;
+//     }
+//   }
+// }
