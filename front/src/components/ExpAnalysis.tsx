@@ -32,7 +32,7 @@ const data = {
   ],
 };
 
-export default function GrowthElementChart() {
+export default function ExpAnalysis() {
   return (
     <Radar
       data={data}
