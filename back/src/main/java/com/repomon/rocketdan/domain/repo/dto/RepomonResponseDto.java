@@ -11,13 +11,21 @@ import java.util.List;
 
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @ToString
 @Builder
 public class RepomonResponseDto {
+	private Long repomonId;
+	private String repomonName;
+	private Integer repomonSkill;
 
 	public static RepomonResponseDto fromEntity(RepomonEntity repomon) {
-		return new RepomonResponseDto();
+		return RepomonResponseDto.builder()
+				.repomonId(repomon.getRepomonId())
+				.repomonName(repomon.getRepomonName())
+				.repomonSkill(repomon.getRepomonSkill())
+				.build();
 	}
 
 
