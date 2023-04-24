@@ -23,10 +23,10 @@ public class RepomonController {
     private final RepomonService repomonService;
 
     @GetMapping("/{repoId}")
-    public ResponseEntity<ResultDto<RepomonResponseDto>> getRepomonInfo(@PathVariable("repoId") Long repoId){
+    public ResponseEntity<ResultDto<RepomonStatusResponseDto>> getRepomonInfo(@PathVariable("repoId") Long repoId){
+        RepomonStatusResponseDto repomonStatusResponseDto = repomonService.getRepomonInfo(repoId);
 
-
-        return ResponseEntity.ok().body(ResultDto.of(new RepomonResponseDto()));
+        return ResponseEntity.ok().body(ResultDto.of(repomonStatusResponseDto));
     }
 
     @GetMapping("/{repoId}/match")
@@ -43,11 +43,10 @@ public class RepomonController {
     }
 
     @GetMapping("/{repoId}/match/result")
-    public ResponseEntity<ResultDto<List<BattleLogResponseDto>>> getBattleLogList(@PathVariable("repoId") Long repoId){
+    public ResponseEntity<ResultDto<BattleLogResponseDto>> getBattleLogList(@PathVariable("repoId") Long repoId){
 
 
-        List<BattleLogResponseDto> battleLogResponseList = new ArrayList<>();
-        return ResponseEntity.ok().body(ResultDto.of(battleLogResponseList));
+        return ResponseEntity.ok().body(ResultDto.of(new BattleLogResponseDto()));
     }
 
     @PutMapping("/{repoId}")

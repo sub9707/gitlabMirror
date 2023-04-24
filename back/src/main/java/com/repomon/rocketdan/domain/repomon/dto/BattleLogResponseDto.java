@@ -23,6 +23,7 @@ public class BattleLogResponseDto {
 	private RepomonStatusResponseDto attackRepo;
 	private RepomonStatusResponseDto defenseRepo;
 
+	private List<BattleLog> battleLogList;
 
 
 	public static BattleLogResponseDto fromEntity(BattleLogEntity battleLog) {
@@ -30,12 +31,26 @@ public class BattleLogResponseDto {
 	}
 
 
-	public static List<BattleLogResponseDto> fromEntityList(List<BattleLogEntity> battleLogList) {
-		List<BattleLogResponseDto> result = new ArrayList<>();
-		for (BattleLogEntity battleLog : battleLogList) {
-			BattleLogResponseDto battleLogResponseDto = BattleLogResponseDto.fromEntity(battleLog);
-			result.add(battleLogResponseDto);
+	@Getter
+	@Builder
+	@AllArgsConstructor
+	@NoArgsConstructor
+	private static class BattleLog {
+		private Boolean isWin;
+		private Integer attackPoint;
+		private Integer defensePoint;
+		private RepomonStatusResponseDto attackRepo;
+		private RepomonStatusResponseDto defenseRepo;
+
+		public static BattleLog fromEntity(BattleLogEntity battleLog) {
+			return BattleLog.builder()
+					.isWin(battleLog.getIsWin())
+					.attackPoint(battleLog.getAttackPoint())
+					.defensePoint(battleLog.getDefensePoint())
+					.attackRepo(RepomonStatusResponseDto.fromEntity(battleLog.getAttackRepo()))
+					.defenseRepo(RepomonStatusResponseDto.fromEntity(battleLog.getDefenseRepo()))
+					.build();
 		}
-		return result;
+
 	}
 }
