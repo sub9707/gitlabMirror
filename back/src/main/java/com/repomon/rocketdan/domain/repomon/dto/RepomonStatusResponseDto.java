@@ -6,10 +6,6 @@ import com.repomon.rocketdan.domain.repomon.app.DefaultStatus;
 import com.repomon.rocketdan.domain.repomon.entity.RepomonStatusEntity;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
 
 
 @AllArgsConstructor
@@ -53,6 +49,7 @@ public class RepomonStatusResponseDto {
 
 	private RepomonResponseDto repomon;
 
+
 	public static RepomonStatusResponseDto fromEntity(RepomonStatusEntity repomonStatus) {
 		return RepomonStatusResponseDto.builder()
 				.repoName(repomonStatus.getRepoName())
@@ -67,23 +64,14 @@ public class RepomonStatusResponseDto {
 				.defPoint(repomonStatus.getDefPoint())
 				.criticalPoint(repomonStatus.getCriticalPoint())
 				.hitPoint(repomonStatus.getHitPoint())
-				.atk(((repomonStatus.getStartAtk()+ repomonStatus.getAtkPoint())*DefaultStatus.atkValue) + DefaultStatus.defaultAtk)
-				.dodge(((repomonStatus.getStartDodge()+repomonStatus.getDodgePoint())*DefaultStatus.dodgeValue) + DefaultStatus.defaultDodge)
-				.def(((repomonStatus.getStartDef()+ repomonStatus.getDefPoint())*DefaultStatus.defValue) + DefaultStatus.defaultDef)
-				.critical(((repomonStatus.getStartCritical() + repomonStatus.getCriticalPoint())*DefaultStatus.criticalValue) + DefaultStatus.defaultCritical)
-				.hit(((repomonStatus.getStartHit() + repomonStatus.getHitPoint()) * DefaultStatus.hitValue) + DefaultStatus.defaultHit)
-				.hp((int)(repomonStatus.getRepoExp() * DefaultStatus.hpValue)+DefaultStatus.defaultHp)
+				.atk(DefaultStatus.createAtk(repomonStatus.getStartAtk(), repomonStatus.getAtkPoint()))
+				.dodge(DefaultStatus.createDodge(repomonStatus.getStartDodge(), repomonStatus.getDodgePoint()))
+				.def(DefaultStatus.createDef(repomonStatus.getStartDef(), repomonStatus.getDefPoint()))
+				.critical(DefaultStatus.createCritical(repomonStatus.getStartCritical(), repomonStatus.getCriticalPoint()))
+				.hit(DefaultStatus.createHit(repomonStatus.getStartHit(), repomonStatus.getHitPoint()))
+				.hp(DefaultStatus.createHp(repomonStatus.getRepoExp()))
 				.repomon(RepomonResponseDto.fromEntity(repomonStatus.getRepomon()))
 				.build();
 	}
 
-
-	public static List<RepomonStatusResponseDto> fromEntityList(List<RepomonStatusEntity> repomonStatusList) {
-		List<RepomonStatusResponseDto> result = new ArrayList<>();
-		for (RepomonStatusEntity repomonStatus : repomonStatusList) {
-			RepomonStatusResponseDto repomonStatusResponseDto = RepomonStatusResponseDto.fromEntity(repomonStatus);
-			result.add(repomonStatusResponseDto);
-		}
-		return result;
-	}
 }
