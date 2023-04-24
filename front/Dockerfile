@@ -9,7 +9,7 @@ RUN npm install
 
 # 소스를 작업폴더로 복사하고 빌드
 COPY . /usr/src/app
-RUN npm next build
+RUN npm run build
 
 FROM nginx:latest
 # nginx의 기본 설정을 삭제하고 앱에서 설정한 파일을 복사
