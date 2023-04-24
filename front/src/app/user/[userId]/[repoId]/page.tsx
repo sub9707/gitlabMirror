@@ -1,15 +1,17 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import ProgressBar from "components/ProgressBar";
 import styles from "./page.module.scss";
 import { StarIcon, ShareIcon } from "@heroicons/react/24/outline";
+import RadarChart from "components/RadarChart";
 
 function Page({ params }: { params: { repoId: string } }) {
   const canvas = useRef<HTMLDivElement>(null);
+  const [scene, setScene] = useState<THREE.Scene | null>(null);
 
   useEffect(() => {
     const scene = new THREE.Scene();
@@ -145,8 +147,13 @@ function Page({ params }: { params: { repoId: string } }) {
             Repo Description Repo Description Repo Description Repo Description
             Repo Description Repo Description
           </p>
+          <div className={styles["growth-element-chart-div"]}>
+            <p className={styles["growth-element-title"]}>Growth Element</p>
+            <RadarChart />
+          </div>
         </div>
       </div>
+      <div>asd</div>
     </div>
   );
 }
