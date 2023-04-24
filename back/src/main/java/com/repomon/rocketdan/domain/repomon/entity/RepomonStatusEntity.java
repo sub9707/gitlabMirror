@@ -19,5 +19,15 @@ public class RepomonStatusEntity extends RepoEntity {
 	private Integer winCnt;
 	private Integer loseCnt;
 	
-	// 아래에 스탯 추가 예정
+	private Integer startAtk;
+	private Integer startDodge;
+	private Integer startDef;
+	private Integer startCritical;
+	private Integer startHit;
+
+	private Integer atkPoint;
+	private Integer dodgePoint;
+	private Integer defPoint;
+	private Integer criticalPoint;
+	private Integer hitPoint;
 }
