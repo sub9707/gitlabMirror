@@ -22,19 +22,17 @@ public class RepomonStatusResponseDto {
 	private Integer statPoint;
 	private Integer winCnt;
 	private Integer loseCnt;
+	private RepomonResponseDto repomon;
 
-	// 내부 공식으로 계산한 수치 (디폴트값 + 각 포인트 반영 %) 근데 프론트에서 가지고 있어야 하지 않을까싶음.
+	// 내부 공식으로 계산한 수치
 	// 최초에 주사위 굴린 수치도 여기에 반영됨
-	@Builder.Default
-	private Integer atk = 0;
-	@Builder.Default
-	private Float dodge = 0f;
-	@Builder.Default
-	private Float def = 0f;
-	@Builder.Default
-	private Float critical = 0f;
-	@Builder.Default
-	private Float hit = 0f;
+	private Integer atk;
+	private Float dodge;
+	private Float def;
+	private Float critical;
+	private Float hit;
+	// 체력
+	private Integer hp;
 
 	// 현재까지 찍은 스탯값
 	private Integer atkPoint;
@@ -43,11 +41,12 @@ public class RepomonStatusResponseDto {
 	private Integer criticalPoint;
 	private Integer hitPoint;
 
-	// 체력
-	private Integer hp;
-
-
-	private RepomonResponseDto repomon;
+	// 증가치
+	private Integer increaseAtk;
+	private Float increaseDodge;
+	private Float increaseDef;
+	private Float increaseCritical;
+	private Float increaseHit;
 
 
 	public static RepomonStatusResponseDto fromEntity(RepomonStatusEntity repomonStatus) {
@@ -59,18 +58,26 @@ public class RepomonStatusResponseDto {
 				.statPoint(repomonStatus.getStatPoint())
 				.winCnt(repomonStatus.getWinCnt())
 				.loseCnt(repomonStatus.getLoseCnt())
+				.repomon(RepomonResponseDto.fromEntity(repomonStatus.getRepomon()))
+				// 각 스탯에 찍은 포인트
 				.atkPoint(repomonStatus.getAtkPoint())
 				.dodgePoint(repomonStatus.getDodgePoint())
 				.defPoint(repomonStatus.getDefPoint())
 				.criticalPoint(repomonStatus.getCriticalPoint())
 				.hitPoint(repomonStatus.getHitPoint())
+				// 스탯의 현재 수치
 				.atk(DefaultStatus.createAtk(repomonStatus.getStartAtk(), repomonStatus.getAtkPoint()))
 				.dodge(DefaultStatus.createDodge(repomonStatus.getStartDodge(), repomonStatus.getDodgePoint()))
 				.def(DefaultStatus.createDef(repomonStatus.getStartDef(), repomonStatus.getDefPoint()))
 				.critical(DefaultStatus.createCritical(repomonStatus.getStartCritical(), repomonStatus.getCriticalPoint()))
 				.hit(DefaultStatus.createHit(repomonStatus.getStartHit(), repomonStatus.getHitPoint()))
 				.hp(DefaultStatus.createHp(repomonStatus.getRepoExp()))
-				.repomon(RepomonResponseDto.fromEntity(repomonStatus.getRepomon()))
+				// 1포인트 당 증가 값
+				.increaseAtk(DefaultStatus.atkValue)
+				.increaseDodge(DefaultStatus.dodgeValue)
+				.increaseDef(DefaultStatus.defValue)
+				.increaseCritical(DefaultStatus.criticalValue)
+				.increaseHit(DefaultStatus.hitValue)
 				.build();
 	}
 
