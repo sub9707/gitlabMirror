@@ -46,20 +46,159 @@
       }
     }
     .leftBox {
-      width: 60em;
-      height: 50em;
-      background-color: aliceblue;
+      width: 50vw;
+      height: auto;
+      border: 3px solid transparent;
+      border-image: $golden-theme;
+      border-image-slice: 1;
+      background-color: transparent;
+      margin-bottom: 3%;
+      color: white;
+      & .commitTitle {
+        color: aquamarine;
+        text-align: center;
+        margin-block: 3%;
+        font-size: 2em;
+      }
     }
     .rigthBox {
-      width: 40em;
-      height: 50em;
-      background-color: rgb(231, 146, 107);
+      width: 30vw;
+      height: 55em;
+      border: 3px solid transparent;
+      border-image: $golden-theme;
+      border-image-slice: 1;
+      background-color: transparent;
+      margin-bottom: 3%;
+      & .diceContainer {
+        width: 100%;
+        height: 100%;
+        background-image: url("/static/images/paper.jpg");
+        background-size: cover;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        & .diceTitle {
+          width: 100%;
+          height: 10%;
+          font-size: 3em;
+          font-weight: 600;
+          text-align: center;
+          margin-top: 3%;
+        }
+        & .diceBox {
+          width: 100%;
+          height: 30%;
+          position: relative;
+          & .dice {
+            width: auto;
+            height: auto;
+            position: absolute;
+            bottom: -7em;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9;
+            transition: transform 0.2s ease-in-out;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+          }
+          & .diceShadow {
+            position: absolute;
+            width: 5em;
+            height: 2em;
+            background-color: rgba(0, 0, 0, 0.781);
+            border-radius: 50%;
+            filter: blur(0.4em);
+            bottom: -2.5em;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.2s ease-in-out;
+          }
+        }
+        & .statusBox {
+          width: 100%;
+          height: 45%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-bottom: 5%;
+        }
+      }
     }
   }
 }
 
+#tableBody {
+  font-size: 1.3em;
+  font-weight: 700;
+}
+
 .selected {
   filter: drop-shadow(-1px 3px 18px #00baff);
+}
+
+.commitBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 30vw;
+  height: 20vh;
+  border: 1px solid white;
+  padding-block: 10%;
+  margin-bottom: 5%;
+}
+
+.inputFields {
+  box-shadow: inset #abacaf 0 0 0 2px;
+  border: 0;
+  background: rgba(0, 0, 0, 0);
+  appearance: none;
+  width: 100%;
+  position: relative;
+  border-radius: 3px;
+  padding: 9px 12px;
+  line-height: 1.4;
+  color: rgb(255, 255, 255) !important;
+  font-size: 16px;
+  font-weight: 400;
+  height: 40px;
+  transition: all 0.2s ease;
+  &:hover {
+    box-shadow: 0 0 0 0 #fff inset, #1de9b6 0 0 0 2px;
+  }
+  &:focus {
+    outline: 0;
+    box-shadow: 0 0 0 0 #fff inset, #1de9b6 0 0 0 3px;
+  }
+}
+
+.buttonAccept {
+  color: inherit;
+  border-radius: 15px;
+  background-color: #fff;
+  font-weight: 800;
+  transition: all 0.2s ease-in-out;
+  &:hover {
+    background-color: inherit;
+    color: #fff;
+    border: 1px solid #fff;
+  }
+}
+
+.buttonDeny {
+  border-color: #fff;
+  color: #fff;
+  border: 1px solid #fff;
+  border-radius: 15px;
+  font-weight: 800;
+  transition: all 0.2s ease-in-out;
+  &:hover {
+    background-color: #fff;
+    color: inherit;
+  }
 }
 
 @keyframes tilt-n-move-shaking {
