@@ -33,29 +33,21 @@ public class JwtTokenProvider {
 	public AuthResponseDto createToken(Long userId) {
 
 		// accessToken 생성
-		Map<String, String> accessTokenInfo = new HashMap<>();
-		accessTokenInfo.put("userId", String.valueOf(userId));
-
-		// 토큰 발행일, 만료일 설정
-		Date issuedDateAtAccessToken = new Date();
-		Date expiryDateAtAccessToken = new Date(issuedDateAtAccessToken.getTime() + accessExpiry);
+		Date issuedDate = new Date();
+		Date expiryDateAtAccessToken = new Date(issuedDate.getTime() + accessExpiry);
 
 		JwtBuilder accessTokenBuilder = Jwts.builder()
 			.setSubject(String.valueOf(userId))
-			.setIssuedAt(issuedDateAtAccessToken)
+			.setIssuedAt(issuedDate)
 			.setExpiration(expiryDateAtAccessToken)
 			.signWith(SignatureAlgorithm.HS256, secretKey);
 
 		// refreshToken 생성
-		Map<String, String> refreshTokenInfo = new HashMap<>();
-		refreshTokenInfo.put("userId", String.valueOf(userId));
-
-		Date issuedDateAtRefreshToken = new Date();
-		Date expiryDateAtRefreshToken = new Date(issuedDateAtRefreshToken.getTime() + refreshExpiry);
+		Date expiryDateAtRefreshToken = new Date(issuedDate.getTime() + refreshExpiry);
 
 		JwtBuilder refreshTokenBuilder = Jwts.builder()
 			.setSubject(String.valueOf(userId))
-			.setIssuedAt(issuedDateAtRefreshToken)
+			.setIssuedAt(issuedDate)
 			.setExpiration(expiryDateAtRefreshToken)
 			.signWith(SignatureAlgorithm.HS256, secretKey);
 

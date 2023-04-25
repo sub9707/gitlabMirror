@@ -36,10 +36,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 		ClientRegistration clientRegistration = userRequest.getClientRegistration();
 		String provider = clientRegistration.getRegistrationId(); // 제공자
 
-		// github accessToken 요청
-		String accessToken = userRequest.getAccessToken().getTokenValue();
 
 		if (provider.equalsIgnoreCase("github")) {
+
+			String accessToken = userRequest.getAccessToken().getTokenValue(); // github accessToken 요청
 			Map<String, Object> userAttributes = oAuth2User.getAttributes();
 			String login = (String) userAttributes.get("login");
 			String name = (String) userAttributes.get("name");
