@@ -40,8 +40,6 @@ public class AuthService {
 			return userRepository.save(userEntity);
 		});
 
-		System.out.println("user.getUserId() = " + user.getUserId());
-
 		return user.getUserId();
 	}
 

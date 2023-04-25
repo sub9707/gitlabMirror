@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 @Component
@@ -53,6 +52,8 @@ public class JwtTokenProvider {
 
 		redisService.setDataExpire(refreshTokenBuilder.compact(), String.valueOf(userId), refreshExpiry);
 
+		System.out.println("createToken !!");
+		System.out.println("accessToken = " + accessTokenBuilder.compact());
 		System.out.println("refreshToken = " + refreshTokenBuilder.compact());
 
 		AuthResponseDto authResponseDto = new AuthResponseDto(accessTokenBuilder.compact(), refreshTokenBuilder.compact());
@@ -65,14 +66,12 @@ public class JwtTokenProvider {
 	 * 토큰에서 유저 아이디(PK) 추출
 	 */
 	public Long getUserId(String token) {
-		String subject = getSubject(token);
 		try {
-			Map<String, String> tokenInfo = objectMapper.readValue(subject, Map.class);
-			return Long.valueOf(tokenInfo.get("userId"));
-		} catch (JsonProcessingException e) {
-			// Todo: 에러 발생
-			System.out.println("유저 아이디 추출 실패");
-			return 0L;
+			Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+			return Long.parseLong(claims.getSubject());
+		} catch (JwtException e) {
+			// Todo : JWT 유효성 검사 실패
+			return null;
 		}
 	}
 
@@ -119,7 +118,7 @@ public class JwtTokenProvider {
 			Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
 			return !claims.getBody().getExpiration().before(new Date());
 		} catch (Exception e) {
-			// Todo: 에러 발생
+f			// Todo: 에러 발생
 			return false;
 		}
 	}
