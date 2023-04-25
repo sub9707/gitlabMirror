@@ -20,14 +20,16 @@ ChartJS.register(
 );
 
 const data = {
-  labels: ["Commit", "Issue", "Merge", "Review", "Efficency", "Security"],
+  labels: ["Commit", "Issue", "Merge", "Review", "Efficiency", "Security"],
   datasets: [
     {
       label: "EXP",
       data: [5, 7, 5, 9, 7, 4],
-      backgroundColor: "rgba(255, 99, 132, 0.2)",
-      borderColor: "rgba(255, 99, 132, 1)",
-      borderWidth: 1,
+      backgroundColor: "rgba(255, 255, 0, 0.2)",
+      borderColor: "yellow",
+      pointBackgroundColor: "rgb(255, 255, 255)",
+      borderWidth: 1.5,
+      color: "white",
     },
   ],
 };
@@ -38,9 +40,39 @@ export default function ExpAnalysis() {
       data={data}
       options={{
         maintainAspectRatio: false,
+        scales: {
+          r: {
+            angleLines: {
+              color: "rgba(255, 255, 255, 0.8)",
+            },
+            grid: {
+              color: "rgba(255, 255, 255, 0.8)",
+            },
+            pointLabels: {
+              font: {
+                family: "SUIT-Thin",
+                size: 15,
+              },
+              color: "white",
+            },
+            ticks: {
+              color: "black",
+            },
+          },
+        },
         plugins: {
+          title: {
+            color: "white",
+          },
           legend: {
             position: "right",
+            labels: {
+              color: "white",
+              font: {
+                family: "SUIT-Thin",
+                size: 16,
+              },
+            },
           },
         },
       }}

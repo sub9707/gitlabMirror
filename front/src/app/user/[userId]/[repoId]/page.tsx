@@ -1,13 +1,12 @@
 "use client";
 
 import React from "react";
-
-import ProgressBar from "components/ProgressBar";
-import styles from "./page.module.scss";
 import { StarIcon, ShareIcon } from "@heroicons/react/24/outline";
-import ExpAnalysis from "components/ExpAnalysis";
-import GrowthChart from "components/GrowthChart";
-import DetailRepomon from "components/DetailRepomon";
+import ExpAnalysis from "@/components/ExpAnalysis";
+import GrowthChart from "@/components/GrowthChart";
+import DetailRepomon from "@/components/DetailRepomon";
+import ProgressBar from "@/components/ProgressBar";
+import styles from "./page.module.scss";
 
 function Page({ params }: { params: { repoId: string } }) {
   return (
