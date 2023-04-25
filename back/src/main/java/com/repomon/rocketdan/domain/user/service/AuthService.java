@@ -35,25 +35,14 @@ public class AuthService {
 	 */
 	public Long login(String userName) {
 
-		// 요청받은 user ID 가 DB에 있는지 조회
-		Optional<UserEntity> user = userRepository.findByUserName(userName);
-
-		Long userId;
-
-		if (user.isPresent()) {
-			// 있으면 userId 반환
-			userId = user.get().getUserId();
-
-		} else {
-			// 없으면 생성하고 PK 반환, 있으면 userId 반환
+		UserEntity user = userRepository.findByUserName(userName).orElseGet(() -> {
 			UserEntity userEntity = UserEntity.builder().userName(userName).build();
-			userRepository.save(userEntity);
-			userId = userEntity.getUserId();
-		}
+			return userRepository.save(userEntity);
+		});
 
-		System.out.println("userId = " + userId);
+		System.out.println("user.getUserId() = " + user.getUserId());
 
-		return userId;
+		return user.getUserId();
 	}
 
 

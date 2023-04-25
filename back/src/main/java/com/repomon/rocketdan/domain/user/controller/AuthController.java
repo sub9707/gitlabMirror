@@ -29,6 +29,12 @@ public class AuthController {
         }).build();
     }
 
+
+    /**
+     * Todo : 추후 수정, 리프레쉬 토큰을 받아서 redis 에서 삭제하기
+     * @param authHeader
+     * @return
+     */
     @GetMapping("/auth/logout")
     public ResponseEntity logout(@RequestHeader("Authorization") String authHeader) {
 
@@ -39,6 +45,12 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+
+    /**
+     * Todo: 추후 수정
+     * @param authHeader
+     * @return
+     */
     @PutMapping("/refresh")
     public ResponseEntity reissueJWT(@RequestHeader("Authorization") String authHeader){
 
