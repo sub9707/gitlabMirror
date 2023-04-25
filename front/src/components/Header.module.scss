@@ -12,7 +12,7 @@
   display: flex;
   justify-content: space-around;
   align-items: flex-end;
-  color: $menu-aqua;
+  color: $aqua;
   font-size: 1.2rem;
   font-weight: 700;
   & .linkTag {
@@ -44,6 +44,6 @@
   height: 0.2vh;
   color: white;
   background: rgb(255, 235, 215);
-  background: $golden-theme;
+  background: $yellow;
   margin-top: 1%;
 }
