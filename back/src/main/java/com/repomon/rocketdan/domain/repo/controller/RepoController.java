@@ -5,7 +5,9 @@ import com.repomon.rocketdan.domain.repo.dto.RepoCardResponseDto;
 import com.repomon.rocketdan.domain.repo.dto.RepoListResponseDto;
 import com.repomon.rocketdan.domain.repo.dto.RepoRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.RepoResponseDto;
+import com.repomon.rocketdan.domain.repo.service.RepoService;
 import com.repomon.rocketdan.domain.user.dto.ActiveRepoRequestDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -15,12 +17,16 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/repo")
+@RequiredArgsConstructor
 public class RepoController {
+
+    private final RepoService repoService;
 
     @ApiOperation(value = "전체 레포 리스트 조회")
     @GetMapping("/{userId}")
     public ResponseEntity<RepoListResponseDto> getUserRepoList(Long userId){
-        return ResponseEntity.ok().build();
+        RepoListResponseDto responseDto = repoService.getUserRepoList(userId);
+        return ResponseEntity.ok(responseDto);
     }
 
     @ApiOperation(value = "개별 레포 디테일 조회")
