@@ -1,85 +1,82 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
-import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import React from "react";
+import { StarIcon, ShareIcon } from "@heroicons/react/24/outline";
+import ExpAnalysis from "@/components/ExpAnalysis";
+import GrowthChart from "@/components/GrowthChart";
+import DetailRepomon from "@/components/DetailRepomon";
+import ProgressBar from "@/components/ProgressBar";
 import styles from "./page.module.scss";
 
 function Page({ params }: { params: { repoId: string } }) {
-  const canvas = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const scene = new THREE.Scene();
-
-    const loader = new GLTFLoader();
-
-    loader.load(
-      "/cute_fox.glb",
-      function (gltf) {
-        scene.add(gltf.scene);
-      },
-      undefined,
-      function (error) {
-        console.error(error);
-      }
-    );
-
-    const light = new THREE.PointLight(0xffffff, 4.5, 100);
-    light.position.set(0, 0, 50);
-    scene.add(light);
-
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setClearColor(0xffffff, 1);
-
-    let camera: THREE.PerspectiveCamera;
-    let controls: OrbitControls;
-
-    if (canvas.current) {
-      camera = new THREE.PerspectiveCamera(
-        75,
-        canvas.current.clientWidth / canvas.current.clientHeight,
-        0.1,
-        1000
-      );
-
-      camera.position.z = 5;
-
-      renderer.setSize(canvas.current.clientWidth, canvas.current.clientHeight);
-
-      canvas.current.appendChild(renderer.domElement);
-
-      controls = new OrbitControls(camera, canvas.current);
-
-      controls.rotateSpeed = 0.5;
-      controls.zoomSpeed = 1.2;
-      controls.panSpeed = 0.8;
-      controls.minDistance = 5;
-      controls.maxDistance = 500;
-    }
-
-    function animate() {
-      requestAnimationFrame(animate);
-      controls.update();
-      renderer.render(scene, camera);
-    }
-
-    animate();
-  }, []);
-
   return (
     <div className={styles.pageContainer}>
       <div className={styles.info}>
         <div className={styles["repo-mon-div"]}>
-          <div ref={canvas} className={styles["repo-mon"]}></div>
+          <DetailRepomon />
           <div className={styles.exp}>
-            <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-              <div
-                className="bg-blue-600 h-2.5 rounded-full"
-                style={{ width: "45%" }}
-              ></div>
+            <p>칙칙폭폭스</p>
+            <ProgressBar />
+          </div>
+        </div>
+        <div className={styles["default-info-div"]}>
+          <div className={styles.first}>
+            <span className={styles.title}>Repo Name</span>
+            <div className={styles["icon-div"]}>
+              <span className={styles.star}>
+                <StarIcon
+                  width="1.25rem"
+                  style={{ display: "inline", marginRight: "0.2rem" }}
+                />
+                12
+              </span>
+              <span className={styles.share}>
+                <ShareIcon
+                  width="1.25rem"
+                  style={{ display: "inline", marginRight: "0.2rem" }}
+                />
+                15
+              </span>
             </div>
           </div>
+          <p className={styles.date}>23.02.20 ~ 23.04.07</p>
+          <div className={styles["lan-div"]}>
+            <span>TypeScript</span>
+            <span>Java</span>
+            <span>Python</span>
+            <span>TypeScript</span>
+            <span>Java</span>
+            <span>Python</span>
+            <span>TypeScript</span>
+            <span>Java</span>
+            <span>Python</span>
+          </div>
+          <div className={styles["tag-div"]}>
+            <span>KakaoAPI</span>
+            <span>GithubAPI</span>
+            <span>NextJS</span>
+            <span>ThreeJS</span>
+            <span>SpringBoot</span>
+            <span>KakaoAPI</span>
+            <span>GithubAPI</span>
+            <span>NextJS</span>
+            <span>ThreeJS</span>
+            <span>SpringBoot</span>
+          </div>
+          <p className={styles.des}>
+            Repo Description Repo Description Repo Description Repo Description
+            Repo Description Repo Description
+          </p>
+          <div className={styles["exp-analysis-div"]}>
+            <span className={styles["exp-analysis-title"]}>Exp Analysis</span>
+            <ExpAnalysis />
+          </div>
+        </div>
+      </div>
+      <div className={styles["extra-div"]}>
+        <div className={styles["growth-chart-div"]}>
+          <span className={styles["growth-title"]}>Growth</span>
+          <GrowthChart />
         </div>
       </div>
     </div>
