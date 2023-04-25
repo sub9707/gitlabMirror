@@ -2,8 +2,8 @@ import styles from "./page.module.scss";
 
 export default function Home() {
   return (
-    <>
-      <p className={styles.title}>Oops..!</p>
-    </>
+    <div className={styles.container}>
+      <div className={styles.banner}></div>
+    </div>
   );
 }
