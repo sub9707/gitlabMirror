@@ -201,6 +201,17 @@
   }
 }
 
+.tableSytle {
+  color: black;
+  text-align: center;
+  th {
+    color: white;
+  }
+  button {
+    color: white;
+  }
+}
+
 @keyframes tilt-n-move-shaking {
   0% {
     transform: translate(0, 0) rotate(0deg);

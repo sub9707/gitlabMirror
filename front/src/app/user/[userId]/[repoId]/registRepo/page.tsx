@@ -228,58 +228,49 @@ const Page: NextPage<PageProps> = ({ params }) => {
               ) : (
                 <button onClick={() => setAddClicked(true)}>+</button>
               )}
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                {todos.map((todo) => (
-                  <div key={todo.id} className={styles.commitBox}>
-                    <div>
-                      <label htmlFor={`title-${todo.id}`}>컨벤션 명:</label>
-                      <input
-                        type="text"
-                        id={`title-${todo.id}`}
-                        defaultValue={todo.title}
-                        className={styles.inputFields}
-                        style={{
-                          color: "black",
-                          marginBottom: "3%",
-                        }}
-                        onBlur={(e) =>
-                          handleEditTodo(
-                            todo.id,
-                            e.target.value,
-                            todo.description
-                          )
-                        }
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor={`description-${todo.id}`}>설명:</label>
-                      <input
-                        type="text"
-                        id={`description-${todo.id}`}
-                        defaultValue={todo.description}
-                        className={styles.inputFields}
-                        style={{
-                          color: "white",
-                          marginBottom: "3%",
-                        }}
-                        onBlur={(e) =>
-                          handleEditTodo(todo.id, todo.title, e.target.value)
-                        }
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    <button onClick={() => handleDeleteTodo(todo.id)}>
-                      Delete
-                    </button>
-                  </div>
-                ))}
+              <div>
+                <table className={styles.tableSytle}>
+                  <thead>
+                    <tr>
+                      <th>컨벤션 명</th>
+                      <th>설명</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {todos.map((todo) => (
+                      <tr key={todo.id}>
+                        <td>
+                          <input
+                            type="text"
+                            value={todo.title}
+                            onChange={(e) =>
+                              handleEditTodo(todo.id, "title", e.target.value)
+                            }
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="text"
+                            value={todo.description}
+                            onChange={(e) =>
+                              handleEditTodo(
+                                todo.id,
+                                "description",
+                                e.target.value
+                              )
+                            }
+                          />
+                        </td>
+                        <td>
+                          <button onClick={() => handleDeleteTodo(todo.id)}>
+                            삭제
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
