@@ -7,6 +7,7 @@ import com.repomon.rocketdan.domain.repomon.dto.BattleLogRequestDto;
 import com.repomon.rocketdan.domain.repomon.dto.BattleLogResponseDto;
 import com.repomon.rocketdan.domain.repomon.dto.RepomonStatusResponseDto;
 import com.repomon.rocketdan.domain.repomon.service.RepomonService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ public class RepomonController {
     private final RepomonService repomonService;
 
     @GetMapping("/{repoId}")
+    @ApiOperation(value = "레포몬의 정보를 조회합니다.")
     public ResponseEntity<ResultDto<RepomonStatusResponseDto>> getRepomonInfo(@PathVariable("repoId") Long repoId) {
         RepomonStatusResponseDto repomonStatusResponseDto = repomonService.getRepomonInfo(repoId);
 
@@ -26,6 +28,7 @@ public class RepomonController {
     }
 
     @GetMapping("/{repoId}/match")
+    @ApiOperation(value = "레포몬의 전투 상대를 매칭합니다.")
     public ResponseEntity<ResultDto<RepomonStatusResponseDto>> getBattleTarget(@PathVariable("repoId") Long repoId) {
         RepomonStatusResponseDto repomonStatusResponseDto = repomonService.getBattleTarget(repoId);
         return ResponseEntity.ok().body(ResultDto.of(repomonStatusResponseDto));
@@ -39,8 +42,9 @@ public class RepomonController {
     }
 
     @GetMapping("/{repoId}/match/result")
+    @ApiOperation(value = "상위 5개의 전투기록을 조회합니다.")
     public ResponseEntity<ResultDto<BattleLogResponseDto>> getBattleLogList(@PathVariable("repoId") Long repoId) {
-
+        BattleLogResponseDto battleLog = repomonService.getBattleLogList(repoId);
 
         return ResponseEntity.ok().body(ResultDto.of(new BattleLogResponseDto()));
     }
