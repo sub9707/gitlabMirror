@@ -2,6 +2,8 @@ import "@/styles/globals.scss";
 import "@/styles/globals.css";
 
 import Header from "../components/Header";
+import { Suspense } from "react";
+import Loading from "./dashboard/loading";
 
 export const metadata = {
   title: "Repomon",
@@ -17,6 +19,7 @@ export default function RootLayout({
     <html lang="ko">
       <body>
         <Header />
+        {/* <Suspense fallback={<Loading />}>{children}</Suspense> */}
         {children}
       </body>
     </html>
