@@ -1,13 +1,10 @@
-$primary-color: blue;
-$menu-aqua: rgb(63, 189, 189);
-$golden-theme: radial-gradient(
-  circle,
-  rgba(255, 235, 215, 1) 0%,
-  rgba(133, 106, 47, 1) 100%
-);
-
 @font-face {
   font-family: "SUIT-Thin";
   src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_suit@1.0/SUIT-Thin.woff2")
     format("woff2");
 }
+
+$primary: rgba(161, 205, 255, 1);
+$second: rgba(142, 167, 233, 1);
+$highlight: rgba(90, 167, 255, 1);
+$sub: rgba(152, 157, 250, 1);
