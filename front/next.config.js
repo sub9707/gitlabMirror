@@ -3,6 +3,9 @@ const path = require("path");
 const nextConfig = {
   experimental: {
     appDir: true,
+    features: {
+      reactRefresh: true,
+    },
   },
   reactStrictMode: false,
   sassOptions: {
