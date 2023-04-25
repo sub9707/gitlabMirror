@@ -24,13 +24,45 @@ ChartJS.register(
 export const options = {
   responsive: true,
   maintainAspectRatio: false,
+  layout: {
+    padding: 30,
+  },
+  scales: {
+    x: {
+      grid: {
+        color: "rgba(255, 255, 255, 0.6)",
+      },
+      ticks: {
+        font: {
+          size: 16,
+          family: "SUIT-Thin",
+        },
+        color: "rgba(255, 255, 255, 0.6)",
+      },
+    },
+    y: {
+      grid: {
+        color: "rgba(255, 255, 255, 0.6)",
+      },
+      ticks: {
+        font: {
+          size: 16,
+          family: "SUIT-Thin",
+        },
+        color: "rgba(255, 255, 255, 0.6)",
+      },
+    },
+  },
   plugins: {
     legend: {
       position: "top" as const,
-    },
-    title: {
-      display: true,
-      text: "Growth Record",
+      labels: {
+        font: {
+          size: 16,
+          family: "SUIT-Thin",
+        },
+        color: "white",
+      },
     },
   },
 };
@@ -51,14 +83,14 @@ export const data = {
     {
       label: "EXP",
       data: [10, 15, 23, 10, 5, 12, 7],
-      borderColor: "rgb(255, 99, 132)",
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
+      borderColor: "rgba(53, 162, 235)",
+      backgroundColor: "rgba(53, 162, 235, 0.5)",
     },
     {
       label: "Cumulative EXP",
       data: [10, 25, 48, 58, 64, 76, 83],
-      borderColor: "rgb(53, 162, 235)",
-      backgroundColor: "rgba(53, 162, 235, 0.5)",
+      borderColor: "yellow",
+      backgroundColor: "rgba(255, 255, 0, 0.5)",
     },
   ],
 };

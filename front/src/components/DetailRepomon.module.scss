@@ -1,4 +1,4 @@
-@import "@/styles/colors.scss";
+@import "@/styles/variables.scss";
 
 .repo-mon {
   margin: 2rem auto 0 auto;
@@ -7,9 +7,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 5px solid transparent;
+  border: 3px solid transparent;
   border-radius: 100px;
   border-image: $golden-theme;
   border-image-slice: 1;
   background-color: transparent;
+  color: yellow;
 }
