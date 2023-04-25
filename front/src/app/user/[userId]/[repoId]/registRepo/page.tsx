@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { NextPage } from "next";
 import styles from "./page.module.scss";
 import Image from "next/image";
-import { PageProps, Todo } from "types/repoRegist";
+import { PageProps, Todo } from "@/types/repoRegist";
 
 const Page: NextPage<PageProps> = ({ params }) => {
   const [selected, setSelected] = useState<number | null>(null);
