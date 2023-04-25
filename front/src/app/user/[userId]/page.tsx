@@ -1,7 +1,7 @@
 import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import styles from "./page.module.scss";
-import Pagination from "components/Pagination";
+import Pagination from "@/components/Pagination";
 
 export default function Page({ params }: { params: { slug: string } }) {
   return (
