@@ -1,9 +1,7 @@
 import "@/styles/globals.scss";
-import "@/styles/globals.css";
+import "@/styles/tailwind.css";
 
 import Header from "../components/Header";
-import { Suspense } from "react";
-import Loading from "./dashboard/loading";
 import Footer from "@/components/Footer";
 
 export const metadata = {
