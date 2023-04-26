@@ -12,3 +12,28 @@ a {
     text-decoration: none;
   }
 }
+html {
+  scroll-behavior: smooth;
+}
+* {
+  ::-webkit-scrollbar-track {
+    border: 5px solid white;
+    // border color does not support transparent on scrollbar
+    // border-color: transparent;
+    background-color: #b2bec3;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    background-color: #dfe6e9;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #609cd8c4;
+    border-radius: 10px;
+    transition: all 0.3s ease-in-out;
+    &:hover {
+      background-color: #609cd8;
+    }
+  }
+}
