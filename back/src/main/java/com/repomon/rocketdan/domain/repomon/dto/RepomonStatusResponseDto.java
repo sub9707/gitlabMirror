@@ -55,7 +55,7 @@ public class RepomonStatusResponseDto {
 				.repomonNickname(repomonStatus.getRepomonNickname())
 				.repomonTier(repomonStatus.getRepomonTier())
 				.rating(repomonStatus.getRating())
-				.statPoint(repomonStatus.getStatPoint())
+//				.statPoint(repomonStatus.getStatPoint())
 				.winCnt(repomonStatus.getWinCnt())
 				.loseCnt(repomonStatus.getLoseCnt())
 				.repomon(RepomonResponseDto.fromEntity(repomonStatus.getRepomon()))
