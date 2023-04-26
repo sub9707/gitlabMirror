@@ -69,7 +69,14 @@ public class AuthService {
 			log.error("액세스 토큰이 만료되지 않음");
 			throw new CustomException(ErrorCode.UNAUTHORIZED_REISSUE_TOKEN);
 		} else if (jwtTokenProvider.validate(refreshToken)) {
-			Long userId = redisService.getAndDelete(refreshToken);
+			Long userId;
+			try {
+				userId = redisService.getAndDelete(refreshToken);
+			} catch (Exception e){
+				log.error("리프레쉬 토큰에서 사용자를 조회할 수 없음");
+				throw new CustomException(ErrorCode.UNAUTHORIZED_REISSUE_TOKEN);
+			}
+			System.out.println("userId = " + userId);
 			return jwtTokenProvider.createToken(userId);
 		} else {
 			log.error("리프레쉬 토큰이 만료됨");
