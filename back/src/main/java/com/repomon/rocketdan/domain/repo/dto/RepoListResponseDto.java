@@ -33,6 +33,7 @@ public class RepoListResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     private static class RepoListItem{
+        private Long repoId;
         private Long repomonId;
         private String repoName;
         private String repomonName;
@@ -46,6 +47,7 @@ public class RepoListResponseDto {
             RepomonEntity repomon = repo.getRepomon();
 
             return RepoListItem.builder()
+                .repoId(repo.getRepoId())
                 .repomonId(repomon == null ? null : repomon.getRepomonId())
                 .repoName(repo.getRepoName())
                 .repomonName(repo.getRepomonNickname())
