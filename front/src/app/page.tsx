@@ -9,7 +9,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} style={{ marginTop: "90px" }}>
       <div className={styles.banner}>
         <div className={styles.left}>
           <p className={styles.title}>REPOMON</p>

@@ -2,6 +2,7 @@ import "@/styles/globals.scss";
 import "@/styles/tailwind.css";
 
 import Header from "../components/Header";
+import Footer from "@/components/Footer";
 
 export const metadata = {
   title: "Repomon",
@@ -18,6 +19,7 @@ export default function RootLayout({
       <body style={{ backgroundColor: "78acde" }}>
         <Header />
         <div style={{ marginTop: "90px" }}>{children}</div>
+        <Footer />
       </body>
     </html>
   );
