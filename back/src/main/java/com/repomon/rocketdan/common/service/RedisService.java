@@ -34,4 +34,11 @@ public class RedisService {
 	public void deleteData(String key) {
 		stringRedisTemplate.delete(key);
 	}
+
+
+	// 데이터 삭제 및 반환
+	public Long getAndDelete(String key) {
+		return Long.valueOf(stringRedisTemplate.opsForValue().getAndDelete(key));
+	}
+
 }

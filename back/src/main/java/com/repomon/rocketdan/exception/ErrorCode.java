@@ -23,11 +23,18 @@ public enum ErrorCode {
 	MESSAGE_REQUEST_ERROR(BAD_REQUEST, "입력된 메세지에 문제가 있습니다."),
 
 	/* 401 UNAUTHORIZED : 권한 인증 문제. JWT 토큰과 관련된 에러 */
+	UNAUTHORIZED_USER(UNAUTHORIZED, "권한이 허용되지 않은 유저입니다."),
+	TOKEN_ERROR(UNAUTHORIZED, "토큰에 문제가 있습니다."),
 	ACCESS_TOKEN_EXPIRED(UNAUTHORIZED, "토큰의 유효기간이 만료되었습니다."),
+	ACCESS_TOKEN_NOT_FOUND(UNAUTHORIZED, "액세스 토큰이 존재하지 않습니다."),
+	REFRESH_TOKEN_NOT_FOUND(UNAUTHORIZED, "리프레시 토큰이 존재하지 않습니다."),
+	ACCESS_TOKEN_ERROR(UNAUTHORIZED, "액세스 토큰에 문제가 있습니다."),
+	REFRESH_TOKEN_ERROR(UNAUTHORIZED, "리프레시 토큰에 문제가 있습니다."),
 
 
 	/* 403 FORBIDDEN : 접근 권한 없음 */
 	NO_ACCESS(FORBIDDEN, "페이지에 대한 접근 권한이 없습니다."),
+	UNAUTHORIZED_REISSUE_TOKEN(FORBIDDEN, "토큰 재발급에 문제가 있습니다."),
 
 	/* 404 NOT_FOUND : 대상이 존재하지 않음 */
 	NOT_FOUND_ENTITY(NOT_FOUND, "엔티티가 존재하지 않습니다.");

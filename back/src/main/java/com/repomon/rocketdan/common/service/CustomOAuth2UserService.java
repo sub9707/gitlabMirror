@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-@Service @Slf4j
+@Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 

@@ -1,22 +1,22 @@
 package com.repomon.rocketdan.common.service;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.repomon.rocketdan.common.dto.AuthResponseDto;
+import com.repomon.rocketdan.exception.CustomException;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import com.repomon.rocketdan.exception.ErrorCode;
 
 import java.util.Date;
-import java.util.Map;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-	private final ObjectMapper objectMapper;
 	private final RedisService redisService;
 	@Value("${jwt.secret}")
 	private String secretKey;
@@ -87,25 +87,20 @@ public class JwtTokenProvider {
 				.getBody() // token의 Body가 하기 exception들로 인해 유효하지 않으면 각각에 해당하는 로그 콘솔에 찍음
 				.getSubject();
 		} catch (SecurityException e) {
-			// Todo: 에러 발생
-			System.out.println("에러 1");
-			return "에러 발생";
+			log.error("Invalid JWT signature.");
+			throw new CustomException(ErrorCode.TOKEN_ERROR);
 		} catch (MalformedJwtException e) {
-			// Todo: 에러 발생
-			System.out.println("에러 2");
-			return "에러 발생";
+			log.error("Invalid JWT token.");
+			throw new CustomException(ErrorCode.TOKEN_ERROR);
 		} catch (ExpiredJwtException e) {
-			// Todo: 에러 발생
-			System.out.println("에러 3");
-			return "에러 발생";
+			log.error("Expired JWT token.");
+			throw new CustomException(ErrorCode.TOKEN_ERROR);
 		} catch (UnsupportedJwtException e) {
-			// Todo: 에러 발생
-			System.out.println("에러 4");
-			return "에러 발생";
+			log.error("Unsupported JWT token.");
+			throw new CustomException(ErrorCode.TOKEN_ERROR);
 		} catch (IllegalArgumentException e) {
-			// Todo: 에러 발생
-			System.out.println("에러 5");
-			return "에러 발생";
+			log.error("JWT token compact of handler are invalid.");
+			throw new CustomException(ErrorCode.TOKEN_ERROR);
 		}
 	}
 
@@ -118,7 +113,6 @@ public class JwtTokenProvider {
 			Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
 			return !claims.getBody().getExpiration().before(new Date());
 		} catch (Exception e) {
-			// Todo: 에러 발생
 			return false;
 		}
 	}
