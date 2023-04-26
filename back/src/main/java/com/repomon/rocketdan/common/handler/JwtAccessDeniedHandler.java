@@ -1,4 +1,4 @@
-package com.repomon.rocketdan.common.config;
+package com.repomon.rocketdan.common.handler;
 
 
 import org.springframework.security.access.AccessDeniedException;

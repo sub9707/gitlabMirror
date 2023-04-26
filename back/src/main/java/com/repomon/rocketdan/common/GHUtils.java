@@ -54,12 +54,12 @@ public class GHUtils {
     private Map<String, GHRepository> getRepositoriesInPublicOrganization(GHUser user)
         throws IOException {
         GHPersonSet<GHOrganization> organizations = user.getOrganizations();
-        GHOrganization ghOrganization = organizations.byLogin(user.getLogin());
-        if(ghOrganization != null) {
-            Map<String, GHRepository> repositories = new HashMap<>(ghOrganization.getRepositories());
+        if(organizations != null) {
             Map<String, GHRepository> repositoriesWithNodeId = new HashMap<>();
-            repositories.forEach((s, ghRepository) -> repositoriesWithNodeId.put(ghRepository.getNodeId(), ghRepository));
-
+            for(GHOrganization ghOrganization : organizations){
+                Map<String, GHRepository> repositories = ghOrganization.getRepositories();
+                repositories.forEach((s, ghRepository) -> repositoriesWithNodeId.put(ghRepository.getNodeId(), ghRepository));
+            }
             return repositoriesWithNodeId;
         }
         return new HashMap<>();

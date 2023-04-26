@@ -4,6 +4,7 @@ import com.repomon.rocketdan.domain.repo.app.RepoDetail;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepomonEntity;
 import com.repomon.rocketdan.domain.repomon.entity.RepomonStatusEntity;
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -18,12 +19,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RepoListResponseDto {
-
+    private int totalPages;
+    private long totalElements;
     private List<RepoListItem> repoListItems;
-    public static RepoListResponseDto fromDetails(List<RepoDetail> repoDetails) {
+    public static RepoListResponseDto fromDetails(List<RepoDetail> repoDetails, long totalElements, int totalPages) {
         List<RepoListItem> collect = repoDetails.stream().map(RepoListItem::convertFromDetail)
             .collect(Collectors.toList());
-        return new RepoListResponseDto(collect);
+        return new RepoListResponseDto(totalPages, totalElements, collect);
     }
 
     @Builder
@@ -36,7 +38,8 @@ public class RepoListResponseDto {
         private String repomonName;
         private String repoDescription;
         private Long repoExp;
-//        private Integer repoRating;
+        private Integer repoRating;
+        private Boolean isPrivate;
 
         public static RepoListItem convertFromDetail(RepoDetail repoDetail){
             RepoEntity repo = repoDetail.getRepoEntity();
@@ -48,7 +51,8 @@ public class RepoListResponseDto {
                 .repomonName(repo.getRepomonNickname())
                 .repoDescription(repoDetail.getDescription())
                 .repoExp(repo.getRepoExp())
-//                .repoRating(repo.getRating())
+                .repoRating(repo.getRating())
+                .isPrivate(repoDetail.getIsPrivate())
                 .build();
         }
     }

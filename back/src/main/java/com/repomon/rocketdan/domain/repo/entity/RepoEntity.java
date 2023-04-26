@@ -20,6 +20,7 @@ import org.kohsuke.github.GHRepository;
 @Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Table(name = "repo")
 public class RepoEntity extends CommonEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,6 +66,7 @@ public class RepoEntity extends CommonEntity {
 			.repoEnd(null)
 			.createdAt(now)
 			.updatedAt(now)
+			.rating(1000)
 			.build();
 	}
 
@@ -77,4 +79,7 @@ public class RepoEntity extends CommonEntity {
 		this.rating += score;
 	}
 
+	public void update(GHRepository ghRepository) {
+		this.repoName = ghRepository.getName();
+	}
 }

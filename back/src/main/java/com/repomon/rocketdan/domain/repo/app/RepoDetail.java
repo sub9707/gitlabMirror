@@ -14,4 +14,5 @@ import lombok.NoArgsConstructor;
 public class RepoDetail {
     private RepoEntity repoEntity;
     private String description;
+    private Boolean isPrivate;
 }

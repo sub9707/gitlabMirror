@@ -14,6 +14,7 @@ import com.repomon.rocketdan.domain.user.repository.UserRepository;
 import com.repomon.rocketdan.exception.CustomException;
 import com.repomon.rocketdan.exception.ErrorCode;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kohsuke.github.GHRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,28 +46,37 @@ public class RepoService {
         String userName = userEntity.getUserName();
         Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(userName);
 
-        repositories.forEach((s, ghRepository) -> {
-            repoRepository.findByRepoKey(s).orElseGet(() -> {
-                RepoEntity repoEntity = RepoEntity.fromGHRepository(ghRepository);
-                RepoEntity savedEntity = repoRepository.save(repoEntity);
-                activeRepoRepository.save(ActiveRepoEntity.of(userEntity, repoEntity));
-                return savedEntity;
-            });
-        });
+        saveAndUpdateRepo(repositories, userEntity);
 
 
         Page<ActiveRepoEntity> activeRepoPage = activeRepoRepository.findByUser(userEntity, pageable);
         List<RepoDetail> repoDetails = activeRepoPage.stream()
             .map(activeRepoEntity -> {
                 RepoEntity repoEntity = activeRepoEntity.getRepo();
-                return convertActiveRepoToRepo(activeRepoEntity, repositories.get(repoEntity.getRepoKey()));
+                GHRepository ghRepository = repositories.get(repoEntity.getRepoKey());
+                return convertActiveRepoToRepo(activeRepoEntity, ghRepository);
             }).collect(Collectors.toList());
 
-        return RepoListResponseDto.fromDetails(repoDetails);
+        long totalElements = activeRepoPage.getTotalElements();
+        int totalPages = activeRepoPage.getTotalPages();
+        return RepoListResponseDto.fromDetails(repoDetails, totalElements, totalPages);
+    }
+
+    private void saveAndUpdateRepo(Map<String, GHRepository> repositories, UserEntity userEntity) {
+        repositories.forEach((s, ghRepository) -> {
+            repoRepository.findByRepoKey(s).ifPresentOrElse(repoEntity -> repoEntity.update(ghRepository),
+                () -> {
+                    RepoEntity repoEntity = RepoEntity.fromGHRepository(ghRepository);
+                    repoRepository.save(repoEntity);
+                    activeRepoRepository.save(ActiveRepoEntity.of(userEntity, repoEntity));
+                });
+        });
     }
 
     private RepoDetail convertActiveRepoToRepo(ActiveRepoEntity activeRepoEntity, GHRepository ghRepository){
         RepoEntity repoEntity = activeRepoEntity.getRepo();
-        return new RepoDetail(repoEntity, ghRepository.getDescription());
+        return new RepoDetail(repoEntity
+            , ghRepository == null ? "비공개 처리된 레포지토리입니다." : ghRepository.getDescription()
+            , ghRepository == null);
     }
 }
