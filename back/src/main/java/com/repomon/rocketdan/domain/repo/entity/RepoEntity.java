@@ -20,29 +20,37 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "repo")
 public class RepoEntity extends CommonEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "repo_id")
-    private Long repoId;
 
-    private String repoName;
-    private String repoOwner;
-    private String repomonNickname;
-    private Long repoExp;
-    private Integer repomonTier;
-    private String repoKey;
-    private LocalDateTime repoStart;
-    private LocalDateTime repoEnd;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "repo_id")
+	private Long repoId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "repomon_id")
-    private RepomonEntity repomon;
+	private String repoName;
+	private String repoOwner;
+	private String repomonNickname;
+	private Long repoExp;
+	private Integer repomonTier;
+	private String repoKey;
+	private LocalDateTime repoStart;
+	private LocalDateTime repoEnd;
+	private Integer rating;
 
-    @OneToMany(mappedBy = "repo")
-    private List<RepoConventionEntity> repoConventionList = new ArrayList<>();
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "repomon_id")
+	private RepomonEntity repomon;
 
-    public void updateNickname(String nickname) {
-        this.repomonNickname = nickname;
-    }
+	@OneToMany(mappedBy = "repo")
+	private List<RepoConventionEntity> repoConventionList = new ArrayList<>();
+
+
+	public void updateNickname(String nickname) {
+		this.repomonNickname = nickname;
+	}
+
+
+	public void updateRating(int score) {
+		this.rating += score;
+	}
 
 }
