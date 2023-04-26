@@ -1,9 +1,7 @@
 package com.repomon.rocketdan.domain.repomon.service;
 
 
-import com.repomon.rocketdan.domain.repomon.dto.BattleLogListResponseDto;
-import com.repomon.rocketdan.domain.repomon.dto.RepomonStatusRequestDto;
-import com.repomon.rocketdan.domain.repomon.dto.RepomonStatusResponseDto;
+import com.repomon.rocketdan.domain.repomon.dto.*;
 import com.repomon.rocketdan.domain.repomon.entity.BattleLogEntity;
 import com.repomon.rocketdan.domain.repomon.entity.RepomonStatusEntity;
 import com.repomon.rocketdan.domain.repomon.repository.BattleLogRepository;
@@ -98,7 +96,21 @@ public class RepomonService {
 
 
 	/**
-	 * 최근순으로 5개의 전투결과를 조회합니다.
+	 * 전투 결과와 로그를 반환
+	 *
+	 * @param repoId
+	 * @param battleLogRequestDto
+	 * @return
+	 */
+	public BattleLogResponseDto createBattleResult(Long repoId,
+		BattleLogRequestDto battleLogRequestDto) {
+
+		return null;
+	}
+
+
+	/**
+	 * 최근순으로 5개의 전투결과를 조회
 	 *
 	 * @param repoId
 	 * @return
@@ -132,6 +144,11 @@ public class RepomonService {
 	}
 
 
+	/**
+	 * 레포몬의 닉네임을 변경
+	 *
+	 * @param repomonStatusRequestDto
+	 */
 	public void modifyRepomonNickname(RepomonStatusRequestDto repomonStatusRequestDto) {
 		RepomonStatusEntity repomon = repomonStatusRepository.findById(
 			repomonStatusRequestDto.getRepoId()).orElseThrow(

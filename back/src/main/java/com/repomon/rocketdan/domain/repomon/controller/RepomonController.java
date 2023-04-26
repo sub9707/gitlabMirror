@@ -52,6 +52,8 @@ public class RepomonController {
 	public ResponseEntity<ResultDto<BattleLogResponseDto>> createBattleResult(
 		@PathVariable("repoId") Long repoId,
 		BattleLogRequestDto battleLogRequestDto) {
+		BattleLogResponseDto battleLog = repomonService.createBattleResult(repoId,
+			battleLogRequestDto);
 
 		return ResponseEntity.ok().body(ResultDto.of(new BattleLogResponseDto()));
 	}
