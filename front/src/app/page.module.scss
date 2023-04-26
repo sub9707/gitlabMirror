@@ -4,12 +4,31 @@
   width: 100%;
 
   .banner {
+    width: 100%;
     height: calc(937px - 90px);
+    padding: 0 10%;
+    display: flex;
     background: rgb(90, 167, 255);
     background: linear-gradient(
       128deg,
       rgba(90, 167, 255, 1) 0%,
-      rgba(142, 167, 233, 1) 73%
+      rgba(122, 155, 241, 1) 73%
     );
+
+    .left {
+      width: 40%;
+      color: white;
+      font-weight: 600;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+
+      .title {
+        margin: 30% 0 0 0;
+        font-size: 100px;
+      }
+
+      .comment {
+        font-size: 30px;
+      }
+    }
   }
 }
