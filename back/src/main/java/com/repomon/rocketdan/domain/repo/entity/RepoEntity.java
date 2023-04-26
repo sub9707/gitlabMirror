@@ -34,12 +34,13 @@ public class RepoEntity extends CommonEntity {
 	private String repoKey;
 	private LocalDateTime repoStart;
 	private LocalDateTime repoEnd;
+	private Integer rating;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="repomon_id")
 	private RepomonEntity repomon;
 
-	@OneToMany(mappedBy = "repo", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "repo")
 	private List<RepoConventionEntity> repoConventionList = new ArrayList<>();
 	public static RepoEntity fromGHRepository(GHRepository ghRepository) {
 		LocalDateTime repoCreatedAt = null;
@@ -51,7 +52,6 @@ public class RepoEntity extends CommonEntity {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-
 		LocalDateTime now = LocalDateTime.now();
 
 		return RepoEntity.builder()
@@ -67,4 +67,14 @@ public class RepoEntity extends CommonEntity {
 			.updatedAt(now)
 			.build();
 	}
+
+	public void updateNickname(String nickname) {
+		this.repomonNickname = nickname;
+	}
+
+
+	public void updateRating(int score) {
+		this.rating += score;
+	}
+
 }
