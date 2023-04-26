@@ -18,48 +18,45 @@ import javax.persistence.Table;
 @Table(name = "repomon_status")
 public class RepomonStatusEntity extends RepoEntity {
 
-    private Integer rating;
-    private Integer winCnt;
-    private Integer loseCnt;
+	private Integer winCnt;
+	private Integer loseCnt;
+	private Integer startAtk;
+	private Integer startDodge;
+	private Integer startDef;
+	private Integer startCritical;
+	private Integer startHit;
+	private Integer atkPoint;
+	private Integer dodgePoint;
+	private Integer defPoint;
+	private Integer criticalPoint;
+	private Integer hitPoint;
 
-    private Integer startAtk;
-    private Integer startDodge;
-    private Integer startDef;
-    private Integer startCritical;
-    private Integer startHit;
 
-    private Integer atkPoint;
-    private Integer dodgePoint;
-    private Integer defPoint;
-    private Integer criticalPoint;
-    private Integer hitPoint;
+	public void updateStatus(int atk, int dodge, int def, int critical, int hit) {
+		this.atkPoint += atk;
+		this.dodgePoint += dodge;
+		this.defPoint += def;
+		this.criticalPoint += critical;
+		this.hitPoint += hit;
+	}
 
-    public void updateStatus(int atk, int dodge, int def, int critical, int hit) {
-        this.atkPoint += atk;
-        this.dodgePoint += dodge;
-        this.defPoint += def;
-        this.criticalPoint += critical;
-        this.hitPoint += hit;
-    }
 
-    public void setStartStatus(int atk, int dodge, int def, int critical, int hit) {
-        this.atkPoint = atk;
-        this.dodgePoint = dodge;
-        this.defPoint = def;
-        this.criticalPoint = critical;
-        this.hitPoint = hit;
-    }
+	public void setStartStatus(int atk, int dodge, int def, int critical, int hit) {
+		this.atkPoint = atk;
+		this.dodgePoint = dodge;
+		this.defPoint = def;
+		this.criticalPoint = critical;
+		this.hitPoint = hit;
+	}
 
-    public void updateWinCnt() {
-        this.winCnt += 1;
-    }
 
-    public void updateLoseCnt() {
-        this.loseCnt += 1;
-    }
+	public void updateWinCnt() {
+		this.winCnt += 1;
+	}
 
-    public void updateRating(int score) {
-        this.rating += score;
-    }
+
+	public void updateLoseCnt() {
+		this.loseCnt += 1;
+	}
 
 }
