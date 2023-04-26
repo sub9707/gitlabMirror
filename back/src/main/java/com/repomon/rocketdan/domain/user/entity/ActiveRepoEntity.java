@@ -11,6 +11,7 @@ import javax.persistence.*;
 @Getter @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Table(name = "active_repo")
 public class ActiveRepoEntity {
 
 	@Id
