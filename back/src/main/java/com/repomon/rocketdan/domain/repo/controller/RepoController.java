@@ -35,10 +35,16 @@ public class RepoController {
 
     @ApiOperation(value = "개별 레포 디테일 조회")
     @GetMapping("/{repoId}/info")
-    public ResponseEntity<RepoResponseDto> getUserRepoInfo(Long repoId){
-        return ResponseEntity.ok().build();
+    public ResponseEntity<RepoResponseDto> getUserRepoInfo(@PathVariable Long repoId){
+        RepoResponseDto responseDto = repoService.getUserRepoInfo(repoId);
+        return ResponseEntity.ok(responseDto);
     }
 
+    /**
+     * TODO 카테고리별로 총 API 4개 추가해야함
+     * @param repoId
+     * @return
+     */
     @ApiOperation(value = "개별 레포 정보 갱신")
     @PutMapping("/{repoId}/info")
     public ResponseEntity<RepoResponseDto> modifyRepoInfo(Long repoId){
