@@ -1,39 +1,38 @@
 @import "./variables.scss";
 
 body {
-  font-family: "SUIT-Thin";
+  font-family: "SUIT-Regular";
+  color: rgb(50, 50, 50);
 }
 
 a {
-  font-family: "SUIT-Bold";
   text-decoration: none;
 
   &:visited {
     text-decoration: none;
   }
 }
+
 html {
   scroll-behavior: smooth;
 }
+
 * {
   ::-webkit-scrollbar-track {
-    border: 5px solid white;
-    // border color does not support transparent on scrollbar
-    // border-color: transparent;
-    background-color: #b2bec3;
+    background-color: white;
   }
 
   ::-webkit-scrollbar {
     width: 10px;
-    background-color: #dfe6e9;
+    background-color: white;
   }
 
   ::-webkit-scrollbar-thumb {
-    background-color: #609cd8c4;
-    border-radius: 10px;
+    background-color: #9a9a9ac4;
     transition: all 0.3s ease-in-out;
+
     &:hover {
-      background-color: #609cd8;
+      background-color: #747474c4;
     }
   }
 }
