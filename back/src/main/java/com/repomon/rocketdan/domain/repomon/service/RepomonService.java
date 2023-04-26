@@ -1,6 +1,8 @@
 package com.repomon.rocketdan.domain.repomon.service;
 
 
+import com.repomon.rocketdan.domain.repo.entity.RepomonEntity;
+import com.repomon.rocketdan.domain.repo.repository.RepomonRepository;
 import com.repomon.rocketdan.domain.repomon.dto.*;
 import com.repomon.rocketdan.domain.repomon.entity.BattleLogEntity;
 import com.repomon.rocketdan.domain.repomon.entity.RepomonStatusEntity;
@@ -24,6 +26,8 @@ import static com.repomon.rocketdan.exception.ErrorCode.NOT_FOUND_ENTITY;
 @RequiredArgsConstructor
 public class RepomonService {
 
+	private final RepomonRepository repomonRepository;
+
 	private final BattleLogRepository battleLogRepository;
 
 	private final RepomonStatusRepository repomonStatusRepository;
@@ -45,7 +49,7 @@ public class RepomonService {
 
 
 	/**
-	 * 레포몬의 초기 닉네임, 스텟 정보 등록
+	 * 레포몬의 초기 닉네임, 스텟 정보, 레포몬 등록
 	 *
 	 * @param repomonStatusRequestDto
 	 */
@@ -54,13 +58,20 @@ public class RepomonService {
 			repomonStatusRequestDto.getRepoId()).orElseThrow(
 			() -> new CustomException(NOT_FOUND_ENTITY)
 		);
-		repomon.updateNickname(repomonStatusRequestDto.getRepomonNickname());
-		repomon.setStartStatus(repomonStatusRequestDto.getAtkPoint(),
-			repomonStatusRequestDto.getDodgePoint(),
-			repomonStatusRequestDto.getDefPoint(),
-			repomonStatusRequestDto.getCriticalPoint(),
-			repomonStatusRequestDto.getHitPoint()
+
+		RepomonEntity selectedRepomon = repomonRepository.findById(
+			repomonStatusRequestDto.getRepomonId()).orElseThrow(
+			() -> new CustomException(NOT_FOUND_ENTITY)
 		);
+
+		repomon.updateNickname(repomonStatusRequestDto.getRepomonNickname());
+		repomon.setStartStatus(repomonStatusRequestDto.getStartAtk(),
+			repomonStatusRequestDto.getStartDodge(),
+			repomonStatusRequestDto.getStartDef(),
+			repomonStatusRequestDto.getStartCritical(),
+			repomonStatusRequestDto.getStartHit()
+		);
+		repomon.updateRepomon(selectedRepomon);
 		repomonStatusRepository.save(repomon);
 	}
 
@@ -104,6 +115,14 @@ public class RepomonService {
 	 */
 	public BattleLogResponseDto createBattleResult(Long repoId,
 		BattleLogRequestDto battleLogRequestDto) {
+		RepomonStatusEntity myRepomon = repomonStatusRepository.findById(repoId).orElseThrow(
+			() -> new CustomException(NOT_FOUND_ENTITY)
+		);
+		RepomonStatusEntity yourRepomon = repomonStatusRepository.findById(
+			battleLogRequestDto.getOpponentRepoId()).orElseThrow(
+			() -> new CustomException(NOT_FOUND_ENTITY)
+		);
+		//		HashMap<String, Object> myStat
 
 		return null;
 	}

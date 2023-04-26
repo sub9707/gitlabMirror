@@ -53,4 +53,9 @@ public class RepoEntity extends CommonEntity {
 		this.rating += score;
 	}
 
+
+	public void updateRepomon(RepomonEntity repomon) {
+		this.repomon = repomon;
+	}
+
 }
