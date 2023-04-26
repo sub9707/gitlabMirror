@@ -1,16 +1,14 @@
 @import "./variables.scss";
 
 body {
-  background: url("../../public/Background_dark.jpg");
-  background-size: cover;
-  font-family: "SUIT-Thin" !important;
+  font-family: "SUIT-Thin";
 }
 
 a {
+  font-family: "SUIT-Bold";
   text-decoration: none;
-  color: rgb(63, 189, 189);
+
   &:visited {
     text-decoration: none;
-    color: rgb(63, 189, 189);
   }
 }

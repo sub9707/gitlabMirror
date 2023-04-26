@@ -17,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body>
+      <body style={{ backgroundColor: "78acde" }}>
         <Header />
         {/* <Suspense fallback={<Loading />}>{children}</Suspense> */}
         {children}
