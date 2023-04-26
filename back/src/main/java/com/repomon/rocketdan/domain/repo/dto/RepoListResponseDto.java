@@ -40,6 +40,7 @@ public class RepoListResponseDto {
         private String repoDescription;
         private Long repoExp;
         private Integer repoRating;
+        private Boolean isActive;
         private Boolean isPrivate;
 
         public static RepoListItem convertFromDetail(RepoDetail repoDetail){
@@ -54,6 +55,7 @@ public class RepoListResponseDto {
                 .repoDescription(repoDetail.getDescription())
                 .repoExp(repo.getRepoExp())
                 .repoRating(repo.getRating())
+                .isActive(repoDetail.getIsActive())
                 .isPrivate(repoDetail.getIsPrivate())
                 .build();
         }

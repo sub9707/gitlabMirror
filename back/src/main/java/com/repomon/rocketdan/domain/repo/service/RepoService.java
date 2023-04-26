@@ -6,15 +6,12 @@ import com.repomon.rocketdan.domain.repo.dto.RepoListResponseDto;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.repository.ActiveRepoRepository;
 import com.repomon.rocketdan.domain.repo.repository.RepoRepository;
-import com.repomon.rocketdan.domain.repomon.entity.RepomonStatusEntity;
 import com.repomon.rocketdan.domain.repomon.repository.RepomonStatusRepository;
 import com.repomon.rocketdan.domain.user.entity.ActiveRepoEntity;
 import com.repomon.rocketdan.domain.user.entity.UserEntity;
 import com.repomon.rocketdan.domain.user.repository.UserRepository;
 import com.repomon.rocketdan.exception.CustomException;
 import com.repomon.rocketdan.exception.ErrorCode;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kohsuke.github.GHRepository;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,6 +73,7 @@ public class RepoService {
         RepoEntity repoEntity = activeRepoEntity.getRepo();
         return new RepoDetail(repoEntity
             , ghRepository == null ? "비공개 처리된 레포지토리입니다." : ghRepository.getDescription()
+            , activeRepoEntity.getIsActive()
             , ghRepository == null);
     }
 }
