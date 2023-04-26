@@ -41,7 +41,7 @@ public class SecurityConfig{
                 .accessDeniedHandler(jwtAccessDeniedHandler)
             .and()
                 .authorizeRequests()
-                .antMatchers("/refresh", "/login/success").permitAll()
+                .antMatchers("/refresh", "/login/success", "/login/oauth2/code/**").permitAll()
                 .antMatchers("/swagger-resources/**", "/swagger-ui", "/swagger-ui/**").permitAll()
 //            .anyRequest().permitAll()
                 .anyRequest().authenticated()
