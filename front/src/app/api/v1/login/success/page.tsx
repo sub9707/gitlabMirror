@@ -10,7 +10,9 @@ const Page = () => {
 
   useEffect(() => {
     if (isToken) {
-      router.push("/");
+      console.log("푸헤헤헤헤헤헤헤헤ㅔ");
+      console.log(localStorage.getItem("accessToken"));
+      // router.push("/");
     }
 
     localStorage.setItem("accessToken", params.get("access-token") as string);
