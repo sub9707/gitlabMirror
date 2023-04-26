@@ -8,8 +8,12 @@ import com.repomon.rocketdan.domain.repo.dto.RepoResponseDto;
 import com.repomon.rocketdan.domain.repo.service.RepoService;
 import com.repomon.rocketdan.domain.user.dto.ActiveRepoRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,8 +28,8 @@ public class RepoController {
 
     @ApiOperation(value = "전체 레포 리스트 조회")
     @GetMapping("/{userId}")
-    public ResponseEntity<RepoListResponseDto> getUserRepoList(Long userId){
-        RepoListResponseDto responseDto = repoService.getUserRepoList(userId);
+    public ResponseEntity<RepoListResponseDto> getUserRepoList(@PathVariable Long userId, @PageableDefault(size = 6, direction = Direction.DESC) Pageable pageable){
+        RepoListResponseDto responseDto = repoService.getUserRepoList(userId, pageable);
         return ResponseEntity.ok(responseDto);
     }
 

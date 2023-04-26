@@ -22,9 +22,4 @@ public class UserEntity {
 	private Long userId;
 	private String userName;
 
-	// 유저 정보 추가 예정
-
-	@OneToMany(mappedBy = "user")
-	private List<ActiveRepoEntity> activeRepoList = new ArrayList<>();
-
 }

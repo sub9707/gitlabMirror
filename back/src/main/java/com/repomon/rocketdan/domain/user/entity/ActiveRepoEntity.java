@@ -8,7 +8,7 @@ import javax.persistence.*;
 
 
 @Entity
-@Getter
+@Getter @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class ActiveRepoEntity {
@@ -27,4 +27,12 @@ public class ActiveRepoEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "repo_id")
 	private RepoEntity repo;
+
+	public static ActiveRepoEntity of(UserEntity userEntity, RepoEntity repoEntity) {
+		return ActiveRepoEntity.builder()
+			.isActive(false)
+			.user(userEntity)
+			.repo(repoEntity)
+			.build();
+	}
 }
