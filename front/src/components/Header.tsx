@@ -1,38 +1,36 @@
 import Link from "next/link";
 import styles from "./Header.module.scss";
-import Logo from "../../public/temp.png";
+import Logo from "../../public/logo.png";
 import Image from "next/image";
 
-export default function Header() {
+const Header = () => {
+  const githubLoginUrl =
+    "https://k8e105.p.ssafy.io/api/v1/oauth2/authorization/github";
+
   return (
-    <header className={styles.navContainer}>
-      <div className={styles.headerWrap}>
-        <div className={styles.navMenu}>
-          <Link href="/" className={styles.linkTag}>
-            Ranking
-          </Link>
-          <Link href="/" className={styles.linkTag}>
-            about
-          </Link>
-          <Link href="/" className={styles.linkTag}>
-            posts
-          </Link>
-        </div>
-        <div className={styles.logoImg}>
-          <Link href={"/"}>
+    <header className={styles.component}>
+      <div className={styles.left}>
+        <div className={styles["logo-div"]}>
+          <Link href="/">
             <Image
               src={Logo}
               alt="logo"
               placeholder="blur"
-              className={styles.logoImgDetail}
+              className={styles.logo}
             />
           </Link>
         </div>
-        <div className={styles.navIcons}>
-          <Link href="/user/temp_user">샘플 유저 페이지</Link>
-        </div>
+        <Link href="/" className={styles.item}>
+          랭킹
+        </Link>
       </div>
-      <div className={styles.divider} />
+      <div className={styles.right}>
+        <Link href={githubLoginUrl} className={styles.item}>
+          로그인
+        </Link>
+      </div>
     </header>
   );
-}
+};
+
+export default Header;
