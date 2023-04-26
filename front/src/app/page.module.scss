@@ -2,15 +2,14 @@
 
 .container {
   width: 100%;
-  min-height: 100vh;
 
   .banner {
-    height: 100vh;
+    height: calc(937px - 90px);
+    background: rgb(90, 167, 255);
     background: linear-gradient(
-        95.98deg,
-        #78acde 9.17%,
-        rgba(120, 172, 222, 0) 89.35%
-      ),
-      linear-gradient(180deg, #78acde 0%, rgba(120, 172, 222, 0) 100%);
+      128deg,
+      rgba(90, 167, 255, 1) 0%,
+      rgba(142, 167, 233, 1) 73%
+    );
   }
 }

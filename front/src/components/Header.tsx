@@ -3,20 +3,34 @@ import styles from "./Header.module.scss";
 import Logo from "../../public/logo.png";
 import Image from "next/image";
 
-export default function Header() {
+const Header = () => {
+  const githubLoginUrl =
+    "https://k8e105.p.ssafy.io/api/v1/oauth2/authorization/github";
+
   return (
     <header className={styles.component}>
-      <div className={styles["logo-div"]}>
-        <Link href="/">
-          <Image
-            src={Logo}
-            alt="logo"
-            placeholder="blur"
-            className={styles.logo}
-          />
+      <div className={styles.left}>
+        <div className={styles["logo-div"]}>
+          <Link href="/">
+            <Image
+              src={Logo}
+              alt="logo"
+              placeholder="blur"
+              className={styles.logo}
+            />
+          </Link>
+        </div>
+        <Link href="/" className={styles.item}>
+          랭킹
         </Link>
       </div>
-      <Link href="/user/temp_user">샘플 유저 페이지</Link>
+      <div className={styles.right}>
+        <Link href={githubLoginUrl} className={styles.item}>
+          로그인
+        </Link>
+      </div>
     </header>
   );
-}
+};
+
+export default Header;

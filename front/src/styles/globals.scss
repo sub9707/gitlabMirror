@@ -1,13 +1,14 @@
 @import "./variables.scss";
 
 body {
+  font-family: "SUIT-Thin";
 }
 
 a {
+  font-family: "SUIT-Bold";
   text-decoration: none;
-  color: rgb(63, 189, 189);
+
   &:visited {
     text-decoration: none;
-    color: rgb(63, 189, 189);
   }
 }
