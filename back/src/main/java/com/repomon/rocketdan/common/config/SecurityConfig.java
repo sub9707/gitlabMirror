@@ -45,10 +45,8 @@ public class SecurityConfig{
                 .accessDeniedHandler(jwtAccessDeniedHandler)
             .and()
                 .authorizeRequests()
-                .antMatchers("/refresh", "/login/success", "/login/oauth2/code/**").permitAll()
-                .antMatchers("/swagger-resources/**", "/swagger-ui", "/swagger-ui/**").permitAll()
-//            .anyRequest().permitAll()
-                .anyRequest().authenticated()
+                .antMatchers("/login/success","/refresh").authenticated() // 권한이 필요한 요청은 /user/** 패턴으로 지정
+                .anyRequest().permitAll() // 그 외 요청은 모두 permitAll 처리
             .and()
                 .addFilterBefore(jwtExceptionFilter, OAuth2LoginAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

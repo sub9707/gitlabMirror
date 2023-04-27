@@ -14,15 +14,15 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @GetMapping("/login/success")
-    public ResponseEntity handleSuccessfulLogin(@RequestParam(value="access-token") String accessToken,
-        @RequestParam(value="refresh-token") String refreshToken) {
-
-        return ResponseEntity.ok().headers(httpHeaders -> {
-            httpHeaders.add("accessToken", accessToken);
-            httpHeaders.add("refreshToken", refreshToken);
-        }).build();
-    }
+//    @GetMapping("/login/success")
+//    public ResponseEntity handleSuccessfulLogin(@RequestParam(value="access-token") String accessToken,
+//        @RequestParam(value="refresh-token") String refreshToken) {
+//
+//        return ResponseEntity.ok().headers(httpHeaders -> {
+//            httpHeaders.add("accessToken", accessToken);
+//            httpHeaders.add("refreshToken", refreshToken);
+//        }).build();
+//    }
 
 
     /**
