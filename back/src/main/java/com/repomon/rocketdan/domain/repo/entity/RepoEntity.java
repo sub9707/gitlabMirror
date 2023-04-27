@@ -2,16 +2,17 @@ package com.repomon.rocketdan.domain.repo.entity;
 
 
 import com.repomon.rocketdan.common.entity.CommonEntity;
-import java.io.IOException;
-import java.time.ZoneId;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+import org.kohsuke.github.GHRepository;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.experimental.SuperBuilder;
-import org.kohsuke.github.GHRepository;
 
 
 @Entity
