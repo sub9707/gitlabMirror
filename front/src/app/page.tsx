@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import styles from "./page.module.scss";
 import grow from "../../public/service_grow.png";
 import fight from "../../public/service_fight.png";
@@ -12,6 +13,12 @@ const Home = () => {
   const fpRef = useRef<HTMLImageElement>(null);
   const spRef = useRef<HTMLImageElement>(null);
   const tpRef = useRef<HTMLImageElement>(null);
+  const params = useSearchParams();
+
+  useEffect(() => {
+    localStorage.setItem("accessToken", params.get("access-token") as string);
+    localStorage.setItem("refreshToken", params.get("refresh-token") as string);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
