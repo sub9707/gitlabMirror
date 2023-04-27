@@ -3,12 +3,22 @@ import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import styles from "./page.module.scss";
 import Pagination from "@/components/Pagination";
+import RepositoryCard from "@/components/RepositoryCard";
 
 export default function Page({ params }: { params: { userId: string } }) {
   return (
     <>
       <div className={styles.pageContainer}>
-        <div className={styles.bannerBack} />
+        <div className={styles.bannerBack}>
+          <iframe
+            src="https://embed.lottiefiles.com/animation/97144"
+            style={{
+              width: "30%",
+              height: "100%",
+              display: "flex",
+            }}
+          ></iframe>
+        </div>
         <div className={styles.bodyContainer}>
           <div className={styles.sideProfile}>
             <div>
@@ -40,7 +50,34 @@ export default function Page({ params }: { params: { userId: string } }) {
               </Link>
             </div>
           </div>
-          <div className={styles.bodyList}></div>
+          <div className={styles.bodyList}>
+            <div className={styles.listTitle}>
+              <div
+                style={{ display: "flex", width: "50%", alignItems: "center" }}
+              >
+                <p>레포지터리 목록</p>
+                <ArrowPathIcon
+                  width="2rem"
+                  style={{ marginLeft: "2%" }}
+                  className={styles.arrow}
+                />
+              </div>
+              <div className={styles.filterBox}>필터</div>
+            </div>
+            <div className={styles.listCards}>
+              <div className="grid grid-cols-2 gap-4 place-content-center">
+                <RepositoryCard />
+                <RepositoryCard />
+                <RepositoryCard />
+                <RepositoryCard />
+                <RepositoryCard />
+                <RepositoryCard />
+              </div>
+              <div className={styles.paginations}>
+                <Pagination />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>
