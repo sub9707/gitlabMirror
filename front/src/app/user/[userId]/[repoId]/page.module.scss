@@ -1,36 +1,56 @@
 @import "@/styles/variables.scss";
 
 .pageContainer {
-  width: 85vw;
+  width: 85%;
   min-height: 100vh;
   margin: 0 auto;
-  color: white;
+  padding: 70px 0 0 0;
+  background: rgb(201, 226, 255);
 
   .info {
     display: flex;
-    height: 700px;
 
-    .repo-mon-div {
+    .repo-mon-card-div {
+      position: relative;
       width: 45%;
-      height: 100%;
+      height: 90%;
 
-      .exp {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
+      .repo-mon-card {
+        margin: 0 0 0 5rem;
+        padding: 1rem 0 0 0;
+        width: 80%;
+        height: 620px;
+        background: rgba(255, 255, 255, 0.35);
+        box-shadow: 0 8px 15px 0 rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
 
-        & p {
-          margin-top: 0.7rem;
-          font-size: 1.75rem;
+        .repo-mon-info {
+          position: absolute;
+          width: 100%;
+          bottom: 2.7rem;
+
+          & p {
+            margin: 0 0 1rem 0;
+            text-align: center;
+            font-size: 2rem;
+          }
+
+          .level {
+            position: relative;
+          }
         }
       }
     }
 
     .default-info-div {
+      display: flex;
+      flex-direction: column;
       width: calc(55% - 1rem);
       margin: 0 auto;
-      padding: 0.5rem 2rem 0.5rem 0;
+      padding: 0 4rem 0.5rem 0;
       font-size: 1.5rem;
 
       .first {
@@ -61,6 +81,7 @@
 
       .date {
         margin: 1% 0 0 0;
+        font-size: 1.75rem;
       }
 
       .lan-div {
@@ -76,12 +97,10 @@
 
         &::-webkit-scrollbar-thumb {
           background-color: rgb(119, 119, 119);
-          border-radius: 5px;
         }
 
         &::-webkit-scrollbar-track {
           background-color: white;
-          border-radius: 5px;
         }
 
         & span {
@@ -91,6 +110,7 @@
           background-color: rgb(0, 149, 149);
           color: white;
           font-size: 1.125rem;
+          white-space: nowrap;
 
           &:hover {
             background-color: rgb(0, 127, 127);
@@ -110,12 +130,10 @@
 
         &::-webkit-scrollbar-thumb {
           background-color: rgb(119, 119, 119);
-          border-radius: 5px;
         }
 
         &::-webkit-scrollbar-track {
           background-color: white;
-          border-radius: 5px;
         }
 
         & span {
@@ -125,6 +143,7 @@
           background-color: rgb(168, 168, 168);
           color: white;
           font-size: 1.125rem;
+          white-space: nowrap;
 
           &:hover {
             background-color: rgb(147, 147, 147);
@@ -137,62 +156,46 @@
         word-wrap: break-word;
       }
 
-      .exp-analysis-div {
-        position: relative;
-        margin: 1rem 0;
-        height: 300px;
-        padding: 2rem;
-        border: 3px solid transparent;
-        border-image: yellow;
-        border-image-slice: 1;
+      .tab {
+        display: flex;
+        justify-content: space-between;
+        margin: auto 0 0 0;
 
-        .exp-analysis-title {
-          position: absolute;
-          top: 0;
-          left: 0;
-          padding: 0.5rem;
-          background-color: rgb(0, 149, 149);
-          font-size: 1.125rem;
-          border-bottom-right-radius: 5px;
+        & button {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          width: 23%;
+          height: 160px;
+          border-radius: 15px;
+          background-color: $primary;
+          box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+          color: white;
+          transition: background-color 0.2s ease-in-out;
+
+          & svg {
+            margin: 0 0 0.5rem 0;
+            width: 60px;
+
+            & path {
+              pointer-events: none;
+            }
+          }
+        }
+
+        .selected {
+          background-color: $highlight;
         }
       }
     }
   }
 
-  .extra-div {
-    padding: 1rem 2.5rem;
-
-    .growth-chart-div {
-      position: relative;
-      width: 100%;
-      height: 500px;
-      background-color: inherit;
-      padding: 2rem;
-      border: 3px solid transparent;
-      border-image: yellow;
-      border-image-slice: 1;
-
-      .growth-title {
-        position: absolute;
-        top: 0;
-        left: 0;
-        padding: 0.5rem;
-        background-color: rgb(0, 149, 149);
-        font-size: 1.125rem;
-        border-bottom-right-radius: 5px;
-      }
-    }
+  .tab-content {
+    height: 100vh;
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
+    background-color: white;
+    margin: 4rem 0 0 0;
   }
 }
-
-// .info {
-//   outline: 1px solid red;
-
-//   .repo-mon-div {
-//     outline: 1px solid orange;
-
-//     .repo-mon {
-//       outline: 1px solid greenyellow;
-//     }
-//   }
-// }
