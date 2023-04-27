@@ -1,7 +1,7 @@
 package com.repomon.rocketdan.domain.repomon.dto;
 
 
-import com.repomon.rocketdan.domain.repo.dto.RepomonResponseDto;
+import com.repomon.rocketdan.domain.repo.dto.response.RepomonResponseDto;
 import com.repomon.rocketdan.domain.repomon.app.DefaultStatus;
 import com.repomon.rocketdan.domain.repomon.entity.RepomonStatusEntity;
 import lombok.*;

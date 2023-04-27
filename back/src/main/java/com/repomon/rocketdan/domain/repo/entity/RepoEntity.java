@@ -43,32 +43,6 @@ public class RepoEntity extends CommonEntity {
 
 	@OneToMany(mappedBy = "repo")
 	private List<RepoConventionEntity> repoConventionList = new ArrayList<>();
-	public static RepoEntity fromGHRepository(GHRepository ghRepository) {
-		LocalDateTime repoCreatedAt = null;
-
-		try {
-			repoCreatedAt = ghRepository.getCreatedAt().toInstant()
-				.atZone(ZoneId.systemDefault())
-				.toLocalDateTime();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		LocalDateTime now = LocalDateTime.now();
-
-		return RepoEntity.builder()
-			.repoName(ghRepository.getName())
-			.repoOwner(ghRepository.getOwnerName())
-			.repomonNickname(null)
-			.repoExp(0L)
-			.repomonTier(0)
-			.repoKey(ghRepository.getNodeId())
-			.repoStart(repoCreatedAt)
-			.repoEnd(null)
-			.createdAt(now)
-			.updatedAt(now)
-			.rating(1000)
-			.build();
-	}
 
 	public void updateNickname(String nickname) {
 		this.repomonNickname = nickname;
