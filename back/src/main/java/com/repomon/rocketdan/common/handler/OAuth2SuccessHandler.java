@@ -34,7 +34,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		String avatarUrl = oAuth2User.getAttribute("avatarUrl");
 		AuthResponseDto authResponseDto = authTokenProvider.createToken(userId);
 
-		setDefaultTargetUrl("http://localhost:3000?access-token=" + authResponseDto.getAccessToken() + "&refresh-token=" + authResponseDto.getRefreshToken() + "&username=" + username + "&name=" + name + "&avatarUrl=" + avatarUrl);
+		setDefaultTargetUrl("http://localhost:3000?access-token=" + authResponseDto.getAccessToken() + "&refresh-token=" + authResponseDto.getRefreshToken() + "&username=" + username + "&name=" + name + "&avatarUrl=" + avatarUrl + "&userId=" + userId);
 		super.onAuthenticationSuccess(request, response, authentication);
 
 	}
