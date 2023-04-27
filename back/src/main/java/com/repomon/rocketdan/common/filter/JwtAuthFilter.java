@@ -1,4 +1,4 @@
-package com.repomon.rocketdan.common.config;
+package com.repomon.rocketdan.common.filter;
 
 
 import com.repomon.rocketdan.common.service.JwtTokenProvider;
