@@ -30,6 +30,7 @@ html {
   ::-webkit-scrollbar-thumb {
     background-color: #9a9a9ac4;
     transition: all 0.3s ease-in-out;
+    border-radius: 5px;
 
     &:hover {
       background-color: #747474c4;
