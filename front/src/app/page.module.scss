@@ -19,7 +19,7 @@
       width: 40%;
       color: white;
       font-weight: 600;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
       font-family: "SUIT-Thin";
 
       .title {
@@ -50,6 +50,7 @@
 
     .service-content {
       width: 80%;
+      height: 570px;
       margin: 0 auto 10rem auto;
       display: flex;
       justify-content: center;
@@ -57,6 +58,7 @@
       & .img-div {
         position: relative;
         width: 600px;
+        max-height: 570px;
         overflow: hidden;
         border-radius: 10px;
         box-shadow: 2px 2px 10px rgb(215, 215, 215);
@@ -75,39 +77,43 @@
           font-weight: bold;
         }
 
-        & img {
-          transition: transform 0.2s ease-in-out;
-
-          &:hover {
-            transform: scale(1.03);
-          }
+        & img:hover {
+          transform: scale(1.03);
         }
 
         .fp {
           width: 600px;
           height: 570px;
+          transition: opacity 0.5s ease-in-out, transform 0.3s ease-in-out;
         }
 
         .sp {
           width: 600px;
           height: 275px;
+          transition: opacity 1s ease-in-out, transform 0.3s ease-in-out;
         }
 
         .tp {
           width: 600px;
           height: 275px;
+          transition: opacity 1.5s ease-in-out, transform 0.3s ease-in-out;
         }
 
-        .des {
+        & p {
+          font-family: "SUIT-Bold";
           display: none;
-          background-color: rgba(90, 167, 255, 0.85);
+          background-color: rgba(90, 167, 255, 0.7);
           position: absolute;
           width: 100%;
           bottom: 0;
-          padding: 2rem 1rem;
+          padding: 2.5rem 1rem;
           text-align: center;
           font-size: 21px;
+          color: white;
           animation: fade-in 0.4s ease-in-out;
+
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
         }
       }
     }
@@ -115,6 +121,15 @@
 }
 
 @keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fp-fade-in {
   0% {
     opacity: 0;
   }
