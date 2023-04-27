@@ -1,8 +1,12 @@
 package com.repomon.rocketdan.domain.user.service;
 
 
+import com.repomon.rocketdan.domain.repo.dto.response.RepoRankResponseDto;
+import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
+import com.repomon.rocketdan.domain.repo.repository.RepoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -12,11 +16,24 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RankService {
 
-	public void getUserRankList(String lastName, Pageable pageable) {
+	private final RepoRepository repoRepository;
 
-		System.out.println("lastName = " + lastName);
-		System.out.println("pageable = " + pageable);
 
+	public void getUserRankList(String search, Pageable pageable) {
+
+	}
+
+
+	public Page<RepoRankResponseDto> getRepoRankList(String search, Pageable pageable) {
+
+		if (search.isEmpty()) {
+			Page<RepoEntity> repoEntitiyList = repoRepository.findByIsActiveTrue(pageable);
+			return repoEntitiyList.map(RepoRankResponseDto::fromEntity);
+		} else {
+
+		}
+
+		return null;
 	}
 
 }
