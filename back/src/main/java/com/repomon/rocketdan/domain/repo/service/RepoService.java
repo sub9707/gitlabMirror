@@ -22,12 +22,23 @@ import com.repomon.rocketdan.domain.user.entity.UserEntity;
 import com.repomon.rocketdan.domain.user.repository.UserRepository;
 import com.repomon.rocketdan.exception.CustomException;
 import com.repomon.rocketdan.exception.ErrorCode;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.kohsuke.github.GHCommit;
+import org.kohsuke.github.GHIssue;
+import org.kohsuke.github.GHPullRequest;
 import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.PagedIterable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -136,7 +147,6 @@ public class RepoService {
 
         int rank = 0;
 
-
         return RepoBattleResponseDto.fromStatusEntity(repomonStatusEntity, rank);
     }
 
@@ -162,8 +172,11 @@ public class RepoService {
     }
 
 
-
-
+    /**
+     * 신규 레포 등록이라면 상세분석해서 전부 저장해야함
+     * @param repositories
+     * @param userEntity
+     */
     private void saveAndUpdateRepo(Map<String, GHRepository> repositories, UserEntity userEntity) {
         repositories.forEach((s, ghRepository) -> {
             repoRepository.findByRepoKey(s).ifPresentOrElse(repoEntity -> repoEntity.update(ghRepository),
@@ -172,12 +185,30 @@ public class RepoService {
                         throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
                     });
 
+
                     RepomonStatusEntity repomonStatusEntity = RepomonStatusEntity.fromGHRepository(ghRepository,
                         repomonEntity);
                     repomonStatusRepository.save(repomonStatusEntity);
                     activeRepoRepository.save(ActiveRepoEntity.of(userEntity, repomonStatusEntity));
+
+                    initRepositoryInfo(repomonStatusEntity, ghRepository);
                 });
         });
+    }
+
+    private void initRepositoryInfo(RepoEntity repoEntity, GHRepository ghRepository) {
+        log.info("최초 등록 레포지토리 분석 시작 => {}", repoEntity.getRepoName());
+        try {
+            List<RepoHistoryEntity> list = new ArrayList<>();
+            list.addAll(ghUtils.GHCommitToHistory(ghRepository, repoEntity));
+            list.addAll(ghUtils.GHPullRequestToHistory(ghRepository, repoEntity));
+            list.addAll(ghUtils.GHIssueToHistory(ghRepository, repoEntity));
+
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        log.info("최초 등록 레포지토리 분석 종료 => {}", repoEntity.getRepoName());
     }
 
     private RepoDetail convertActiveRepoToRepo(ActiveRepoEntity activeRepoEntity, GHRepository ghRepository){

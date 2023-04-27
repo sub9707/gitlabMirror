@@ -2,7 +2,7 @@ package com.repomon.rocketdan.domain.repomon.dto;
 
 
 import com.repomon.rocketdan.domain.repo.dto.response.RepomonResponseDto;
-import com.repomon.rocketdan.domain.repomon.app.DefaultStatus;
+import com.repomon.rocketdan.domain.repomon.app.BattleLogic;
 import com.repomon.rocketdan.domain.repomon.entity.RepomonStatusEntity;
 import lombok.*;
 
@@ -73,18 +73,18 @@ public class RepomonStatusResponseDto {
                 .criticalPoint(repomonStatus.getCriticalPoint())
                 .hitPoint(repomonStatus.getHitPoint())
                 // 스탯의 현재 수치
-                .atk(DefaultStatus.createAtk(repomonStatus.getStartAtk(), repomonStatus.getAtkPoint()))
-                .dodge(DefaultStatus.createDodge(repomonStatus.getStartDodge(), repomonStatus.getDodgePoint()))
-                .def(DefaultStatus.createDef(repomonStatus.getStartDef(), repomonStatus.getDefPoint()))
-                .critical(DefaultStatus.createCritical(repomonStatus.getStartCritical(), repomonStatus.getCriticalPoint()))
-                .hit(DefaultStatus.createHit(repomonStatus.getStartHit(), repomonStatus.getHitPoint()))
-                .hp(DefaultStatus.createHp(repomonStatus.getRepoExp()))
+                .atk(BattleLogic.createAtk(repomonStatus.getStartAtk(), repomonStatus.getAtkPoint()))
+                .dodge(BattleLogic.createDodge(repomonStatus.getStartDodge(), repomonStatus.getDodgePoint()))
+                .def(BattleLogic.createDef(repomonStatus.getStartDef(), repomonStatus.getDefPoint()))
+                .critical(BattleLogic.createCritical(repomonStatus.getStartCritical(), repomonStatus.getCriticalPoint()))
+                .hit(BattleLogic.createHit(repomonStatus.getStartHit(), repomonStatus.getHitPoint()))
+                .hp(BattleLogic.createHp(repomonStatus.getRepoExp()))
                 // 1포인트 당 증가 값
-                .increaseAtk(DefaultStatus.atkValue)
-                .increaseDodge(DefaultStatus.dodgeValue)
-                .increaseDef(DefaultStatus.defValue)
-                .increaseCritical(DefaultStatus.criticalValue)
-                .increaseHit(DefaultStatus.hitValue)
+                .increaseAtk(BattleLogic.atkValue)
+                .increaseDodge(BattleLogic.dodgeValue)
+                .increaseDef(BattleLogic.defValue)
+                .increaseCritical(BattleLogic.criticalValue)
+                .increaseHit(BattleLogic.hitValue)
                 .build();
     }
 
