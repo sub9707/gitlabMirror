@@ -16,7 +16,7 @@
     "@types/node": "18.15.11",
     "@types/react": "18.0.35",
     "@types/react-dom": "18.0.11",
-    "@types/three": "^0.150.1",
+    "@types/three": "^0.150.2",
     "axios": "^1.3.6",
     "chart.js": "^4.2.1",
     "eslint": "8.38.0",

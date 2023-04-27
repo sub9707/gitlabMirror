@@ -1,12 +1,25 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import styles from "./page.module.scss";
 import grow from "../../public/service_grow.png";
 import fight from "../../public/service_fight.png";
 import card from "../../public/service_card.png";
+import { Canvas, useLoader, useFrame } from "@react-three/fiber";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { OrbitControls } from "@react-three/drei";
+
+const Model = () => {
+  const gltf = useLoader(GLTFLoader, "/static/models/Penguin.glb");
+  useFrame((state, delta) => {
+    gltf.scene.rotation.y += delta * 0.3; // 회전 속도를 조절할 수 있습니다.
+  });
+  return (
+    <primitive object={gltf.scene} scale={[6, 6, 6]} position={[1, -3, 0]} />
+  );
+};
 
 const Home = () => {
   const [scrollY, setScrollY] = useState<number>(0);
@@ -55,7 +68,24 @@ const Home = () => {
             당신의 프로젝트에 함께할 레포몬은 무엇인가요?
           </p>
         </div>
-        <div className={styles.right}></div>
+        <div className={styles.right}>
+          <Canvas className={styles.rightCanvas}>
+            <ambientLight intensity={0.1} />
+            <ambientLight intensity={0.1} />
+            <directionalLight
+              color="white"
+              position={[0, 0, 5]}
+              intensity={0.5}
+            />
+            <directionalLight
+              color="white"
+              position={[-5, 0, -5]}
+              intensity={0.5}
+            />
+            <Model />
+            <OrbitControls enableZoom={false} />
+          </Canvas>
+        </div>
       </div>
       <div className={styles.service}>
         <h2 className={styles["service-title"]}>
