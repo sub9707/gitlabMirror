@@ -23,6 +23,9 @@ const Header = () => {
         <Link href="/" className={styles.item}>
           랭킹
         </Link>
+        <Link href="/user/123" className={styles.item}>
+          샘플 유저 페이지
+        </Link>
       </div>
       <div className={styles.right}>
         <Link href={githubLoginUrl} className={styles.item}>

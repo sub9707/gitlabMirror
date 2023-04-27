@@ -4,29 +4,12 @@ import { NextPage } from "next";
 import styles from "./page.module.scss";
 import Image from "next/image";
 import { PageProps, Todo } from "@/types/repoRegist";
+import "animate.css";
 
 const Page: NextPage<PageProps> = ({ params }) => {
-  const [selected, setSelected] = useState<number | null>(null);
-  const [mounted, setMounted] = useState<boolean>(false);
+  const [numArr, setNumArr] = useState([0, 0, 0, 0, 0]);
   const dice = useRef<HTMLImageElement>(null);
   const diceShadow = useRef<HTMLDivElement>(null);
-
-  // 부화알 이미지 경로 배열
-  const images = [
-    "/static/images/monEgg1.png",
-    "/static/images/monEgg2.png",
-    "/static/images/monEgg3.png",
-  ];
-
-  // 부화알 선택 state
-  const handleSelect = (index: number) => {
-    if (selected === index) {
-      setSelected(null);
-    } else {
-      setSelected(index);
-    }
-  };
-  const [numArr, setNumArr] = useState([0, 0, 0, 0, 0]);
 
   function generateRandomNumArr() {
     let sum = 0;
@@ -45,6 +28,7 @@ const Page: NextPage<PageProps> = ({ params }) => {
 
     setNumArr(newArr);
   }
+
   // 주사위 클릭 시 실행
   const diceClick = () => {
     const audio = new Audio("/static/sound/Dice.mp3");
@@ -70,348 +54,185 @@ const Page: NextPage<PageProps> = ({ params }) => {
     }
   };
 
+  const attackRef = useRef<any>(null);
+  const avoidanceRef = useRef<any>(null);
+  const enduranceRef = useRef<any>(null);
+  const criticalRef = useRef<any>(null);
+  const hitRef = useRef<any>(null);
+
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    // numArr의 값이 바뀔 때마다 호출
+    const [attack, avoidance, endurance, critical, hit] = numArr;
+    // 최대치를 달성하면 해당 숫자의 색깔을 주황색으로 변경
+    if (
+      !attackRef.current ||
+      !avoidanceRef.current ||
+      !enduranceRef.current ||
+      !criticalRef.current ||
+      !hitRef.current
+    )
+      return;
 
-  // 컨벤션 리스트
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [title, setTitle] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
-  const [input, setInput] = useState({ title: "", description: "" });
-  const [addClicked, setAddClicked] = useState<boolean>(true);
-
-  const handleAddTodo = (): void => {
-    const newTodo: Todo = {
-      id: todos.length + 1,
-      title: title,
-      description: description,
-    };
-    setTodos([...todos, newTodo]);
-    setTitle("");
-    setDescription("");
-    setAddClicked(true);
-  };
-
-  const handleEditTodo = (
-    id: number,
-    title: string,
-    description: string
-  ): void => {
-    const editedTodos: Todo[] = todos.map((todo) => {
-      if (todo.id === id) {
-        return {
-          id: id,
-          title: title,
-          description: description,
-        };
-      } else {
-        return todo;
+    const setStatStyle = (
+      stat: number,
+      statRef: React.MutableRefObject<any | null>
+    ) => {
+      const isMax = stat === 10;
+      statRef.current!.style.color = isMax ? "red" : "white";
+      statRef.current!.style.fontSize = isMax ? "1.2em" : "1em";
+      if (isMax) {
+        statRef.current!.classList.add("animate__animated", "animate__shakeX");
+        setTimeout(() => {
+          statRef.current!.classList.remove(
+            "animate__animated",
+            "animate__shakeX"
+          );
+        }, 80);
       }
-    });
-    setTodos(editedTodos);
-  };
+    };
 
-  const handleDeleteTodo = (id: number): void => {
-    const filteredTodos: Todo[] = todos.filter((todo) => todo.id !== id);
-    setTodos(filteredTodos);
-  };
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setInput((prevInput) => ({ ...prevInput, [name]: value }));
-  };
-
-  if (!mounted) return null;
+    setStatStyle(attack, attackRef);
+    setStatStyle(avoidance, avoidanceRef);
+    setStatStyle(endurance, enduranceRef);
+    setStatStyle(critical, criticalRef);
+    setStatStyle(hit, hitRef);
+  }, [numArr]);
 
   return (
     <div className={styles.pageContainer}>
-      <div className={styles.pageBox}>
-        <div className={styles.monSelect}>
-          <p style={{ color: "aliceblue", fontSize: "3rem" }}>함뽑아바라!</p>
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            {images.map((src, index) => (
-              <div
-                key={index}
-                className={`${styles.monFrame} ${
-                  selected === index ? styles.selected : ""
-                }`}
-                onClick={() => handleSelect(index)}
-              >
-                <Image
-                  src={src}
-                  alt={`mon${index + 1}`}
-                  width={500}
-                  height={400}
-                  className={styles.monEgg}
-                />
-              </div>
-            ))}
+      <div className={styles.selectBox}>
+        <div className={styles.monChar}></div>
+        <div className={styles.monChar}></div>
+        <div className={styles.monChar}></div>
+      </div>
+      <div className={styles.settingBox}>
+        <div className={styles.conventionBox}>컨벤션 등록</div>
+        <div className={styles.diceContainer}>
+          <p className={styles.diceTitle}>초기 능력치 설정</p>
+          <div className={styles.diceBox} style={{ marginBottom: "15%" }}>
+            <Image
+              src="/static/images/dice.png"
+              alt="dice"
+              width={100}
+              height={100}
+              className={styles[`dice`]}
+              onClick={diceClick}
+              ref={dice}
+            />
+            <div className={styles.diceShadow} ref={diceShadow} />
           </div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginTop: "5%",
-          }}
-        >
-          <div className={styles.leftBox}>
-            <p className={styles.commitTitle}>커밋 컨벤션 입력</p>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                flexDirection: "column",
-              }}
-            >
-              {addClicked ? (
-                <div
-                  style={{
-                    marginBottom: "5%",
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    paddingInline: "3%",
-                    fontSize: "0.8vw",
-                  }}
-                >
-                  <label
-                    style={{
-                      color: "black",
-                      marginInline: "3%",
-                      width: "20%",
-                    }}
-                  >
-                    <p style={{ color: "white" }}>커밋 메시지 컨벤션</p>
-                    <input
-                      type="text"
-                      name="title"
-                      className={styles.inputFields}
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      placeholder="커밋 컨벤션 입력"
-                    />
-                  </label>
-                  <label
-                    style={{
-                      color: "black",
-                      marginInline: "3%",
-                      width: "70%",
-                      marginTop: "0.6%",
-                    }}
-                  >
-                    <p style={{ color: "white" }}>설명 </p>
-                    <textarea
-                      name="description"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      className={styles.inputFields}
-                      style={{
-                        color: "black",
-                        width: "100%",
-                      }}
-                    />
-                  </label>
-                  <button
-                    style={{
-                      width: "10%",
-                      height: "4em",
-                      border: "1px solid white",
-                    }}
-                    onClick={handleAddTodo}
-                    className={styles.buttonInput}
-                  >
-                    추가
-                  </button>
-                </div>
-              ) : (
-                <button onClick={() => setAddClicked(true)}>+</button>
-              )}
-              <div>
-                <table className={styles.tableSytle}>
-                  <thead>
-                    <tr>
-                      <th>컨벤션 명</th>
-                      <th>설명</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {todos.map((todo) => (
-                      <tr key={todo.id}>
-                        <td>
-                          <input
-                            type="text"
-                            value={todo.title}
-                            onChange={(e) =>
-                              handleEditTodo(todo.id, "title", e.target.value)
-                            }
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            value={todo.description}
-                            onChange={(e) =>
-                              handleEditTodo(
-                                todo.id,
-                                "description",
-                                e.target.value
-                              )
-                            }
-                          />
-                        </td>
-                        <td>
-                          <button onClick={() => handleDeleteTodo(todo.id)}>
-                            삭제
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <div className={styles.rigthBox}>
-            <div className={styles.diceContainer}>
-              <p className={styles.diceTitle}>초기 능력치 설정</p>
-              <div className={styles.diceBox}>
-                <Image
-                  src="/static/images/dice.png"
-                  alt="dice"
-                  width={100}
-                  height={100}
-                  className={styles[`dice`]}
-                  onClick={diceClick}
-                  ref={dice}
-                />
-                <div className={styles.diceShadow} ref={diceShadow} />
-              </div>
-              <div className={styles.statusBox}>
-                <div className="flex flex-col" style={{ width: "80%" }}>
-                  <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
-                    <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
-                      <div className="overflow-hidden">
-                        <table className="min-w-full border text-center dark:border-neutral-500">
-                          <tbody
-                            style={{ textAlign: "center" }}
-                            id={styles.tableBody}
+          <div className={styles.statusBox}>
+            <div className="flex flex-col" style={{ width: "80%" }}>
+              <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
+                  <div className="rounded-lg overflow-hidden">
+                    <table
+                      className="min-w-full border  text-center dark:border-neutral-500  "
+                      id={styles.tableText}
+                    >
+                      <tbody
+                        style={{ textAlign: "center" }}
+                        id={styles.tableBody}
+                      >
+                        <tr
+                          className="border-white dark:border-neutral-500"
+                          style={{ borderWidth: "5px", height: "4em" }}
+                        >
+                          <td
+                            className=" border-white whitespace-nowrap border-r px-6 py-4  dark:border-neutral-500"
+                            style={{ width: "50%", borderWidth: "5px" }}
                           >
-                            <tr
-                              className="border-white dark:border-neutral-500"
-                              style={{ borderWidth: "5px" }}
-                            >
-                              <td
-                                className=" border-white whitespace-nowrap border-r px-6 py-4  dark:border-neutral-500"
-                                style={{ width: "50%", borderWidth: "5px" }}
-                              >
-                                공격력
-                              </td>
-                              <td
-                                id={styles.ranNumber}
-                                className="whitespace-nowrap border-r px-6 py-4 dark:border-neutral-500"
-                              >
-                                {numArr[0]}
-                              </td>
-                            </tr>
-                            <tr
-                              className="border-white dark:border-neutral-500"
-                              style={{ borderWidth: "5px" }}
-                            >
-                              <td
-                                className="border-white whitespace-nowrap border-r px-6 py-4  dark:border-neutral-500"
-                                style={{ width: "50%", borderWidth: "5px" }}
-                              >
-                                회피율
-                              </td>
-                              <td className="whitespace-nowrap border-r px-6 py-4 dark:border-neutral-500">
-                                {numArr[1]}%
-                              </td>
-                            </tr>
-                            <tr
-                              className="border-white dark:border-neutral-500"
-                              style={{ borderWidth: "5px" }}
-                            >
-                              <td
-                                className=" border-white whitespace-nowrap border-r px-6 py-4  dark:border-neutral-500"
-                                style={{ width: "50%", borderWidth: "5px" }}
-                              >
-                                방어율
-                              </td>
-                              <td className="whitespace-nowrap border-r px-6 py-4 dark:border-neutral-500">
-                                {numArr[2]}%
-                              </td>
-                            </tr>
-                            <tr
-                              className="border-white dark:border-neutral-500"
-                              style={{ borderWidth: "5px" }}
-                            >
-                              <td
-                                className="border-white whitespace-nowrap border-r px-6 py-4  dark:border-neutral-500"
-                                style={{ width: "50%", borderWidth: "5px" }}
-                              >
-                                치명타율
-                              </td>
-                              <td className="whitespace-nowrap border-r px-6 py-4 dark:border-neutral-500">
-                                {numArr[3]}%
-                              </td>
-                            </tr>
-                            <tr
-                              className="border-white dark:border-neutral-500"
-                              style={{ borderWidth: "5px" }}
-                            >
-                              <td
-                                className="border-white whitespace-nowrap border-r px-6 py-4  dark:border-neutral-500"
-                                style={{ width: "50%", borderWidth: "5px" }}
-                              >
-                                명중률
-                              </td>
-                              <td className="whitespace-nowrap border-r px-6 py-4 dark:border-neutral-500">
-                                {numArr[4]}%
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                        <div>
-                          <p>(공격력 최소 1 ~ 최대 10)</p>
-                          <p>
-                            (기타 확률 최소 1% ~ 최대 10%, 모든 확률 총합은 30
-                            이하)
-                          </p>
-                        </div>
-                      </div>
+                            공격력
+                          </td>
+                          <td
+                            id={styles.ranNumber}
+                            className="whitespace-nowrap border-r px-6 py-4 dark:border-neutral-500"
+                            ref={attackRef}
+                          >
+                            {numArr[0]}
+                          </td>
+                        </tr>
+                        <tr
+                          className="border-white dark:border-neutral-500"
+                          style={{ borderWidth: "5px", height: "4em" }}
+                        >
+                          <td
+                            className="border-white whitespace-nowrap border-r px-6 py-4  dark:border-neutral-500"
+                            style={{ width: "50%", borderWidth: "5px" }}
+                          >
+                            회피율
+                          </td>
+                          <td
+                            className="whitespace-nowrap border-r px-6 py-4 dark:border-neutral-500"
+                            ref={avoidanceRef}
+                          >
+                            {numArr[1]}%
+                          </td>
+                        </tr>
+                        <tr
+                          className="border-white dark:border-neutral-500"
+                          style={{ borderWidth: "5px", height: "4em" }}
+                        >
+                          <td
+                            className=" border-white whitespace-nowrap border-r px-6 py-4  dark:border-neutral-500"
+                            style={{ width: "50%", borderWidth: "5px" }}
+                          >
+                            방어율
+                          </td>
+                          <td
+                            className="whitespace-nowrap border-r px-6 py-4 dark:border-neutral-500"
+                            ref={enduranceRef}
+                          >
+                            {numArr[2]}%
+                          </td>
+                        </tr>
+                        <tr
+                          className="border-white dark:border-neutral-500"
+                          style={{ borderWidth: "5px", height: "4em" }}
+                        >
+                          <td
+                            className="border-white whitespace-nowrap border-r px-6 py-4  dark:border-neutral-500"
+                            style={{ width: "50%", borderWidth: "5px" }}
+                          >
+                            치명타율
+                          </td>
+                          <td
+                            className="whitespace-nowrap border-r px-6 py-4 dark:border-neutral-500"
+                            ref={criticalRef}
+                          >
+                            {numArr[3]}%
+                          </td>
+                        </tr>
+                        <tr
+                          className="border-white dark:border-neutral-500"
+                          style={{ borderWidth: "5px", height: "4em" }}
+                        >
+                          <td
+                            className="border-white whitespace-nowrap border-r px-6 py-4  dark:border-neutral-500"
+                            style={{ width: "50%", borderWidth: "5px" }}
+                          >
+                            명중률
+                          </td>
+                          <td
+                            className="whitespace-nowrap border-r px-6 py-4 dark:border-neutral-500"
+                            ref={hitRef}
+                          >
+                            {numArr[4]}%
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <div>
+                      <p>(공격력 최소 1 ~ 최대 10)</p>
+                      <p>
+                        (기타 확률 최소 1% ~ 최대 10%, 모든 확률 총합은 30 이하)
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div style={{ display: "flex", marginBottom: "3%" }}>
-          <button
-            style={{
-              width: "10em",
-              height: "3em",
-              fontSize: "1.2em",
-              marginInline: "2%",
-            }}
-            className={styles.buttonAccept}
-          >
-            결 정
-          </button>
-          <button
-            style={{
-              width: "10em",
-              height: "3em",
-              fontSize: "1.2em",
-              marginInline: "2%",
-            }}
-            className={styles.buttonDeny}
-          >
-            취 소
-          </button>
         </div>
       </div>
     </div>
