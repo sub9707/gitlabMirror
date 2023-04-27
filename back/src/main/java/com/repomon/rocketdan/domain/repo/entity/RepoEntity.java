@@ -2,7 +2,10 @@ package com.repomon.rocketdan.domain.repo.entity;
 
 
 import com.repomon.rocketdan.common.entity.CommonEntity;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,7 +18,9 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Table(name = "repo")
 public class RepoEntity extends CommonEntity {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "repo_id")
@@ -29,12 +34,23 @@ public class RepoEntity extends CommonEntity {
 	private String repoKey;
 	private LocalDateTime repoStart;
 	private LocalDateTime repoEnd;
+	private Integer rating;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="repomon_id")
+	@JoinColumn(name = "repomon_id")
 	private RepomonEntity repomon;
 
 	@OneToMany(mappedBy = "repo")
 	private List<RepoConventionEntity> repoConventionList = new ArrayList<>();
+
+
+	public void updateNickname(String nickname) {
+		this.repomonNickname = nickname;
+	}
+
+
+	public void updateRating(int score) {
+		this.rating += score;
+	}
 
 }
