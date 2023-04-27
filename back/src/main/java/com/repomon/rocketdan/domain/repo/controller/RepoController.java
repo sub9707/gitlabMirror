@@ -4,6 +4,7 @@ import com.repomon.rocketdan.domain.repo.dto.request.RepoCardRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.response.RepoBattleResponseDto;
 import com.repomon.rocketdan.domain.repo.dto.response.RepoCardResponseDto;
 import com.repomon.rocketdan.domain.repo.dto.response.RepoContributeResponseDto;
+import com.repomon.rocketdan.domain.repo.dto.response.RepoConventionResponseDto;
 import com.repomon.rocketdan.domain.repo.dto.response.RepoListResponseDto;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.response.RepoResearchResponseDto;
@@ -59,6 +60,13 @@ public class RepoController {
     @GetMapping("/{repoId}/info/rank")
     public ResponseEntity<RepoBattleResponseDto> getRepoBattleInfo(@PathVariable Long repoId){
         RepoBattleResponseDto responseDto = repoService.getRepoBattleInfo(repoId);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @ApiOperation(value = "개별 레포 컨벤션 정보 조회")
+    @GetMapping("/{repoId}/info/convention")
+    public ResponseEntity<RepoConventionResponseDto> getRepoConventionInfo(@PathVariable Long repoId){
+        RepoConventionResponseDto responseDto = repoService.getRepoConventionInfo(repoId);
         return ResponseEntity.ok(responseDto);
     }
 
