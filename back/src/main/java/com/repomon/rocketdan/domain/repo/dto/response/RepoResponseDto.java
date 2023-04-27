@@ -1,4 +1,4 @@
-package com.repomon.rocketdan.domain.repo.dto;
+package com.repomon.rocketdan.domain.repo.dto.response;
 
 
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHTag;
-import org.kohsuke.github.PagedIterable;
 
 
 @AllArgsConstructor

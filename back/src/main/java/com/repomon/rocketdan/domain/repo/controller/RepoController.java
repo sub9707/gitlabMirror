@@ -1,10 +1,11 @@
 package com.repomon.rocketdan.domain.repo.controller;
 
-import com.repomon.rocketdan.domain.repo.dto.RepoCardRequestDto;
-import com.repomon.rocketdan.domain.repo.dto.RepoCardResponseDto;
-import com.repomon.rocketdan.domain.repo.dto.RepoListResponseDto;
-import com.repomon.rocketdan.domain.repo.dto.RepoRequestDto;
-import com.repomon.rocketdan.domain.repo.dto.RepoResponseDto;
+import com.repomon.rocketdan.domain.repo.dto.request.RepoCardRequestDto;
+import com.repomon.rocketdan.domain.repo.dto.response.RepoCardResponseDto;
+import com.repomon.rocketdan.domain.repo.dto.response.RepoListResponseDto;
+import com.repomon.rocketdan.domain.repo.dto.request.RepoRequestDto;
+import com.repomon.rocketdan.domain.repo.dto.response.RepoResearchResponseDto;
+import com.repomon.rocketdan.domain.repo.dto.response.RepoResponseDto;
 import com.repomon.rocketdan.domain.repo.service.RepoService;
 import com.repomon.rocketdan.domain.user.dto.ActiveRepoRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class RepoController {
 
     @ApiOperation(value = "개별 레포 디테일 조회")
     @GetMapping("/{repoId}/info")
-    public ResponseEntity<RepoResponseDto> getUserRepoInfo(@PathVariable Long repoId){
+    public ResponseEntity<RepoResponseDto> getRepoInfo(@PathVariable Long repoId){
         RepoResponseDto responseDto = repoService.getUserRepoInfo(repoId);
         return ResponseEntity.ok(responseDto);
     }
@@ -45,6 +46,13 @@ public class RepoController {
      * @param repoId
      * @return
      */
+    @ApiOperation(value = "개별 레포 분석 조회")
+    @GetMapping("/{repoId}/info/research")
+    public ResponseEntity<RepoResearchResponseDto> getRepoResearchInfo(@PathVariable Long repoId){
+        RepoResearchResponseDto responseDto = repoService.getRepoResearchInfo(repoId);
+        return ResponseEntity.ok(responseDto);
+    }
+
     @ApiOperation(value = "개별 레포 정보 갱신")
     @PutMapping("/{repoId}/info")
     public ResponseEntity<RepoResponseDto> modifyRepoInfo(Long repoId){
