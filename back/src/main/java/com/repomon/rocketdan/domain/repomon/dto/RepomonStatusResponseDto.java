@@ -48,7 +48,6 @@ public class RepomonStatusResponseDto {
     private Float increaseHit;
 
     public static Integer remainStat(Long exp, int atk, int dodge, int def, int critical, int hit) {
-
         return (int) (exp / 100) - (atk + dodge + def + critical + hit);
     }
 

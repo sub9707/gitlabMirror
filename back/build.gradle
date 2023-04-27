@@ -52,6 +52,8 @@ dependencies {
 	//swagger
 	implementation 'io.springfox:springfox-boot-starter:3.0.0'
 
+	// github
+	implementation 'org.kohsuke:github-api:1.314'
 
 }
 
