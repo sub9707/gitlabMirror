@@ -1,20 +1,14 @@
 @import "@/styles/variables.scss";
 
 .component {
-  margin: 10px auto 0 auto;
+  margin: 1rem auto 0 auto;
   width: 90%;
-  height: 26px;
+  height: 22px;
   border-radius: 20px;
   background-color: white;
-  border: 2px solid grey;
 
   .inner {
-    background: rgb(229, 252, 150);
-    background: linear-gradient(
-      266deg,
-      rgba(229, 252, 150, 1) 0%,
-      rgba(124, 199, 0, 1) 100%
-    );
+    background: linear-gradient(266deg, $primary 0%, $second 100%);
     width: 100%;
     height: 22px;
     border-radius: 20px;

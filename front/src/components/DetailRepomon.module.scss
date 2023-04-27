@@ -1,16 +1,10 @@
 @import "@/styles/variables.scss";
 
 .repo-mon {
-  margin: 2rem auto 0 auto;
+  margin: 1rem auto 0 auto;
   width: 90%;
-  height: 80%;
+  height: 60%;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 3px solid transparent;
-  border-radius: 100px;
-  border-image: yellow;
-  border-image-slice: 1;
-  background-color: transparent;
-  color: yellow;
+  border: 5px solid rgba(255, 255, 255, 0.35);
+  border-radius: 10px;
 }
