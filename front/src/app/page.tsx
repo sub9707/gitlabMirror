@@ -14,10 +14,10 @@ import { OrbitControls } from "@react-three/drei";
 const Model = () => {
   const gltf = useLoader(GLTFLoader, "/static/models/Penguin.glb");
   useFrame((state, delta) => {
-    gltf.scene.rotation.y += delta * 0.3; // 회전 속도를 조절할 수 있습니다.
+    gltf.scene.rotation.y += delta * 1; // 회전 속도를 조절할 수 있습니다.
   });
   return (
-    <primitive object={gltf.scene} scale={[6, 6, 6]} position={[1, -3, 0]} />
+    <primitive object={gltf.scene} scale={[8, 8, 8]} position={[2, -3, 0]} />
   );
 };
 
@@ -83,7 +83,7 @@ const Home = () => {
               intensity={0.5}
             />
             <Model />
-            <OrbitControls enableZoom={false} />
+            <OrbitControls enableZoom={false} target={[1, 0, -1]} />
           </Canvas>
         </div>
       </div>
