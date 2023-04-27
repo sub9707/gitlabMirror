@@ -5,9 +5,15 @@ import com.repomon.rocketdan.domain.repo.dto.RepoCardResponseDto;
 import com.repomon.rocketdan.domain.repo.dto.RepoListResponseDto;
 import com.repomon.rocketdan.domain.repo.dto.RepoRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.RepoResponseDto;
+import com.repomon.rocketdan.domain.repo.service.RepoService;
 import com.repomon.rocketdan.domain.user.dto.ActiveRepoRequestDto;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,20 +21,30 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/repo")
+@RequiredArgsConstructor
 public class RepoController {
+
+    private final RepoService repoService;
 
     @ApiOperation(value = "전체 레포 리스트 조회")
     @GetMapping("/{userId}")
-    public ResponseEntity<RepoListResponseDto> getUserRepoList(Long userId){
-        return ResponseEntity.ok().build();
+    public ResponseEntity<RepoListResponseDto> getUserRepoList(@PathVariable Long userId, @PageableDefault(size = 6, direction = Direction.DESC) Pageable pageable){
+        RepoListResponseDto responseDto = repoService.getUserRepoList(userId, pageable);
+        return ResponseEntity.ok(responseDto);
     }
 
     @ApiOperation(value = "개별 레포 디테일 조회")
     @GetMapping("/{repoId}/info")
-    public ResponseEntity<RepoResponseDto> getUserRepoInfo(Long repoId){
-        return ResponseEntity.ok().build();
+    public ResponseEntity<RepoResponseDto> getUserRepoInfo(@PathVariable Long repoId){
+        RepoResponseDto responseDto = repoService.getUserRepoInfo(repoId);
+        return ResponseEntity.ok(responseDto);
     }
 
+    /**
+     * TODO 카테고리별로 총 API 4개 추가해야함
+     * @param repoId
+     * @return
+     */
     @ApiOperation(value = "개별 레포 정보 갱신")
     @PutMapping("/{repoId}/info")
     public ResponseEntity<RepoResponseDto> modifyRepoInfo(Long repoId){
