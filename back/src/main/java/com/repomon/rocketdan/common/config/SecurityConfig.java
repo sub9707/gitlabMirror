@@ -1,5 +1,9 @@
 package com.repomon.rocketdan.common.config;
 
+import com.repomon.rocketdan.common.filter.JwtAuthFilter;
+import com.repomon.rocketdan.common.filter.JwtExceptionFilter;
+import com.repomon.rocketdan.common.handler.JwtAccessDeniedHandler;
+import com.repomon.rocketdan.common.handler.OAuth2SuccessHandler;
 import com.repomon.rocketdan.common.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -19,10 +24,10 @@ import java.util.Arrays;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig{
-//    private final JwtAuthFilter jwtAuthFilter;
-//    private final JwtExceptionFilter jwtExceptionFilter;
-//    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-//    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final JwtAuthFilter jwtAuthFilter;
+    private final JwtExceptionFilter jwtExceptionFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final OAuth2SuccessHandler successHandler;
     private final CustomOAuth2UserService oAuth2UserService;
 
@@ -34,18 +39,18 @@ public class SecurityConfig{
             .httpBasic().disable()
             .csrf().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // JWT 사용하니 session 생성 X
-                .and()
-            .exceptionHandling()
-//            .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-//            .accessDeniedHandler(jwtAccessDeniedHandler)
-                .and()
-            .authorizeRequests()
-            .anyRequest().permitAll()
             .and()
-//            .addFilterBefore(jwtExceptionFilter, OAuth2LoginAuthenticationFilter.class)
-//            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(jwtAccessDeniedHandler)
+            .and()
+                .authorizeRequests()
+                .antMatchers("/login/success","/refresh").authenticated() // 권한이 필요한 요청은 /user/** 패턴으로 지정
+                .anyRequest().permitAll() // 그 외 요청은 모두 permitAll 처리
+            .and()
+                .addFilterBefore(jwtExceptionFilter, OAuth2LoginAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .oauth2Login()
-//            .loginPage("/login").permitAll()
                 .userInfoEndpoint()
                     .userService(oAuth2UserService)
                     .and()// 여기서 oAuth 정보를 가져옴
@@ -74,4 +79,6 @@ public class SecurityConfig{
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
+
 }

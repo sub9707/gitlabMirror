@@ -1,4 +1,4 @@
-package com.repomon.rocketdan.domain.repo.dto;
+package com.repomon.rocketdan.domain.repo.dto.response;
 
 
 import com.repomon.rocketdan.domain.repo.entity.PersonalRepoCardEntity;

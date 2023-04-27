@@ -1,7 +1,8 @@
 package com.repomon.rocketdan.domain.repomon.dto;
 
 
-import com.repomon.rocketdan.domain.repo.dto.RepomonResponseDto;
+
+import com.repomon.rocketdan.domain.repo.dto.response.RepomonResponseDto;
 import com.repomon.rocketdan.domain.repomon.app.BattleLogic;
 import com.repomon.rocketdan.domain.repomon.entity.RepomonStatusEntity;
 import lombok.*;
@@ -48,49 +49,45 @@ public class RepomonStatusResponseDto {
 	private Float increaseHit;
 
 
-	public static Integer remainStat(Long exp, int atk, int dodge, int def, int critical, int hit) {
+    public static Integer remainStat(Long exp, int atk, int dodge, int def, int critical, int hit) {
+        return (int) (exp / 100) - (atk + dodge + def + critical + hit);
+    }
 
-		return (int) (exp / 100) - (atk + dodge + def + critical + hit);
-	}
-
-
-	public static RepomonStatusResponseDto fromEntity(RepomonStatusEntity repomonStatus) {
-		return RepomonStatusResponseDto.builder()
-			.repoName(repomonStatus.getRepoName())
-			.repomonNickname(repomonStatus.getRepomonNickname())
-			.repomonTier(repomonStatus.getRepomonTier())
-			.rating(repomonStatus.getRating())
-			.statPoint(remainStat(repomonStatus.getRepoExp(),
-				repomonStatus.getAtkPoint(),
-				repomonStatus.getDodgePoint(),
-				repomonStatus.getDefPoint(),
-				repomonStatus.getCriticalPoint(),
-				repomonStatus.getHitPoint()))
-			.winCnt(repomonStatus.getWinCnt())
-			.loseCnt(repomonStatus.getLoseCnt())
-			.repomon(RepomonResponseDto.fromEntity(repomonStatus.getRepomon()))
-			// 각 스탯에 찍은 포인트
-			.atkPoint(repomonStatus.getAtkPoint())
-			.dodgePoint(repomonStatus.getDodgePoint())
-			.defPoint(repomonStatus.getDefPoint())
-			.criticalPoint(repomonStatus.getCriticalPoint())
-			.hitPoint(repomonStatus.getHitPoint())
-			// 스탯의 현재 수치
-			.atk(BattleLogic.createAtk(repomonStatus.getStartAtk(), repomonStatus.getAtkPoint()))
-			.dodge(BattleLogic.createDodge(repomonStatus.getStartDodge(),
-				repomonStatus.getDodgePoint()))
-			.def(BattleLogic.createDef(repomonStatus.getStartDef(), repomonStatus.getDefPoint()))
-			.critical(BattleLogic.createCritical(repomonStatus.getStartCritical(),
-				repomonStatus.getCriticalPoint()))
-			.hit(BattleLogic.createHit(repomonStatus.getStartHit(), repomonStatus.getHitPoint()))
-			.hp(BattleLogic.createHp(repomonStatus.getRepoExp()))
-			// 1포인트 당 증가 값
-			.increaseAtk(BattleLogic.atkValue)
-			.increaseDodge(BattleLogic.dodgeValue)
-			.increaseDef(BattleLogic.defValue)
-			.increaseCritical(BattleLogic.criticalValue)
-			.increaseHit(BattleLogic.hitValue)
-			.build();
-	}
+    public static RepomonStatusResponseDto fromEntity(RepomonStatusEntity repomonStatus) {
+        return RepomonStatusResponseDto.builder()
+                .repoName(repomonStatus.getRepoName())
+                .repomonNickname(repomonStatus.getRepomonNickname())
+                .repomonTier(repomonStatus.getRepomonTier())
+                .rating(repomonStatus.getRating())
+                .statPoint(remainStat(repomonStatus.getRepoExp(),
+                        repomonStatus.getAtkPoint(),
+                        repomonStatus.getDodgePoint(),
+                        repomonStatus.getDefPoint(),
+                        repomonStatus.getCriticalPoint(),
+                        repomonStatus.getHitPoint()))
+                .winCnt(repomonStatus.getWinCnt())
+                .loseCnt(repomonStatus.getLoseCnt())
+                .repomon(RepomonResponseDto.fromEntity(repomonStatus.getRepomon()))
+                // 각 스탯에 찍은 포인트
+                .atkPoint(repomonStatus.getAtkPoint())
+                .dodgePoint(repomonStatus.getDodgePoint())
+                .defPoint(repomonStatus.getDefPoint())
+                .criticalPoint(repomonStatus.getCriticalPoint())
+                .hitPoint(repomonStatus.getHitPoint())
+                // 스탯의 현재 수치
+                .atk(BattleLogic.createAtk(repomonStatus.getStartAtk(), repomonStatus.getAtkPoint()))
+                .dodge(BattleLogic.createDodge(repomonStatus.getStartDodge(), repomonStatus.getDodgePoint()))
+                .def(BattleLogic.createDef(repomonStatus.getStartDef(), repomonStatus.getDefPoint()))
+                .critical(BattleLogic.createCritical(repomonStatus.getStartCritical(), repomonStatus.getCriticalPoint()))
+                .hit(BattleLogic.createHit(repomonStatus.getStartHit(), repomonStatus.getHitPoint()))
+                .hp(BattleLogic.createHp(repomonStatus.getRepoExp()))
+                // 1포인트 당 증가 값
+                .increaseAtk(BattleLogic.atkValue)
+                .increaseDodge(BattleLogic.dodgeValue)
+                .increaseDef(BattleLogic.defValue)
+                .increaseCritical(BattleLogic.criticalValue)
+                .increaseHit(BattleLogic.hitValue)
+                .build();
+    }
 
 }
