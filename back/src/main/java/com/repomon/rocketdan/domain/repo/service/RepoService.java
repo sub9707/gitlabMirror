@@ -1,13 +1,10 @@
 package com.repomon.rocketdan.domain.repo.service;
 
+
 import com.repomon.rocketdan.common.GHUtils;
 import com.repomon.rocketdan.domain.repo.app.RepoDetail;
-import com.repomon.rocketdan.domain.repo.dto.response.RepoBattleResponseDto;
-import com.repomon.rocketdan.domain.repo.dto.response.RepoContributeResponseDto;
-import com.repomon.rocketdan.domain.repo.dto.response.RepoConventionResponseDto;
-import com.repomon.rocketdan.domain.repo.dto.response.RepoListResponseDto;
-import com.repomon.rocketdan.domain.repo.dto.response.RepoResearchResponseDto;
-import com.repomon.rocketdan.domain.repo.dto.response.RepoResponseDto;
+import com.repomon.rocketdan.domain.repo.dto.request.RepoRequestDto;
+import com.repomon.rocketdan.domain.repo.dto.response.*;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepoHistoryEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepomonEntity;
@@ -22,12 +19,6 @@ import com.repomon.rocketdan.domain.user.entity.UserEntity;
 import com.repomon.rocketdan.domain.user.repository.UserRepository;
 import com.repomon.rocketdan.exception.CustomException;
 import com.repomon.rocketdan.exception.ErrorCode;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kohsuke.github.GHRepository;
@@ -37,6 +28,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service @Slf4j
 @Transactional
@@ -256,11 +254,19 @@ public class RepoService {
         log.info("최초 등록 레포지토리 분석 종료 => {}", repoEntity.getRepoName());
     }
 
-    private RepoDetail convertActiveRepoToRepo(ActiveRepoEntity activeRepoEntity, GHRepository ghRepository){
+
+    private RepoDetail convertActiveRepoToRepo(ActiveRepoEntity activeRepoEntity, GHRepository ghRepository) {
         RepoEntity repoEntity = activeRepoEntity.getRepo();
         return new RepoDetail(repoEntity
             , ghRepository == null ? "비공개 처리된 레포지토리입니다." : ghRepository.getDescription()
             , repoEntity.getIsActive()
             , ghRepository == null);
     }
+
+
+    public Boolean checkRepomonNickname(RepoRequestDto repoRequestDto) {
+
+        return repoRepository.existsByRepomonNickname(repoRequestDto.getRepomonNickname());
+    }
+
 }

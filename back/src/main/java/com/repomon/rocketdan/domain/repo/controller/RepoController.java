@@ -1,26 +1,20 @@
 package com.repomon.rocketdan.domain.repo.controller;
 
+
+import com.repomon.rocketdan.common.dto.ResultDto;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoCardRequestDto;
-import com.repomon.rocketdan.domain.repo.dto.response.RepoBattleResponseDto;
-import com.repomon.rocketdan.domain.repo.dto.response.RepoCardResponseDto;
-import com.repomon.rocketdan.domain.repo.dto.response.RepoContributeResponseDto;
-import com.repomon.rocketdan.domain.repo.dto.response.RepoListResponseDto;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoRequestDto;
-import com.repomon.rocketdan.domain.repo.dto.response.RepoResearchResponseDto;
-import com.repomon.rocketdan.domain.repo.dto.response.RepoResponseDto;
+import com.repomon.rocketdan.domain.repo.dto.response.*;
 import com.repomon.rocketdan.domain.repo.service.RepoService;
 import com.repomon.rocketdan.domain.user.dto.ActiveRepoRequestDto;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import io.swagger.annotations.ApiOperation;
+import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/repo")
@@ -28,6 +22,7 @@ import io.swagger.annotations.ApiOperation;
 public class RepoController {
 
     private final RepoService repoService;
+
 
     @ApiOperation(value = "전체 레포 리스트 조회")
     @GetMapping("/{userId}")
@@ -105,15 +100,28 @@ public class RepoController {
         return ResponseEntity.ok().build();
     }
 
+
     @ApiOperation(value = "개인레포카드 조회")
     @GetMapping("/{repoId}/card/personal")
-    public ResponseEntity<RepoCardResponseDto> getPersonalRepoCard(Long repoId){
+    public ResponseEntity<RepoCardResponseDto> getPersonalRepoCard(Long repoId) {
         return ResponseEntity.ok().build();
     }
 
+
     @ApiOperation(value = "개인레포카드 수정")
     @PutMapping("/{repoId}/card/personal")
-    public ResponseEntity modifyPersonalRepoCard(Long repoId, RepoCardRequestDto requestDto){
+    public ResponseEntity modifyPersonalRepoCard(Long repoId, RepoCardRequestDto requestDto) {
         return ResponseEntity.ok().build();
     }
+
+
+    @ApiOperation(value = "닉네임 중복 확인")
+    @PostMapping("/nickname")
+    public ResponseEntity<ResultDto<Boolean>> checkRepomonNickname(RepoRequestDto repoRequestDto) {
+        if (!repoService.checkRepomonNickname(repoRequestDto)) {
+            return ResponseEntity.ok().body(ResultDto.ofSuccess());
+        }
+        return ResponseEntity.ok().body(ResultDto.ofFail());
+    }
+
 }
