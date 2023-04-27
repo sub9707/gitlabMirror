@@ -45,7 +45,7 @@ public class SecurityConfig{
                 .accessDeniedHandler(jwtAccessDeniedHandler)
             .and()
                 .authorizeRequests()
-                .antMatchers("/refresh").authenticated() // 권한이 필요한 요청은 /user/** 패턴으로 지정
+                .antMatchers("/login/success","/refresh").authenticated() // 권한이 필요한 요청은 /user/** 패턴으로 지정
                 .anyRequest().permitAll() // 그 외 요청은 모두 permitAll 처리
             .and()
                 .addFilterBefore(jwtExceptionFilter, OAuth2LoginAuthenticationFilter.class)
