@@ -2,7 +2,8 @@ package com.repomon.rocketdan.domain.repo.dto.response;
 
 import com.repomon.rocketdan.domain.repo.app.GrowthFactor;
 import com.repomon.rocketdan.domain.repo.entity.RepoHistoryEntity;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,13 +38,14 @@ public class RepoResearchResponseDto {
             totalGetExp += historyInfo.exp;
 
             Long nowExp = 0L;
-            String typeName = GrowthFactor.idxToName(historyInfo.type).name();
-            if(growthFactor.containsKey(typeName)){
-                nowExp = growthFactor.get(typeName);
+            if(growthFactor.containsKey(historyInfo.type)){
+                nowExp = growthFactor.get(historyInfo.type);
             }
 
-            growthFactor.put(typeName, nowExp + historyInfo.exp);
+            growthFactor.replace(historyInfo.type, nowExp + historyInfo.exp);
         }
+
+        histories.sort(Comparator.comparing(HistoryInfo::getWorkedAt));
 
         return RepoResearchResponseDto.builder()
             .rank(rank)
@@ -54,15 +56,17 @@ public class RepoResearchResponseDto {
             .build();
     }
 
+    @Getter
     @AllArgsConstructor
     private static class HistoryInfo{
 
         private Long exp;
-        private Integer type;
-        private LocalDateTime createdAt;
+        private String type;
+        private LocalDate workedAt;
 
         public static HistoryInfo fromEntity(RepoHistoryEntity historyEntity){
-            return new HistoryInfo(historyEntity.getRepoHistoryExp(), historyEntity.getRepoHistoryType(), historyEntity.getCreatedAt());
+            Integer repoHistoryType = historyEntity.getRepoHistoryType();
+            return new HistoryInfo(historyEntity.getRepoHistoryExp(), GrowthFactor.idxToEnum(repoHistoryType).name(), historyEntity.getWorkedAt());
         }
     }
 }

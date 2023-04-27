@@ -32,32 +32,30 @@ public class RepoResponseDto {
 	private List<String> tags;
 
 	public static RepoResponseDto fromEntityAndGHRepository(RepoEntity repoEntity, GHRepository ghRepository) {
-		Map<String, Long> languageMap = null;
-		List<GHTag> ghTags = null;
 		try {
-			languageMap = ghRepository.listLanguages();
-			ghTags = ghRepository.listTags().toList();
+			Map<String, Long> languageMap = ghRepository.listLanguages();
+			List<GHTag> ghTags = ghRepository.listTags().toList();
+
+			List<String> languages = new ArrayList<>();
+			List<String> tags = new ArrayList<>();
+
+			languages.addAll(languageMap.keySet());
+			tags.addAll(ghTags.stream().map(GHTag::getName).collect(Collectors.toList()));
+
+			return RepoResponseDto.builder()
+				.repoName(repoEntity.getRepoName())
+				.repomonId(repoEntity.getRepomon().getRepomonId())
+				.repomonName(repoEntity.getRepomonNickname())
+				.repoExp(repoEntity.getRepoExp())
+				.starCnt(ghRepository.getStargazersCount())
+				.forkCnt(ghRepository.getForksCount())
+				.repoStart(repoEntity.getRepoStart())
+				.repoEnd(repoEntity.getRepoEnd())
+				.languages(languages)
+				.tags(tags)
+				.build();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-
-		List<String> languages = new ArrayList<>();
-		List<String> tags = new ArrayList<>();
-
-		languages.addAll(languageMap.keySet());
-		tags.addAll(ghTags.stream().map(GHTag::getName).collect(Collectors.toList()));
-
-		return RepoResponseDto.builder()
-			.repoName(repoEntity.getRepoName())
-			.repomonId(repoEntity.getRepomon().getRepomonId())
-			.repomonName(repoEntity.getRepomonNickname())
-			.repoExp(repoEntity.getRepoExp())
-			.starCnt(ghRepository.getStargazersCount())
-			.forkCnt(ghRepository.getForksCount())
-			.repoStart(repoEntity.getRepoStart())
-			.repoEnd(repoEntity.getRepoEnd())
-			.languages(languages)
-			.tags(tags)
-			.build();
 	}
 }

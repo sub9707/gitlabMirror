@@ -90,6 +90,7 @@ public class RepomonStatusEntity extends RepoEntity {
 			.createdAt(now)
 			.updatedAt(now)
 			.rating(1000)
+			.isActive(false)
 			.repomon(repomonEntity)
 			.winCnt(0)
 			.loseCnt(0)
