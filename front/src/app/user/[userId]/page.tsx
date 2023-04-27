@@ -1,11 +1,16 @@
-`use-client`;
+"use client";
+
+import React, { useEffect } from "react";
 import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import styles from "./page.module.scss";
 import Pagination from "@/components/Pagination";
 import RepositoryCard from "@/components/RepositoryCard";
+import { useRouter } from "next/navigation";
 
-export default function Page({ params }: { params: { userId: string } }) {
+const Page = ({ params }: { params: { userId: string } }) => {
+  const router = useRouter();
+
   return (
     <>
       <div className={styles.pageContainer}>
@@ -60,6 +65,7 @@ export default function Page({ params }: { params: { userId: string } }) {
                   width="2rem"
                   style={{ marginLeft: "2%" }}
                   className={styles.arrow}
+                  onClick={() => router.push("/user/123/abc/registRepo")}
                 />
               </div>
               <div className={styles.filterBox}>필터</div>
@@ -82,4 +88,6 @@ export default function Page({ params }: { params: { userId: string } }) {
       </div>
     </>
   );
-}
+};
+
+export default Page;

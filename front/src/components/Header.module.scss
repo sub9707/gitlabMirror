@@ -20,6 +20,10 @@
     font-size: 22px;
     margin-left: 2rem;
     color: $highlight;
+    transition: all 0.2s ease-in-out;
+    &:hover {
+      color: rgb(13, 111, 224);
+    }
   }
 
   .left {
