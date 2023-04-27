@@ -24,16 +24,20 @@ public class RankService {
 	}
 
 
+	/**
+	 * @param search   : 레포이름 포함 문자열
+	 * @param pageable : 페이지네이션 size, page
+	 * @return
+	 */
 	public Page<RepoRankResponseDto> getRepoRankList(String search, Pageable pageable) {
 
 		if (search.isEmpty()) {
 			Page<RepoEntity> repoEntitiyList = repoRepository.findByIsActiveTrue(pageable);
 			return repoEntitiyList.map(RepoRankResponseDto::fromEntity);
 		} else {
-
+			Page<RepoEntity> repoEntitiyList = repoRepository.findByRepoNameContainingAndIsActiveTrue(search, pageable);
+			return repoEntitiyList.map(RepoRankResponseDto::fromEntity);
 		}
-
-		return null;
 	}
 
 }
