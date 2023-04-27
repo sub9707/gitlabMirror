@@ -27,8 +27,11 @@ public class RankController {
 
     @ApiOperation(value = "유저 랭킹 조회")
     @GetMapping("/user")
-    public ResponseEntity<UserRankResponseDto> getUserRankList() {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Page<UserRankResponseDto>> getUserRankList(@RequestParam(name = "search", required = false, defaultValue = "") String search,
+        @PageableDefault(sort = "totalExp", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        Page<UserRankResponseDto> userRankResponseDtoList = rankService.getUserRankList(search, pageable);
+        return ResponseEntity.ok().body(userRankResponseDtoList);
     }
 
 
@@ -37,8 +40,8 @@ public class RankController {
     public ResponseEntity<Page<RepoRankResponseDto>> getRepoRankList(@RequestParam(name = "search", required = false, defaultValue = "") String search,
         @PageableDefault(sort = "repoExp", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        Page<RepoRankResponseDto> repoRankList = rankService.getRepoRankList(search, pageable);
-        return ResponseEntity.ok().body(repoRankList);
+        Page<RepoRankResponseDto> repoRankDtoList = rankService.getRepoRankList(search, pageable);
+        return ResponseEntity.ok().body(repoRankDtoList);
     }
 
 
@@ -46,7 +49,8 @@ public class RankController {
     @GetMapping("/repomon")
     public ResponseEntity<Page<RepoRankResponseDto>> getRepomonRankList(@RequestParam(name = "search", required = false, defaultValue = "") String search,
         @PageableDefault(sort = "rating", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<RepoRankResponseDto> repomonRankList = rankService.getRepomonRankList(search, pageable);
-        return ResponseEntity.ok().body(repomonRankList);
+
+        Page<RepoRankResponseDto> repomonRankDtoList = rankService.getRepomonRankList(search, pageable);
+        return ResponseEntity.ok().body(repomonRankDtoList);
     }
 }

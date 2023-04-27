@@ -15,6 +15,4 @@ public interface RepoRepository extends JpaRepository<RepoEntity, Long> {
     Page<RepoEntity> findByIsActiveTrue(Pageable pageable);
     Page<RepoEntity> findByRepoNameContainingAndIsActiveTrue(String search, Pageable pageable);
 
-    Page<RepoEntity> findActiveRepositoriesOrderByRepomonRatingDesc(Pageable pageable);
-
 }
