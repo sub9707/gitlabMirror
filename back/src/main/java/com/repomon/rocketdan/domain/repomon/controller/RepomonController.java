@@ -6,11 +6,13 @@ import com.repomon.rocketdan.domain.repomon.dto.*;
 import com.repomon.rocketdan.domain.repomon.service.RepomonService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/repomon")
 public class RepomonController {
@@ -55,7 +57,7 @@ public class RepomonController {
 		BattleLogResponseDto battleLog = repomonService.createBattleResult(repoId,
 			battleLogRequestDto);
 
-		return ResponseEntity.ok().body(ResultDto.of(new BattleLogResponseDto()));
+		return ResponseEntity.ok().body(ResultDto.of(battleLog));
 	}
 
 

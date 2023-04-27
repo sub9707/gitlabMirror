@@ -19,7 +19,6 @@ public class ActiveRepoEntity {
 	@Column(name = "active_repo_id")
 	private Long activeRepoId;
 
-	private Boolean isActive;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
@@ -31,7 +30,6 @@ public class ActiveRepoEntity {
 
 	public static ActiveRepoEntity of(UserEntity userEntity, RepoEntity repoEntity) {
 		return ActiveRepoEntity.builder()
-			.isActive(false)
 			.user(userEntity)
 			.repo(repoEntity)
 			.build();

@@ -58,12 +58,12 @@ public class RepomonStatusEntity extends RepoEntity {
 
 
 	public void updateWinCnt() {
-		this.winCnt += 1;
+		this.winCnt++;
 	}
 
 
 	public void updateLoseCnt() {
-		this.loseCnt += 1;
+		this.loseCnt++;
 	}
 
 	public static RepomonStatusEntity fromGHRepository(GHRepository ghRepository, RepomonEntity repomonEntity) {
@@ -90,6 +90,7 @@ public class RepomonStatusEntity extends RepoEntity {
 			.createdAt(now)
 			.updatedAt(now)
 			.rating(1000)
+			.isActive(false)
 			.repomon(repomonEntity)
 			.winCnt(0)
 			.loseCnt(0)

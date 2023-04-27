@@ -1,6 +1,7 @@
 package com.repomon.rocketdan.domain.repomon.dto;
 
 
+
 import com.repomon.rocketdan.domain.repo.dto.response.RepomonResponseDto;
 import com.repomon.rocketdan.domain.repomon.app.BattleLogic;
 import com.repomon.rocketdan.domain.repomon.entity.RepomonStatusEntity;
@@ -14,38 +15,39 @@ import lombok.*;
 @Builder
 public class RepomonStatusResponseDto {
 
-    private String repoName;
-    private String repomonNickname;
-    private Integer repomonTier;
-    private Integer rating;
-    private Integer statPoint;
-    private Integer winCnt;
-    private Integer loseCnt;
-    private RepomonResponseDto repomon;
+	private String repoName;
+	private String repomonNickname;
+	private Integer repomonTier;
+	private Integer rating;
+	private Integer statPoint;
+	private Integer winCnt;
+	private Integer loseCnt;
+	private RepomonResponseDto repomon;
 
-    // 내부 공식으로 계산한 수치
-    // 최초에 주사위 굴린 수치도 여기에 반영됨
-    private Integer atk;
-    private Float dodge;
-    private Float def;
-    private Float critical;
-    private Float hit;
-    // 체력
-    private Integer hp;
+	// 내부 공식으로 계산한 수치
+	// 최초에 주사위 굴린 수치도 여기에 반영됨
+	private Integer atk;
+	private Float dodge;
+	private Float def;
+	private Float critical;
+	private Float hit;
+	// 체력
+	private Integer hp;
 
-    // 현재까지 찍은 스탯값
-    private Integer atkPoint;
-    private Integer dodgePoint;
-    private Integer defPoint;
-    private Integer criticalPoint;
-    private Integer hitPoint;
+	// 현재까지 찍은 스탯값
+	private Integer atkPoint;
+	private Integer dodgePoint;
+	private Integer defPoint;
+	private Integer criticalPoint;
+	private Integer hitPoint;
 
-    // 증가치
-    private Integer increaseAtk;
-    private Float increaseDodge;
-    private Float increaseDef;
-    private Float increaseCritical;
-    private Float increaseHit;
+	// 증가치
+	private Integer increaseAtk;
+	private Float increaseDodge;
+	private Float increaseDef;
+	private Float increaseCritical;
+	private Float increaseHit;
+
 
     public static Integer remainStat(Long exp, int atk, int dodge, int def, int critical, int hit) {
         return (int) (exp / 100) - (atk + dodge + def + critical + hit);

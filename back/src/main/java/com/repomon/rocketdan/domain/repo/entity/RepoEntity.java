@@ -38,6 +38,8 @@ public class RepoEntity extends CommonEntity {
 	private LocalDateTime repoEnd;
 	private Integer rating;
 
+	private Boolean isActive;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="repomon_id")
 	private RepomonEntity repomon;
@@ -65,4 +67,7 @@ public class RepoEntity extends CommonEntity {
 		this.repoName = ghRepository.getName();
 	}
 
+	public void updateExp(Long totalExp) {
+		this.repoExp = totalExp;
+	}
 }
