@@ -3,6 +3,7 @@ package com.repomon.rocketdan.domain.repomon.service;
 
 import com.repomon.rocketdan.domain.repo.entity.RepomonEntity;
 import com.repomon.rocketdan.domain.repo.repository.RepomonRepository;
+import com.repomon.rocketdan.domain.repomon.app.BattleLogic;
 import com.repomon.rocketdan.domain.repomon.dto.*;
 import com.repomon.rocketdan.domain.repomon.entity.BattleLogEntity;
 import com.repomon.rocketdan.domain.repomon.entity.RepomonStatusEntity;
@@ -14,9 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
+import static com.repomon.rocketdan.exception.ErrorCode.DATA_BAD_REQUEST;
 import static com.repomon.rocketdan.exception.ErrorCode.NOT_FOUND_ENTITY;
 
 
@@ -54,6 +56,15 @@ public class RepomonService {
 	 * @param repomonStatusRequestDto
 	 */
 	public void createRepomonStatus(RepomonStatusRequestDto repomonStatusRequestDto) {
+		if (repomonStatusRequestDto.getStartAtk() > 10 ||
+			repomonStatusRequestDto.getStartDodge() > 10 ||
+			repomonStatusRequestDto.getStartCritical() > 10 ||
+			repomonStatusRequestDto.getStartHit() > 10 ||
+			repomonStatusRequestDto.getStartDef() > 10
+		) {
+			throw new CustomException(DATA_BAD_REQUEST);
+		}
+
 		RepomonStatusEntity repomon = repomonStatusRepository.findById(
 			repomonStatusRequestDto.getRepoId()).orElseThrow(
 			() -> new CustomException(NOT_FOUND_ENTITY)
@@ -122,9 +133,92 @@ public class RepomonService {
 			battleLogRequestDto.getOpponentRepoId()).orElseThrow(
 			() -> new CustomException(NOT_FOUND_ENTITY)
 		);
-		//		HashMap<String, Object> myStat
 
-		return null;
+		List<HashMap<String, Object>> battleLogList = new ArrayList<>();
+
+		HashMap<String, Float> myStatus = BattleLogic.createStatus(myRepomon);
+		HashMap<String, Float> yourStatus = BattleLogic.createStatus(yourRepomon);
+
+		Random random = new Random();
+		boolean startPlayer = random.nextBoolean();
+		Float myHp = myStatus.get("hp");
+		Float yourHp = yourStatus.get("hp");
+		Integer mySkillDmg = BattleLogic.skillDamageCalc(myRepomon);
+		Integer yourSkillDmg = BattleLogic.skillDamageCalc(yourRepomon);
+		int turn = 1;
+
+		//		 종료 조건 : 내가 죽거나 상대가 죽거나 20턴이 경과했을 때
+		while (myHp > 0 && yourHp > 0 && turn <= 10) {
+			if (startPlayer) {
+				// 내 공격차례일 때
+				HashMap<String, Object> battleResult = BattleLogic.battle(turn, myRepomon,
+					yourRepomon, myStatus, yourStatus, mySkillDmg);
+				yourHp -= (int) battleResult.get("damage");
+				battleLogList.add(battleResult);
+
+			} else {
+				HashMap<String, Object> battleResult = BattleLogic.battle(turn, yourRepomon,
+					myRepomon, yourStatus, myStatus,
+					yourSkillDmg);
+				myHp -= (int) battleResult.get("damage");
+				battleLogList.add(battleResult);
+			}
+			turn++;
+			startPlayer = !startPlayer;
+		}
+		boolean isLose = false;
+		if (myHp <= 0 || yourHp <= 0) {
+			isLose = myHp <= 0;
+		} else if (turn > 10) {
+			isLose = myHp / myStatus.get("hp") < yourHp / yourStatus.get("hp");
+		}
+		Integer point = (!isLose)
+			? BattleLogic.getResultPoint(myRepomon, yourRepomon)
+			: BattleLogic.getResultPoint(yourRepomon, myRepomon);
+
+		modifyBattleResult(isLose, point, myRepomon.getRepoId());
+		modifyBattleResult(!isLose, point, yourRepomon.getRepoId());
+
+		point = (!isLose) ? point : -point;
+
+		BattleLogEntity battleResult = BattleLogEntity.builder()
+			.isWin(!isLose)
+			.createdAt(LocalDateTime.now())
+			.updatedAt(LocalDateTime.now())
+			.attackPoint(point)
+			.defensePoint(-point)
+			.attackRepo(myRepomon)
+			.defenseRepo(yourRepomon)
+			.build();
+
+		battleLogRepository.save(battleResult);
+
+		return BattleLogResponseDto.builder()
+			.isWin(!isLose)
+			.startPlayer(startPlayer)
+			.attackPoint(point)
+			.defensePoint(-point)
+			.attackRepo(RepomonStatusResponseDto.fromEntity(myRepomon))
+			.defenseRepo(RepomonStatusResponseDto.fromEntity(yourRepomon))
+			.battleLog(battleLogList)
+			.build();
+
+	}
+
+
+	public void modifyBattleResult(Boolean isLose, Integer point, Long repoId) {
+		RepomonStatusEntity repomon = repomonStatusRepository.findById(repoId).orElseThrow(
+			() -> new CustomException(NOT_FOUND_ENTITY)
+		);
+		if (isLose) {
+			repomon.updateLoseCnt();
+			repomon.updateRating(-point);
+			repomonStatusRepository.save(repomon);
+		} else {
+			repomon.updateWinCnt();
+			repomon.updateRating(point);
+			repomonStatusRepository.save(repomon);
+		}
 	}
 
 
@@ -140,10 +234,8 @@ public class RepomonService {
 		if (battleLogList.isEmpty()) {
 			throw new CustomException(NOT_FOUND_ENTITY);
 		}
-		BattleLogListResponseDto battleLogListResponseDto = BattleLogListResponseDto.fromEntity(
-			battleLogList);
+		return BattleLogListResponseDto.fromEntity(battleLogList);
 
-		return battleLogListResponseDto;
 	}
 
 

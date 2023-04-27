@@ -51,12 +51,12 @@ public class RepomonStatusEntity extends RepoEntity {
 
 
 	public void updateWinCnt() {
-		this.winCnt += 1;
+		this.winCnt++;
 	}
 
 
 	public void updateLoseCnt() {
-		this.loseCnt += 1;
+		this.loseCnt++;
 	}
 
 }
