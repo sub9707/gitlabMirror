@@ -23,21 +23,15 @@ import com.repomon.rocketdan.domain.user.repository.UserRepository;
 import com.repomon.rocketdan.exception.CustomException;
 import com.repomon.rocketdan.exception.ErrorCode;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.kohsuke.github.GHCommit;
-import org.kohsuke.github.GHIssue;
-import org.kohsuke.github.GHPullRequest;
 import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GHRepository.Contributor;
 import org.kohsuke.github.PagedIterable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -125,7 +119,7 @@ public class RepoService {
         // TODO 랭킹 순위 받기
         int rank = 0;
 
-        // TODO repo history 범위 설정
+
         List<RepoHistoryEntity> historyEntityList = repoHistoryRepository.findAllByRepo(repoEntity);
 
         return RepoResearchResponseDto.fromHistoryAndRank(historyEntityList, rank, repoEntity.getRepoExp());
@@ -145,6 +139,7 @@ public class RepoService {
                 throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
             });
 
+        // TODO 랭킹 순위 받기
         int rank = 0;
 
         return RepoBattleResponseDto.fromStatusEntity(repomonStatusEntity, rank);
@@ -168,7 +163,52 @@ public class RepoService {
      * @return
      */
     public RepoContributeResponseDto getRepoContributeInfo(Long repoId){
-        return null;
+        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+        });
+
+        /**
+         * redis에 있는지 파악 후 분기처리
+         */
+
+        String repoOwner = repoEntity.getRepoOwner();
+        Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
+
+        String repoKey = repoEntity.getRepoKey();
+        GHRepository ghRepository = repositories.get(repoKey);
+        try {
+            int totalCommitCount = ghRepository
+                .queryCommits().list()
+                .toList().size();
+
+            Map<String, Integer> commitCountMap = new HashMap<>();
+            PagedIterable<Contributor> contributors = ghRepository.listContributors();
+            for(Contributor contributor : contributors){
+                String author = contributor.getLogin();
+                int authorCommitCnt = ghRepository.queryCommits()
+                    .author(author).list()
+                    .toList().size();
+
+                commitCountMap.put(author, authorCommitCnt);
+            }
+
+            String mvp = null;
+            for (String user : commitCountMap.keySet()) {
+                if(mvp == null || commitCountMap.get(user) > commitCountMap.get(mvp)){
+                    mvp = user;
+                }
+            }
+
+            RepoContributeResponseDto responseDto = new RepoContributeResponseDto(totalCommitCount, commitCountMap, mvp, repoOwner);
+
+            /**
+             * TODO Redis 저장
+             */
+
+            return responseDto;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -184,7 +224,6 @@ public class RepoService {
                     RepomonEntity repomonEntity = repomonRepository.findById(9999L).orElseThrow(()->{
                         throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
                     });
-
 
                     RepomonStatusEntity repomonStatusEntity = RepomonStatusEntity.fromGHRepository(ghRepository,
                         repomonEntity);
@@ -204,7 +243,13 @@ public class RepoService {
             list.addAll(ghUtils.GHPullRequestToHistory(ghRepository, repoEntity));
             list.addAll(ghUtils.GHIssueToHistory(ghRepository, repoEntity));
 
+            Long totalExp = 0L;
+            for(RepoHistoryEntity item : list){
+                totalExp += item.getRepoHistoryExp();
+            }
 
+            repoEntity.updateExp(totalExp);
+            repoHistoryRepository.saveAll(list);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -215,7 +260,7 @@ public class RepoService {
         RepoEntity repoEntity = activeRepoEntity.getRepo();
         return new RepoDetail(repoEntity
             , ghRepository == null ? "비공개 처리된 레포지토리입니다." : ghRepository.getDescription()
-            , activeRepoEntity.getIsActive()
+            , repoEntity.getIsActive()
             , ghRepository == null);
     }
 }

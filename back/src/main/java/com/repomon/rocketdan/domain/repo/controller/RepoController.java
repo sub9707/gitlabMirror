@@ -1,7 +1,9 @@
 package com.repomon.rocketdan.domain.repo.controller;
 
 import com.repomon.rocketdan.domain.repo.dto.request.RepoCardRequestDto;
+import com.repomon.rocketdan.domain.repo.dto.response.RepoBattleResponseDto;
 import com.repomon.rocketdan.domain.repo.dto.response.RepoCardResponseDto;
+import com.repomon.rocketdan.domain.repo.dto.response.RepoContributeResponseDto;
 import com.repomon.rocketdan.domain.repo.dto.response.RepoListResponseDto;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.response.RepoResearchResponseDto;
@@ -50,6 +52,20 @@ public class RepoController {
     @GetMapping("/{repoId}/info/research")
     public ResponseEntity<RepoResearchResponseDto> getRepoResearchInfo(@PathVariable Long repoId){
         RepoResearchResponseDto responseDto = repoService.getRepoResearchInfo(repoId);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @ApiOperation(value = "개별 레포 랭킹정보 조회")
+    @GetMapping("/{repoId}/info/rank")
+    public ResponseEntity<RepoBattleResponseDto> getRepoBattleInfo(@PathVariable Long repoId){
+        RepoBattleResponseDto responseDto = repoService.getRepoBattleInfo(repoId);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @ApiOperation(value = "개별 레포 기여도 조회")
+    @GetMapping("/{repoId}/info/contribute")
+    public ResponseEntity<RepoContributeResponseDto> getRepoContributeInfo(@PathVariable Long repoId){
+        RepoContributeResponseDto responseDto = repoService.getRepoContributeInfo(repoId);
         return ResponseEntity.ok(responseDto);
     }
 

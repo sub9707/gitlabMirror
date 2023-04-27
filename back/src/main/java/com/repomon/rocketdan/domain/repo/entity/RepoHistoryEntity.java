@@ -26,7 +26,7 @@ import org.kohsuke.github.GHPullRequest;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "repo_history")
-public class RepoHistoryEntity extends CommonEntity {
+public class RepoHistoryEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,30 +43,12 @@ public class RepoHistoryEntity extends CommonEntity {
     public void updateExp(Long exp){
         this.repoHistoryExp += exp;
     }
-    public static RepoHistoryEntity ofCommit(LocalDate commitDate, RepoEntity repoEntity){
+    public static RepoHistoryEntity ofGHInfo(LocalDate date, RepoEntity repoEntity, GrowthFactor factor){
         return RepoHistoryEntity.builder()
-            .repoHistoryExp(10L)
-            .repoHistoryType(GrowthFactor.COMMIT.getIdx())
+            .repoHistoryExp(factor.getExp())
+            .repoHistoryType(factor.getIdx())
             .repo(repoEntity)
-            .workedAt(commitDate)
-            .build();
-    }
-
-    public static RepoHistoryEntity ofPullRequest(LocalDate prDate, RepoEntity repoEntity) {
-        return RepoHistoryEntity.builder()
-            .repoHistoryExp(5L)
-            .repoHistoryType(GrowthFactor.MERGE.getIdx())
-            .repo(repoEntity)
-            .workedAt(prDate)
-            .build();
-    }
-
-    public static RepoHistoryEntity ofIssue(LocalDate issueClosedDate, RepoEntity repoEntity) {
-        return RepoHistoryEntity.builder()
-            .repoHistoryExp(2L)
-            .repoHistoryType(GrowthFactor.ISSUE.getIdx())
-            .repo(repoEntity)
-            .workedAt(issueClosedDate)
+            .workedAt(date)
             .build();
     }
 }

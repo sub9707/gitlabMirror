@@ -1,5 +1,6 @@
 package com.repomon.rocketdan.common;
 
+import com.repomon.rocketdan.domain.repo.app.GrowthFactor;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepoHistoryEntity;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import javax.annotation.PostConstruct;
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHIssue;
 import org.kohsuke.github.GHOrganization;
+import org.kohsuke.github.GHOrganization.Role;
 import org.kohsuke.github.GHPersonSet;
 import org.kohsuke.github.GHPullRequest;
 import org.kohsuke.github.GHRepository;
@@ -86,7 +88,7 @@ public class GHUtils {
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
 
-            configureRepoInfo(histories, commitDate, repoEntity);
+            configureRepoInfo(histories, commitDate, repoEntity, GrowthFactor.COMMIT);
         }
         return histories.values();
     }
@@ -99,7 +101,7 @@ public class GHUtils {
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
 
-            configureRepoInfo(histories, prDate, repoEntity);
+            configureRepoInfo(histories, prDate, repoEntity, GrowthFactor.MERGE);
         }
 
         return histories.values();
@@ -114,7 +116,7 @@ public class GHUtils {
                 LocalDate issueCloseDate = closedAt.toInstant()
                     .atZone(ZoneId.systemDefault())
                     .toLocalDate();
-                configureRepoInfo(histories, issueCloseDate, repoEntity);
+                configureRepoInfo(histories, issueCloseDate, repoEntity, GrowthFactor.ISSUE);
             }
         }
 
@@ -122,12 +124,12 @@ public class GHUtils {
     }
 
 
-    private void configureRepoInfo(Map<LocalDate, RepoHistoryEntity> histories, LocalDate date, RepoEntity repoEntity){
+    private void configureRepoInfo(Map<LocalDate, RepoHistoryEntity> histories, LocalDate date, RepoEntity repoEntity, GrowthFactor factor){
         if(histories.containsKey(date)){
             RepoHistoryEntity repoHistoryEntity = histories.get(date);
-            repoHistoryEntity.updateExp(10L);
+            repoHistoryEntity.updateExp(factor.getExp());
         }else{
-            histories.put(date, RepoHistoryEntity.ofCommit(date, repoEntity));
+            histories.put(date, RepoHistoryEntity.ofGHInfo(date, repoEntity, factor));
         }
     }
 }
