@@ -18,6 +18,7 @@ public class BattleLogResponseDto {
 	private Boolean isWin;
 	private Integer attackPoint;
 	private Integer defensePoint;
+	private Boolean startPlayer;
 	private List<HashMap<String, Object>> battleLog;
 	private RepomonStatusResponseDto attackRepo;
 	private RepomonStatusResponseDto defenseRepo;
