@@ -1,18 +1,14 @@
-package com.repomon.rocketdan.domain.repo.dto;
+package com.repomon.rocketdan.domain.repo.dto.response;
 
 import com.repomon.rocketdan.domain.repo.app.RepoDetail;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepomonEntity;
-import com.repomon.rocketdan.domain.repomon.entity.RepomonStatusEntity;
-import java.awt.print.Pageable;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 
 @Getter

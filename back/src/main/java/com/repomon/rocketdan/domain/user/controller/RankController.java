@@ -1,6 +1,6 @@
 package com.repomon.rocketdan.domain.user.controller;
 
-import com.repomon.rocketdan.domain.repo.dto.RepoRankResponseDto;
+import com.repomon.rocketdan.domain.repo.dto.response.RepoRankResponseDto;
 import com.repomon.rocketdan.domain.repomon.dto.RepomonRankResponseDto;
 import com.repomon.rocketdan.domain.user.dto.UserRankResponseDto;
 import io.swagger.annotations.ApiOperation;

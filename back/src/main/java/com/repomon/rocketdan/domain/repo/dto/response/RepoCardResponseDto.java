@@ -1,4 +1,4 @@
-package com.repomon.rocketdan.domain.repo.dto;
+package com.repomon.rocketdan.domain.repo.dto.response;
 
 
 import lombok.*;
