@@ -8,13 +8,17 @@ import com.repomon.rocketdan.domain.repo.dto.response.RepoConventionResponseDto;
 import com.repomon.rocketdan.domain.repo.dto.response.RepoListResponseDto;
 import com.repomon.rocketdan.domain.repo.dto.response.RepoResearchResponseDto;
 import com.repomon.rocketdan.domain.repo.dto.response.RepoResponseDto;
+import com.repomon.rocketdan.domain.repo.entity.RepoConventionEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepoHistoryEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepomonEntity;
 import com.repomon.rocketdan.domain.repo.repository.ActiveRepoRepository;
+import com.repomon.rocketdan.domain.repo.repository.RepoConventionRepository;
 import com.repomon.rocketdan.domain.repo.repository.RepoHistoryRepository;
 import com.repomon.rocketdan.domain.repo.repository.RepoRepository;
 import com.repomon.rocketdan.domain.repo.repository.RepomonRepository;
+import com.repomon.rocketdan.domain.repo.repository.redis.RepoRedisContributeRepository;
+import com.repomon.rocketdan.domain.repo.repository.redis.RepoRedisConventionRepository;
 import com.repomon.rocketdan.domain.repomon.entity.RepomonStatusEntity;
 import com.repomon.rocketdan.domain.repomon.repository.RepomonStatusRepository;
 import com.repomon.rocketdan.domain.user.entity.ActiveRepoEntity;
@@ -30,6 +34,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHRepository.Contributor;
 import org.kohsuke.github.PagedIterable;
@@ -49,7 +54,12 @@ public class RepoService {
     private final RepomonRepository repomonRepository;
     private final RepomonStatusRepository repomonStatusRepository;
     private final RepoHistoryRepository repoHistoryRepository;
+    private final RepoConventionRepository conventionRepository;
     private final ActiveRepoRepository activeRepoRepository;
+
+    // redis repository
+    private final RepoRedisContributeRepository redisContributeRepository;
+    private final RepoRedisConventionRepository redisConventionRepository;
 
     /**
      * 레포 전체 조회
@@ -153,7 +163,16 @@ public class RepoService {
      * @return
      */
     public RepoConventionResponseDto getRepoConventionInfo(Long repoId){
-        return null;
+        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+        });
+        String repoOwner = repoEntity.getRepoOwner();
+
+        RepoConventionResponseDto responseDto = redisConventionRepository.findByRepoOwner(
+                repoOwner)
+            .orElseGet(() -> findConvetionDtoWithGHApi(repoEntity, repoOwner));
+
+        return responseDto;
     }
 
     /**
@@ -167,11 +186,40 @@ public class RepoService {
             throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
         });
 
-        /**
-         * redis에 있는지 파악 후 분기처리
-         */
-
         String repoOwner = repoEntity.getRepoOwner();
+
+        RepoContributeResponseDto responseDto = redisContributeRepository.findByRepoOwner(repoOwner)
+            .orElseGet(() -> findContributeDtoWithGHApi(repoEntity, repoOwner));
+
+        return responseDto;
+    }
+
+
+
+    /**
+     * 신규 레포 등록이라면 상세분석해서 전부 저장해야함
+     * @param repositories
+     * @param userEntity
+     */
+    private void saveAndUpdateRepo(Map<String, GHRepository> repositories, UserEntity userEntity) {
+        repositories.forEach((s, ghRepository) -> {
+            repoRepository.findByRepoKey(s).ifPresentOrElse(repoEntity -> repoEntity.update(ghRepository),
+                () -> {
+                    RepomonEntity repomonEntity = repomonRepository.findById(9999L).orElseThrow(()->{
+                        throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+                    });
+
+                    RepomonStatusEntity repomonStatusEntity = RepomonStatusEntity.fromGHRepository(ghRepository,
+                        repomonEntity);
+                    repomonStatusRepository.save(repomonStatusEntity);
+                    activeRepoRepository.save(ActiveRepoEntity.of(userEntity, repomonStatusEntity));
+
+                    initRepositoryInfo(repomonStatusEntity, ghRepository);
+                });
+        });
+    }
+
+    private RepoContributeResponseDto findContributeDtoWithGHApi(RepoEntity repoEntity, String repoOwner){
         Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
 
         String repoKey = repoEntity.getRepoKey();
@@ -199,42 +247,52 @@ public class RepoService {
                 }
             }
 
-            RepoContributeResponseDto responseDto = new RepoContributeResponseDto(totalCommitCount, commitCountMap, mvp, repoOwner);
+            RepoContributeResponseDto responseDto = RepoContributeResponseDto.of(totalCommitCount, commitCountMap, mvp, repoOwner);
 
-            /**
-             * TODO Redis 저장
-             */
-
+            redisContributeRepository.save(responseDto);
             return responseDto;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+    private RepoConventionResponseDto findConvetionDtoWithGHApi(RepoEntity repoEntity, String repoOwner){
+        List<RepoConventionEntity> conventions = conventionRepository.findAllByRepo(repoEntity);
 
+        int totalCnt = 0;
+        int collectCnt = 0;
+        if(!conventions.isEmpty()) {
+            log.info("컨벤션 분석 시작");
 
-    /**
-     * 신규 레포 등록이라면 상세분석해서 전부 저장해야함
-     * @param repositories
-     * @param userEntity
-     */
-    private void saveAndUpdateRepo(Map<String, GHRepository> repositories, UserEntity userEntity) {
-        repositories.forEach((s, ghRepository) -> {
-            repoRepository.findByRepoKey(s).ifPresentOrElse(repoEntity -> repoEntity.update(ghRepository),
-                () -> {
-                    RepomonEntity repomonEntity = repomonRepository.findById(9999L).orElseThrow(()->{
-                        throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+            Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(
+                repoOwner);
+
+            GHRepository ghRepository = repositories.get(repoEntity.getRepoKey());
+            try {
+                List<GHCommit> ghCommits = ghRepository.listCommits().toList();
+                for(GHCommit commit : ghCommits){
+                    totalCnt++;
+                    String message = commit.getCommitShortInfo().getMessage();
+
+                    boolean present = conventions.stream().anyMatch(convention -> {
+                        String prefix = convention.getRepoConventionType();
+                        return message.startsWith(prefix);
                     });
 
-                    RepomonStatusEntity repomonStatusEntity = RepomonStatusEntity.fromGHRepository(ghRepository,
-                        repomonEntity);
-                    repomonStatusRepository.save(repomonStatusEntity);
-                    activeRepoRepository.save(ActiveRepoEntity.of(userEntity, repomonStatusEntity));
+                    if(present){
+                        collectCnt++;
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
-                    initRepositoryInfo(repomonStatusEntity, ghRepository);
-                });
-        });
+            log.info("컨벤션 분석 끝");
+        }
+
+        RepoConventionResponseDto responseDto = RepoConventionResponseDto.fronEntities(repoOwner, conventions, totalCnt, collectCnt);
+        redisConventionRepository.save(responseDto);
+        return responseDto;
     }
-
     private void initRepositoryInfo(RepoEntity repoEntity, GHRepository ghRepository) {
         log.info("최초 등록 레포지토리 분석 시작 => {}", repoEntity.getRepoName());
         try {
