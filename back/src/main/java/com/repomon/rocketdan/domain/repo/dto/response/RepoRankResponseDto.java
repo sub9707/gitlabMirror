@@ -20,6 +20,9 @@ public class RepoRankResponseDto {
 	private String username;
 	private String repoOwner;
 	private String repomonNickname;
+	private Integer rating;
+	private Integer repomonTier;
+	private String repoKey;
 
 
 	public static RepoRankResponseDto fromEntity(RepoEntity repo) {
@@ -29,6 +32,9 @@ public class RepoRankResponseDto {
 			.repoExp(repo.getRepoExp())
 			.repoOwner(repo.getRepoOwner())
 			.repomonNickname(repo.getRepomonNickname())
+			.rating(repo.getRating())
+			.repomonTier(repo.getRepomonTier())
+			.repoKey(repo.getRepoKey())
 			.build();
 	}
 

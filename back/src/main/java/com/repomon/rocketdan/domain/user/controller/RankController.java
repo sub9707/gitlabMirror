@@ -2,7 +2,6 @@ package com.repomon.rocketdan.domain.user.controller;
 
 
 import com.repomon.rocketdan.domain.repo.dto.response.RepoRankResponseDto;
-import com.repomon.rocketdan.domain.repomon.dto.RepomonRankResponseDto;
 import com.repomon.rocketdan.domain.user.dto.UserRankResponseDto;
 import com.repomon.rocketdan.domain.user.service.RankService;
 import io.swagger.annotations.ApiOperation;
@@ -45,7 +44,9 @@ public class RankController {
 
     @ApiOperation(value = "전투 랭킹 조회")
     @GetMapping("/repomon")
-    public ResponseEntity<RepomonRankResponseDto> getRepomonRankList() {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Page<RepoRankResponseDto>> getRepomonRankList(@RequestParam(name = "search", required = false, defaultValue = "") String search,
+        @PageableDefault(sort = "rating", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<RepoRankResponseDto> repomonRankList = rankService.getRepomonRankList(search, pageable);
+        return ResponseEntity.ok().body(repomonRankList);
     }
 }
