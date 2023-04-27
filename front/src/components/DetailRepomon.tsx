@@ -9,6 +9,7 @@ import styles from "./DetailRepomon.module.scss";
 function DetailRepomon() {
   const canvas = useRef<HTMLDivElement>(null);
   const [classRepoMon, setClassRepoMon] = useState<string>("");
+  const [isRender, setIsRender] = useState<boolean>(false);
 
   useEffect(() => {
     setClassRepoMon("repo-mon");
@@ -93,11 +94,7 @@ function DetailRepomon() {
     };
   }, [classRepoMon, canvas]);
 
-  return (
-    <>
-      <div ref={canvas} className={styles[classRepoMon]} />
-    </>
-  );
+  return <div ref={canvas} className={styles[classRepoMon]} />;
 }
 
 export default DetailRepomon;
