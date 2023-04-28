@@ -32,7 +32,11 @@ public class BattleLogic {
 	// 레이팅 최대값
 	public static final Integer maxRating = 20;
 
+	// 스킬 발동 확률
+	public static final Integer skillProbability = 5;
 
+
+	// 현재 해당 스텟 계산
 	public static Integer createAtk(Integer startPoint, Integer atkPoint) {
 		return (startPoint + atkPoint) * atkValue + defaultAtk;
 	}
@@ -51,15 +55,10 @@ public class BattleLogic {
 	public static Float createCritical(Integer startPoint, Integer nowPoint) {
 		return (startPoint + nowPoint) * criticalValue + defaultCritical;
 	}
-
-
 	public static Float createHit(Integer startPoint, Integer nowPoint) {
 		return (startPoint + nowPoint) * hitValue + defaultHit;
 	}
-
-
 	public static Integer createHp(Long exp) {
-
 		return (int) (exp * hpValue) + defaultHp;
 	}
 
@@ -72,6 +71,7 @@ public class BattleLogic {
 		Float critical = createCritical(repomon.getStartCritical(), repomon.getCriticalPoint());
 		Float hit = createHit(repomon.getStartHit(), repomon.getHitPoint());
 		Float hp = (float) createHp(repomon.getRepoExp());
+
 
 		return new HashMap<>() {
 			{
@@ -101,16 +101,16 @@ public class BattleLogic {
 	/**
 	 * MMR 계산을 위한 스탯 차이 계산
 	 *
-	 * @param myRepomon
-	 * @param yourRepomon
+	 * @param offenseRepomon
+	 * @param defenseRepomon
 	 * @return
 	 */
-	public static Integer createGap(RepomonStatusEntity myRepomon,
-		RepomonStatusEntity yourRepomon) {
-		return ((getAllStat(yourRepomon)
-			+ (int) ((yourRepomon.getRepoExp()) / 100))
-			- (getAllStat(myRepomon)
-			+ (int) ((myRepomon.getRepoExp()) / 100)));
+	public static Integer createGap(RepomonStatusEntity offenseRepomon,
+	                                RepomonStatusEntity defenseRepomon) {
+		return ((getAllStat(defenseRepomon)
+			+ (int) ((defenseRepomon.getRepoExp()) / 100))
+			- (getAllStat(offenseRepomon)
+			+ (int) ((offenseRepomon.getRepoExp()) / 100)));
 
 	}
 
@@ -124,9 +124,6 @@ public class BattleLogic {
 	public static Integer attackDamageCalc(RepomonStatusEntity repomon, Float def) {
 		Random random = new Random();
 		Integer allStat = getAllStat(repomon);
-		if (def > 90f) {
-			def = 90f;
-		}
 
 		Integer attack = createAtk(repomon.getStartAtk(), repomon.getAtkPoint());
 
@@ -152,20 +149,21 @@ public class BattleLogic {
 
 
 	public static HashMap<String, Object> battle(Integer turn, RepomonStatusEntity offenseRepomon,
-		RepomonStatusEntity defenseRepomon, HashMap<String, Float> myStatus,
-		HashMap<String, Float> yourStatus, Integer skillDmg) {
+	                                             RepomonStatusEntity defenseRepomon, Integer skillDmg) {
+		HashMap<String, Float> offenseStatus = createStatus(offenseRepomon);
+		HashMap<String, Float> defenseStatus = createStatus(defenseRepomon);
 		Random random = new Random();
 
 		int isSkilled = random.nextInt(100);
 		// 스킬 발동 여부 확인
-		if (isSkilled < 5) {
+		if (isSkilled < skillProbability) {
 
 			return useSkillLog(turn, offenseRepomon.getRepoId(), defenseRepomon.getRepoId(),
 				skillDmg);
 
 		} else {
 			// 명중 여부 확인
-			float dodgePercent = yourStatus.get("dodge") - myStatus.get("hit");
+			float dodgePercent = defenseStatus.get("dodge") - offenseStatus.get("hit");
 			boolean dodge = false;
 			int isDodge = random.nextInt(100);
 			if (isDodge < dodgePercent) {
@@ -173,14 +171,14 @@ public class BattleLogic {
 			}
 			// 치명타 여부 확인
 			int isCritical = random.nextInt(100);
-			if (isCritical < myStatus.get("critical")) {
-				Integer dmg = attackDamageCalc(offenseRepomon, yourStatus.get("def")) * 2;
+			if (isCritical < offenseStatus.get("critical")) {
+				Integer dmg = attackDamageCalc(offenseRepomon, defenseStatus.get("def")) * 2;
 				return (dodge)
 					? useDodgeLog(turn, offenseRepomon.getRepoId(), defenseRepomon.getRepoId(), 2)
 					: useAttackLog(turn, offenseRepomon.getRepoId(), defenseRepomon.getRepoId(), 2,
 						dmg);
 			} else {
-				Integer dmg = attackDamageCalc(offenseRepomon, yourStatus.get("def"));
+				Integer dmg = attackDamageCalc(offenseRepomon, defenseStatus.get("def"));
 				return (dodge)
 					? useDodgeLog(turn, offenseRepomon.getRepoId(), defenseRepomon.getRepoId(), 1)
 					: useAttackLog(turn, offenseRepomon.getRepoId(), defenseRepomon.getRepoId(), 1,
@@ -200,7 +198,7 @@ public class BattleLogic {
 				put("attacker", attackRepoId);
 				put("defender", defenseRepoId);
 				put("attack_act", attackType);
-				put("defense_act", "피격");
+				put("defense_act", 1);
 				put("damage", dmg);
 			}
 		};
@@ -215,7 +213,7 @@ public class BattleLogic {
 				put("attacker", attackRepoId);
 				put("defender", defenseRepoId);
 				put("attack_act", attackType);
-				put("defense_act", "회피");
+				put("defense_act", 2);
 				put("damage", 0);
 			}
 		};
@@ -230,7 +228,7 @@ public class BattleLogic {
 				put("attacker", attackRepoId);
 				put("defender", defenseRepoId);
 				put("attack_act", 3);
-				put("defense_act", "피격");
+				put("defense_act", 1);
 				put("damage", skillDmg);
 			}
 		};

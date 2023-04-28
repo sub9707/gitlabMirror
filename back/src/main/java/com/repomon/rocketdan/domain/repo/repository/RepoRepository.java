@@ -12,7 +12,11 @@ import java.util.Optional;
 public interface RepoRepository extends JpaRepository<RepoEntity, Long> {
 
     Optional<RepoEntity> findByRepoKey(String repoKey);
+
+    Boolean existsByRepomonNickname(String nickName);
+
     Page<RepoEntity> findByIsActiveTrue(Pageable pageable);
     Page<RepoEntity> findByRepoNameContainingAndIsActiveTrue(String search, Pageable pageable);
+
 
 }
