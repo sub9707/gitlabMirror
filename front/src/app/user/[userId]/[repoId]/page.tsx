@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StarIcon, ShareIcon } from "@heroicons/react/24/outline";
 import DetailRepomon from "@/components/DetailRepomon";
 import ProgressBar from "@/components/ProgressBar";
@@ -14,7 +14,15 @@ import DetailAnalysis from "@/components/DetailAnalysis";
 import DetailBattle from "@/components/DetailBattle";
 
 function Page() {
-  const [tabIndex, setTabIndex] = useState(1);
+  const [tabIndex, setTabIndex] = useState<number>(0);
+
+  useEffect(() => {
+    if (document.referrer !== window.location.href) {
+      setTabIndex(1);
+    } else {
+      setTabIndex(parseInt(sessionStorage.getItem("tabIndex") as string, 10));
+    }
+  }, []);
 
   const onClickTabBtn = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
@@ -22,6 +30,7 @@ function Page() {
     console.log(e.target);
 
     setTabIndex(parseInt(target.id, 10));
+    sessionStorage.setItem("tabIndex", target.id);
   };
 
   return (

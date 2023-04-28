@@ -16,7 +16,7 @@ function DetailAnalysis() {
           <span>레포지토리 랭킹</span>
         </div>
         <div className={styles.att} style={{ color: "rgba(90, 167, 255, 1)" }}>
-          <span>20,462</span>
+          <span>20,462 EXP</span>
           <span>14위</span>
         </div>
       </div>
