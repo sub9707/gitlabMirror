@@ -1,12 +1,12 @@
-package com.repomon.rocketdan.domain.user.entity;
+package com.repomon.rocketdan.domain.repo.entity;
 
 
 import com.repomon.rocketdan.domain.repo.app.RepoDetail;
-import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
+import com.repomon.rocketdan.domain.user.entity.UserEntity;
 import lombok.*;
+import org.kohsuke.github.GHRepository;
 
 import javax.persistence.*;
-import org.kohsuke.github.GHRepository;
 
 
 @Entity
