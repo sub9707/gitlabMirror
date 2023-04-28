@@ -33,7 +33,7 @@ public class RepoRankResponseDto {
 			.repoOwner(repo.getRepoOwner())
 			.repomonNickname(repo.getRepomonNickname())
 			.rating(repo.getRating())
-			.repomonTier(repo.getRepomonTier())
+			.repomonTier(repo.getRepomon().getRepomonTier())
 			.repoKey(repo.getRepoKey())
 			.build();
 	}

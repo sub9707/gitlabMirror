@@ -21,5 +21,5 @@ public interface RepomonStatusRepository extends JpaRepository<RepomonStatusEnti
 	Optional<RepomonStatusEntity> findByRatingBetweenRandom(
 		@Param("startRating") Integer startRating, @Param("endRating") Integer endRating,
 		@Param("repoId") Long repoId);
-
+	
 }

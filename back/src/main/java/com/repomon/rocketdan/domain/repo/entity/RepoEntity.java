@@ -2,17 +2,17 @@ package com.repomon.rocketdan.domain.repo.entity;
 
 
 import com.repomon.rocketdan.common.entity.CommonEntity;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+import org.kohsuke.github.GHRepository;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.experimental.SuperBuilder;
-import org.kohsuke.github.GHRepository;
 
 
 @Entity
@@ -23,6 +23,7 @@ import org.kohsuke.github.GHRepository;
 @AllArgsConstructor
 @Table(name = "repo")
 public class RepoEntity extends CommonEntity {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "repo_id")
@@ -32,7 +33,6 @@ public class RepoEntity extends CommonEntity {
 	private String repoOwner;
 	private String repomonNickname;
 	private Long repoExp;
-	private Integer repomonTier;
 	private String repoKey;
 	private LocalDateTime repoStart;
 	private LocalDateTime repoEnd;
@@ -41,11 +41,12 @@ public class RepoEntity extends CommonEntity {
 	private Boolean isActive;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name="repomon_id")
+	@JoinColumn(name = "repomon_id")
 	private RepomonEntity repomon;
 
 	@OneToMany(mappedBy = "repo")
 	private List<RepoConventionEntity> repoConventionList = new ArrayList<>();
+
 
 	public void updateNickname(String nickname) {
 		this.repomonNickname = nickname;
@@ -57,7 +58,6 @@ public class RepoEntity extends CommonEntity {
 	}
 
 
-
 	public void updateRepomon(RepomonEntity repomon) {
 		this.repomon = repomon;
 	}
@@ -67,20 +67,25 @@ public class RepoEntity extends CommonEntity {
 		this.repoName = ghRepository.getName();
 	}
 
+
 	public void updateExp(Long totalExp) {
 		this.repoExp = totalExp;
 	}
+
 
 	public void activate() {
 		this.isActive = true;
 	}
 
-	public void deActivate(){
+
+	public void deActivate() {
 		this.isActive = false;
 	}
+
 
 	public void updatePeriod(LocalDateTime startAt, LocalDateTime endAt) {
 		this.repoStart = startAt;
 		this.repoEnd = repoEnd;
 	}
+
 }

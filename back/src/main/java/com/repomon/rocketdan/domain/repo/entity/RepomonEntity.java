@@ -21,7 +21,7 @@ public class RepomonEntity {
 	@Column(name = "repomon_id")
 	private Long repomonId;
 	private String repomonUrl;
-
+	private Integer repomonTier;
 	private String repomonName;
 	private Integer repomonSkill;
 	private String repomonSkillName;

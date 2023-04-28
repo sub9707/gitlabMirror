@@ -1,25 +1,17 @@
 package com.repomon.rocketdan.domain.repo.service;
 
+
 import com.repomon.rocketdan.common.GHUtils;
 import com.repomon.rocketdan.domain.repo.app.RepoDetail;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoConventionRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoPeriodRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoRequestDto;
-import com.repomon.rocketdan.domain.repo.dto.response.RepoBattleResponseDto;
-import com.repomon.rocketdan.domain.repo.dto.response.RepoContributeResponseDto;
-import com.repomon.rocketdan.domain.repo.dto.response.RepoConventionResponseDto;
-import com.repomon.rocketdan.domain.repo.dto.response.RepoListResponseDto;
-import com.repomon.rocketdan.domain.repo.dto.response.RepoResearchResponseDto;
-import com.repomon.rocketdan.domain.repo.dto.response.RepoResponseDto;
+import com.repomon.rocketdan.domain.repo.dto.response.*;
 import com.repomon.rocketdan.domain.repo.entity.RepoConventionEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepoHistoryEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepomonEntity;
-import com.repomon.rocketdan.domain.repo.repository.ActiveRepoRepository;
-import com.repomon.rocketdan.domain.repo.repository.RepoConventionRepository;
-import com.repomon.rocketdan.domain.repo.repository.RepoHistoryRepository;
-import com.repomon.rocketdan.domain.repo.repository.RepoRepository;
-import com.repomon.rocketdan.domain.repo.repository.RepomonRepository;
+import com.repomon.rocketdan.domain.repo.repository.*;
 import com.repomon.rocketdan.domain.repo.repository.redis.RepoRedisContributeRepository;
 import com.repomon.rocketdan.domain.repo.repository.redis.RepoRedisConventionRepository;
 import com.repomon.rocketdan.domain.repomon.entity.RepomonStatusEntity;
@@ -30,17 +22,6 @@ import com.repomon.rocketdan.domain.user.repository.UserRepository;
 import com.repomon.rocketdan.domain.user.service.RankService;
 import com.repomon.rocketdan.exception.CustomException;
 import com.repomon.rocketdan.exception.ErrorCode;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kohsuke.github.GHCommit;
@@ -52,7 +33,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service @Slf4j
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
+import java.util.stream.Collectors;
+
+
+@Service
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class RepoService {
@@ -431,5 +421,11 @@ public class RepoService {
 
         return repoRepository.existsByRepomonNickname(repoRequestDto.getRepomonNickname());
     }
+
+	public RepomonResponseDto createSelectRepomon() {
+		List<RepomonEntity> repomonList = repomonRepository.findTop3ByRandom();
+
+		return RepomonResponseDto.createSelectRepomon(repomonList);
+	}
 
 }
