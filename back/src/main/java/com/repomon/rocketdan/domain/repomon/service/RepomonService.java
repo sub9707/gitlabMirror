@@ -18,8 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static com.repomon.rocketdan.exception.ErrorCode.DATA_BAD_REQUEST;
-import static com.repomon.rocketdan.exception.ErrorCode.NOT_FOUND_ENTITY;
+import static com.repomon.rocketdan.exception.ErrorCode.*;
 
 
 @Service
@@ -43,7 +42,7 @@ public class RepomonService {
 	 */
 	public RepomonStatusResponseDto getRepomonInfo(Long repoId) {
 		RepomonStatusEntity repomonStatus = repomonStatusRepository.findById(repoId).orElseThrow(
-			() -> new CustomException(NOT_FOUND_ENTITY)
+			() -> new CustomException(NOT_FOUND_REPOSITORY)
 		);
 		return RepomonStatusResponseDto.fromEntity(repomonStatus);
 
@@ -67,7 +66,7 @@ public class RepomonService {
 
 		RepomonStatusEntity repomon = repomonStatusRepository.findById(
 			repomonStatusRequestDto.getRepoId()).orElseThrow(
-			() -> new CustomException(NOT_FOUND_ENTITY)
+			() -> new CustomException(NOT_FOUND_REPOSITORY)
 		);
 
 		RepomonEntity selectedRepomon = repomonRepository.findById(
@@ -95,7 +94,7 @@ public class RepomonService {
 	 */
 	public RepomonStatusResponseDto getBattleTarget(Long repoId) {
 		RepomonStatusEntity repomonStatus = repomonStatusRepository.findById(repoId).orElseThrow(
-			() -> new CustomException(NOT_FOUND_ENTITY)
+			() -> new CustomException(NOT_FOUND_REPOSITORY)
 		);
 		Integer userRating = repomonStatus.getRating();
 		int index = 1;
@@ -112,7 +111,7 @@ public class RepomonService {
 
 		}
 
-		throw new CustomException(NOT_FOUND_ENTITY);
+		throw new CustomException(NOT_FOUND_REPOSITORY);
 
 	}
 
@@ -127,11 +126,11 @@ public class RepomonService {
 	public BattleLogResponseDto createBattleResult(Long repoId,
 		BattleLogRequestDto battleLogRequestDto) {
 		RepomonStatusEntity myRepomon = repomonStatusRepository.findById(repoId).orElseThrow(
-			() -> new CustomException(NOT_FOUND_ENTITY)
+			() -> new CustomException(NOT_FOUND_REPOSITORY)
 		);
 		RepomonStatusEntity yourRepomon = repomonStatusRepository.findById(
 			battleLogRequestDto.getOpponentRepoId()).orElseThrow(
-			() -> new CustomException(NOT_FOUND_ENTITY)
+			() -> new CustomException(NOT_FOUND_REPOSITORY)
 		);
 
 		List<HashMap<String, Object>> battleLogList = new ArrayList<>();
@@ -152,14 +151,13 @@ public class RepomonService {
 			if (startPlayer) {
 				// 내 공격차례일 때
 				HashMap<String, Object> battleResult = BattleLogic.battle(turn, myRepomon,
-					yourRepomon, myStatus, yourStatus, mySkillDmg);
+					yourRepomon, mySkillDmg);
 				yourHp -= (int) battleResult.get("damage");
 				battleLogList.add(battleResult);
 
 			} else {
 				HashMap<String, Object> battleResult = BattleLogic.battle(turn, yourRepomon,
-					myRepomon, yourStatus, myStatus,
-					yourSkillDmg);
+					myRepomon, yourSkillDmg);
 				myHp -= (int) battleResult.get("damage");
 				battleLogList.add(battleResult);
 			}
@@ -208,7 +206,7 @@ public class RepomonService {
 
 	public void modifyBattleResult(Boolean isLose, Integer point, Long repoId) {
 		RepomonStatusEntity repomon = repomonStatusRepository.findById(repoId).orElseThrow(
-			() -> new CustomException(NOT_FOUND_ENTITY)
+			() -> new CustomException(NOT_FOUND_REPOSITORY)
 		);
 		if (isLose) {
 			repomon.updateLoseCnt();
@@ -242,7 +240,7 @@ public class RepomonService {
 	public void modifyRepomonStatus(RepomonStatusRequestDto repomonStatusRequestDto) {
 		RepomonStatusEntity repomon = repomonStatusRepository.findById(
 			repomonStatusRequestDto.getRepoId()).orElseThrow(
-			() -> new CustomException(NOT_FOUND_ENTITY)
+			() -> new CustomException(NOT_FOUND_REPOSITORY)
 		);
 
 		repomon.updateStatus(repomonStatusRequestDto.getAtkPoint(),
@@ -263,7 +261,7 @@ public class RepomonService {
 	public void modifyRepomonNickname(RepomonStatusRequestDto repomonStatusRequestDto) {
 		RepomonStatusEntity repomon = repomonStatusRepository.findById(
 			repomonStatusRequestDto.getRepoId()).orElseThrow(
-			() -> new CustomException(NOT_FOUND_ENTITY)
+			() -> new CustomException(NOT_FOUND_REPOSITORY)
 		);
 		repomon.updateNickname(repomonStatusRequestDto.getRepomonNickname());
 		repomonStatusRepository.save(repomon);
