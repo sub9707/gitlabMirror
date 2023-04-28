@@ -27,7 +27,8 @@
   }
   & .settingBox {
     width: 80%;
-    height: 100vh;
+    min-height: 100vh;
+    height: auto;
     display: flex;
     justify-content: center;
     & .conventionBox {
@@ -35,6 +36,7 @@
     }
     & .diceContainer {
       width: 30%;
+      height: 60em;
     }
   }
 }
