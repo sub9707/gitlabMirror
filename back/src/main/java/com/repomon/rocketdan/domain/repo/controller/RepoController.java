@@ -120,15 +120,28 @@ public class RepoController {
         return ResponseEntity.ok().build();
     }
 
+
     @ApiOperation(value = "개인레포카드 조회")
     @GetMapping("/{repoId}/card/personal")
-    public ResponseEntity<RepoCardResponseDto> getPersonalRepoCard(Long repoId){
+    public ResponseEntity<RepoCardResponseDto> getPersonalRepoCard(Long repoId) {
         return ResponseEntity.ok().build();
     }
 
+
     @ApiOperation(value = "개인레포카드 수정")
     @PutMapping("/{repoId}/card/personal")
-    public ResponseEntity modifyPersonalRepoCard(Long repoId, RepoCardRequestDto requestDto){
+    public ResponseEntity modifyPersonalRepoCard(Long repoId, RepoCardRequestDto requestDto) {
         return ResponseEntity.ok().build();
     }
+
+
+    @ApiOperation(value = "닉네임 중복 확인")
+    @PostMapping("/nickname")
+    public ResponseEntity<ResultDto<Boolean>> checkRepomonNickname(RepoRequestDto repoRequestDto) {
+        if (!repoService.checkRepomonNickname(repoRequestDto)) {
+            return ResponseEntity.ok().body(ResultDto.ofSuccess());
+        }
+        return ResponseEntity.ok().body(ResultDto.ofFail());
+    }
+
 }

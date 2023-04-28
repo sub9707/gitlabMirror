@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHRepository.Contributor;
 import org.kohsuke.github.PagedIterable;
@@ -149,6 +148,7 @@ public class RepoService {
      * @param repoId
      * @return
      */
+
     public RepoBattleResponseDto getRepoBattleInfo(Long repoId){
         RepomonStatusEntity repomonStatusEntity = repomonStatusRepository.findByRepoId(repoId)
             .orElseThrow(() -> {
@@ -407,4 +407,11 @@ public class RepoService {
 
         log.info("기존 레포지토리 업데이트 종료 => {}", repoEntity.getRepoName());
     }
+
+
+    public Boolean checkRepomonNickname(RepoRequestDto repoRequestDto) {
+
+        return repoRepository.existsByRepomonNickname(repoRequestDto.getRepomonNickname());
+    }
+
 }
