@@ -1,0 +1,33 @@
+@import "@/styles/variables.scss";
+
+.pageContainer {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  & .headerTitle {
+    font-size: 2em;
+    margin-block: 1em;
+  }
+  & .gameWrapper {
+    width: 80%;
+    height: 50em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 3em;
+    & .gameBox {
+      width: 80%;
+      height: 35em;
+      background-color: rgb(75, 75, 75);
+    }
+    & .gameLogBox {
+      width: 80%;
+      height: 15em;
+      border: 1px solid black;
+      padding: 1em;
+    }
+  }
+}
