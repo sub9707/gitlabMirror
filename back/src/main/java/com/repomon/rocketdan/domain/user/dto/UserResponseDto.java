@@ -1,32 +1,36 @@
 package com.repomon.rocketdan.domain.user.dto;
 
 
+import com.repomon.rocketdan.domain.repo.app.RepoListItem;
 import com.repomon.rocketdan.domain.user.entity.UserEntity;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
+import java.util.Map;
 
 
 @AllArgsConstructor
 @Getter
+@Setter
 @ToString
 @Builder
 public class UserResponseDto {
 
-	public static UserResponseDto fromEntity(UserEntity user) {
-		return new UserResponseDto();
+	private final Long userId;
+	private final String username;
+	private final String nickname;
+	private final String avatarUrl;
+	private Long totalExp;
+	private RepoListItem representRepo;
+
+
+	public static UserResponseDto fromEntity(UserEntity user, Map<String, String> userInfo) {
+
+		return UserResponseDto.builder()
+			.userId(user.getUserId())
+			.username(userInfo.get("username"))
+			.avatarUrl(userInfo.get("avatarUrl"))
+			.nickname(userInfo.get("nickname"))
+			.build();
 	}
 
-	public static List<UserResponseDto> fromEntityList(List<UserEntity> userList) {
-		List<UserResponseDto> result = new ArrayList<>();
-
-		for (UserEntity user : userList) {
-			UserResponseDto userResponseDto = UserResponseDto.fromEntity(user);
-			result.add(userResponseDto);
-		}
-		return result;
-	}
 }

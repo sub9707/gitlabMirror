@@ -1,6 +1,7 @@
 package com.repomon.rocketdan.domain.user.entity;
 
 
+import com.repomon.rocketdan.domain.repo.entity.ActiveRepoEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.util.Optional;
 
 
 @Entity
@@ -32,6 +34,11 @@ public class UserEntity {
 
 	public void updateRepresentRepo(ActiveRepoEntity repo) {
 		this.representRepo = repo;
+	}
+
+
+	public Optional<ActiveRepoEntity> getRepresentRepo() {
+		return Optional.ofNullable(representRepo);
 	}
 
 }
