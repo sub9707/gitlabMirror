@@ -24,7 +24,10 @@ const Header = () => {
           랭킹
         </Link>
         <Link href="/user/123" className={styles.item}>
-          샘플 유저 페이지
+          샘플 유저
+        </Link>
+        <Link href="/user/123/456" className={styles.item}>
+          샘플 레포 상세
         </Link>
       </div>
       <div className={styles.right}>

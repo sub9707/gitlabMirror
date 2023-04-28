@@ -10,6 +10,8 @@ import {
   ClipboardDocumentListIcon,
   ChartPieIcon,
 } from "@heroicons/react/24/outline";
+import DetailAnalysis from "@/components/DetailAnalysis";
+import DetailBattle from "@/components/DetailBattle";
 
 function Page() {
   const [tabIndex, setTabIndex] = useState(1);
@@ -37,7 +39,7 @@ function Page() {
                     fontWeight: "bold",
                     fontStyle: "italic",
                     marginRight: "1rem",
-                    color: "red",
+                    color: "blue",
                   }}
                 >
                   LV
@@ -148,7 +150,10 @@ function Page() {
           </div>
         </div>
       </div>
-      <div className={styles["tab-content"]}></div>
+      <div className={styles["tab-content"]}>
+        {tabIndex === 1 && <DetailAnalysis />}
+        {tabIndex === 2 && <DetailBattle />}
+      </div>
     </div>
   );
 }
