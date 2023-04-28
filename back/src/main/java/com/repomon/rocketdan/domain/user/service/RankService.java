@@ -90,4 +90,26 @@ public class RankService {
 		}
 	}
 
+
+	/**
+	 * 레포 순위 구하기
+	 *
+	 * @param repo
+	 * @return
+	 */
+	public Long getRepoRank(RepoEntity repo) {
+		return repoRepository.findRankByRepoExp(repo.getRepoExp());
+	}
+
+
+	/**
+	 * 레포몬 순위 구하기
+	 *
+	 * @param repo
+	 * @return
+	 */
+	public Long getRepomonRank(RepoEntity repo) {
+		return repoRepository.findRankByRating(repo.getRating());
+	}
+
 }
