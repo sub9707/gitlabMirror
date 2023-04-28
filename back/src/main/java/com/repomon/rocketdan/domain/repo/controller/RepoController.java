@@ -62,7 +62,7 @@ public class RepoController {
     }
 
     @ApiOperation(value = "개별 레포 랭킹정보 조회")
-    @GetMapping("/{repoId}/info/rank")
+    @GetMapping("/{repoId}/info/battle")
     public ResponseEntity<RepoBattleResponseDto> getRepoBattleInfo(@PathVariable Long repoId){
         RepoBattleResponseDto responseDto = repoService.getRepoBattleInfo(repoId);
         return ResponseEntity.ok(responseDto);

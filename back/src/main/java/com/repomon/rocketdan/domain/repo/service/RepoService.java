@@ -27,6 +27,7 @@ import com.repomon.rocketdan.domain.repomon.repository.RepomonStatusRepository;
 import com.repomon.rocketdan.domain.user.entity.ActiveRepoEntity;
 import com.repomon.rocketdan.domain.user.entity.UserEntity;
 import com.repomon.rocketdan.domain.user.repository.UserRepository;
+import com.repomon.rocketdan.domain.user.service.RankService;
 import com.repomon.rocketdan.exception.CustomException;
 import com.repomon.rocketdan.exception.ErrorCode;
 import java.io.IOException;
@@ -57,6 +58,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RepoService {
 
     private final GHUtils ghUtils;
+    private final RankService rankService;
     private final UserRepository userRepository;
     private final RepoRepository repoRepository;
     private final RepomonRepository repomonRepository;
@@ -134,8 +136,7 @@ public class RepoService {
             throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
         });
 
-        // TODO 랭킹 순위 받기
-        int rank = 0;
+        Long rank = rankService.getRepoRank(repoEntity);
 
 
         List<RepoHistoryEntity> historyEntityList = repoHistoryRepository.findAllByRepo(repoEntity);
@@ -157,8 +158,7 @@ public class RepoService {
                 throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
             });
 
-        // TODO 랭킹 순위 받기
-        int rank = 0;
+        Long rank = rankService.getRepomonRank(repomonStatusEntity);
 
         return RepoBattleResponseDto.fromStatusEntity(repomonStatusEntity, rank);
     }
