@@ -23,6 +23,7 @@ public class RepoResponseDto {
 	private String repoName;
 	private Long repomonId;
 	private String repomonName;
+	private String repoDescription;
 	private Long repoExp;
 	private int starCnt;
 	private int forkCnt;
@@ -46,6 +47,7 @@ public class RepoResponseDto {
 				.repoName(repoEntity.getRepoName())
 				.repomonId(repoEntity.getRepomon().getRepomonId())
 				.repomonName(repoEntity.getRepomonNickname())
+				.repoDescription(ghRepository.getDescription())
 				.repoExp(repoEntity.getRepoExp())
 				.starCnt(ghRepository.getStargazersCount())
 				.forkCnt(ghRepository.getForksCount())
