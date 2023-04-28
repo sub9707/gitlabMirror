@@ -5,6 +5,9 @@ import styles from "./page.module.scss";
 import Image from "next/image";
 import { PageProps, Todo } from "@/types/repoRegist";
 import "animate.css";
+import GitTable from "@/components/GitTable";
+import Button_OK from "@/components/Button_OK";
+import Button_NO from "@/components/Button_NO";
 
 const Page: NextPage<PageProps> = ({ params }) => {
   const [numArr, setNumArr] = useState([0, 0, 0, 0, 0]);
@@ -106,7 +109,9 @@ const Page: NextPage<PageProps> = ({ params }) => {
         <div className={styles.monChar}></div>
       </div>
       <div className={styles.settingBox}>
-        <div className={styles.conventionBox}>컨벤션 등록</div>
+        <div className={styles.conventionBox}>
+          <GitTable />
+        </div>
         <div className={styles.diceContainer}>
           <p className={styles.diceTitle}>초기 능력치 설정</p>
           <div className={styles.diceBox} style={{ marginBottom: "15%" }}>
@@ -222,7 +227,14 @@ const Page: NextPage<PageProps> = ({ params }) => {
                         </tr>
                       </tbody>
                     </table>
-                    <div>
+                    <div
+                      style={{
+                        fontSize: "0.8em",
+                        color: "grey",
+                        textAlign: "center",
+                        marginTop: "5%",
+                      }}
+                    >
                       <p>(공격력 최소 1 ~ 최대 10)</p>
                       <p>
                         (기타 확률 최소 1% ~ 최대 10%, 모든 확률 총합은 30 이하)
@@ -234,6 +246,10 @@ const Page: NextPage<PageProps> = ({ params }) => {
             </div>
           </div>
         </div>
+      </div>
+      <div style={{ display: "flex", marginBlock: "3%" }}>
+        <Button_OK msg={"결정하기"} />
+        <Button_NO msg={"취소하기"} />
       </div>
     </div>
   );
