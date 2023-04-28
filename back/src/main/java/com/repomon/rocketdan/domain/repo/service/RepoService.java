@@ -2,6 +2,8 @@ package com.repomon.rocketdan.domain.repo.service;
 
 import com.repomon.rocketdan.common.GHUtils;
 import com.repomon.rocketdan.domain.repo.app.RepoDetail;
+import com.repomon.rocketdan.domain.repo.dto.request.RepoConventionRequestDto;
+import com.repomon.rocketdan.domain.repo.dto.request.RepoPeriodRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.response.RepoBattleResponseDto;
 import com.repomon.rocketdan.domain.repo.dto.response.RepoContributeResponseDto;
 import com.repomon.rocketdan.domain.repo.dto.response.RepoConventionResponseDto;
@@ -27,8 +29,8 @@ import com.repomon.rocketdan.domain.user.repository.UserRepository;
 import com.repomon.rocketdan.exception.CustomException;
 import com.repomon.rocketdan.exception.ErrorCode;
 import java.io.IOException;
-import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -216,6 +218,37 @@ public class RepoService {
         updateRepositoryInfo(repoEntity, ghRepository);
     }
 
+
+    /**
+     * 레포 기간 설정
+     * @param repoId
+     * @param requestDto
+     */
+    public void modifyRepoPeriod(Long repoId, RepoPeriodRequestDto requestDto) {
+        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+        });
+
+        LocalDateTime startedAt = requestDto.getStartedAt();
+        LocalDateTime endAt = requestDto.getEndAt();
+        repoEntity.updatePeriod(startedAt, endAt);
+    }
+
+    /**
+     * 레포 컨벤션 수정 및 등록
+     * @param repoId
+     * @param requestDto
+     */
+    public void modifyRepoConvention(Long repoId, RepoConventionRequestDto requestDto) {
+        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+        });
+
+        conventionRepository.deleteAllByRepo(repoEntity);
+        List<RepoConventionEntity> entities = requestDto.toEntities(repoEntity);
+        conventionRepository.saveAll(entities);
+    }
+
     /**
      * 레포 활성화
      * @param repoId
@@ -374,5 +407,4 @@ public class RepoService {
 
         log.info("기존 레포지토리 업데이트 종료 => {}", repoEntity.getRepoName());
     }
-
 }

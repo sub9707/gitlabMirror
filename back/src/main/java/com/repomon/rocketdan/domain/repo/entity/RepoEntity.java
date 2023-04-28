@@ -3,6 +3,7 @@ package com.repomon.rocketdan.domain.repo.entity;
 
 import com.repomon.rocketdan.common.entity.CommonEntity;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import lombok.*;
 
@@ -76,5 +77,10 @@ public class RepoEntity extends CommonEntity {
 
 	public void deActivate(){
 		this.isActive = false;
+	}
+
+	public void updatePeriod(LocalDateTime startAt, LocalDateTime endAt) {
+		this.repoStart = startAt;
+		this.repoEnd = repoEnd;
 	}
 }

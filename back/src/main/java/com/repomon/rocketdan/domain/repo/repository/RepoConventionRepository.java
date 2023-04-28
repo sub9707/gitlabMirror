@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface RepoConventionRepository extends JpaRepository<RepoConventionEntity, Long> {
 
     List<RepoConventionEntity> findAllByRepo(RepoEntity repoEntity);
+
+    void deleteAllByRepo(RepoEntity repoEntity);
 }
