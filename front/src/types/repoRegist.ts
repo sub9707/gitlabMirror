@@ -6,6 +6,10 @@ export type PageProps = {
   };
 };
 
+export type buttonType = {
+  msg: string;
+};
+
 // 등록 페이지 깃 컨벤션 인터페이스
 export interface Todo {
   id: number;
