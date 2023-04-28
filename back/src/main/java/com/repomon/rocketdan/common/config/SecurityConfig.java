@@ -5,6 +5,7 @@ import com.repomon.rocketdan.common.filter.JwtExceptionFilter;
 import com.repomon.rocketdan.common.handler.JwtAccessDeniedHandler;
 import com.repomon.rocketdan.common.handler.OAuth2SuccessHandler;
 import com.repomon.rocketdan.common.service.CustomOAuth2UserService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -71,8 +72,9 @@ public class SecurityConfig{
 
         configuration.addAllowedOriginPattern("*");
 //        configuration.addAllowedOrigin("https://i8e204.p.ssafy.io");
-        configuration.setAllowedMethods(Arrays.asList("HEAD","POST","GET","DELETE","PUT"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedMethods(List.of("HEAD","POST","GET","DELETE","PUT"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

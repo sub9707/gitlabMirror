@@ -2,6 +2,7 @@ package com.repomon.rocketdan.common.config;
 
 import com.fasterxml.classmate.TypeResolver;
 import com.repomon.rocketdan.common.MyPageable;
+import java.util.Collections;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,7 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.ApiKey;
 import springfox.documentation.service.AuthorizationScope;
 import springfox.documentation.service.SecurityReference;
+import springfox.documentation.service.Server;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
@@ -27,8 +29,11 @@ public class SwaggerConfig {
     //	Swagger-UI 3.x 확인
     //	http://localhost:8080/{your-app-root}/swagger-ui/index.html
     @Bean
-    public Docket pochaApi(TypeResolver typeResolver) {
+    public Docket api(TypeResolver typeResolver) {
+        Server serverLocal = new Server("local", "http://localhost:8080", "local", Collections.emptyList(), Collections.emptyList());
+        Server devServer = new Server("test", "https://k8e105.p.ssafy.io", "dev", Collections.emptyList(), Collections.emptyList());
         return new Docket(DocumentationType.OAS_30)
+            .servers(serverLocal, devServer)
             .alternateTypeRules(AlternateTypeRules.newRule(typeResolver.resolve(Pageable.class),
                 typeResolver.resolve(MyPageable.class)))
             .useDefaultResponseMessages(false)
