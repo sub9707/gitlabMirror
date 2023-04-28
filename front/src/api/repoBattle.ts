@@ -10,10 +10,9 @@ import { http } from "./axios";
 export const requestMatchResult = async (oppoId: number, myId: number) => {
   const data = {
     opponentRepoId: oppoId,
-    repoId: myId,
   };
 
-  const res = await http.post(`/api/v1/repomon/${myId}/match`);
+  const res = await http.post(`/repomon/${myId}/match`, data);
 
   return res;
 };
