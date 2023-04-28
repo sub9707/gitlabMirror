@@ -3,18 +3,18 @@ package com.repomon.rocketdan.domain.repomon.entity;
 
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepomonEntity;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+import org.kohsuke.github.GHRepository;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import lombok.experimental.SuperBuilder;
-import org.kohsuke.github.GHRepository;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 
 @Entity
@@ -66,6 +66,7 @@ public class RepomonStatusEntity extends RepoEntity {
 		this.loseCnt++;
 	}
 
+
 	public static RepomonStatusEntity fromGHRepository(GHRepository ghRepository, RepomonEntity repomonEntity) {
 		LocalDateTime repoCreatedAt = null;
 
@@ -83,7 +84,6 @@ public class RepomonStatusEntity extends RepoEntity {
 			.repoOwner(ghRepository.getOwnerName())
 			.repomonNickname(repomonEntity.getRepomonName())
 			.repoExp(0L)
-			.repomonTier(0)
 			.repoKey(ghRepository.getNodeId())
 			.repoStart(repoCreatedAt)
 			.repoEnd(null)

@@ -23,7 +23,7 @@ public class RepomonController {
 	@PostMapping("/start")
 	@ApiOperation(value = "레포몬의 초기 정보를 등록합니다.")
 	public ResponseEntity<ResultDto<Boolean>> createRepomonStatus(
-		RepomonStatusRequestDto repomonStatusRequestDto) {
+		@RequestBody RepomonStatusRequestDto repomonStatusRequestDto) {
 		repomonService.createRepomonStatus(repomonStatusRequestDto);
 
 		return ResponseEntity.ok().body(ResultDto.ofSuccess());
@@ -53,7 +53,7 @@ public class RepomonController {
 	@ApiOperation(value = "레포몬의 전투 결과를 반환합니다.")
 	public ResponseEntity<ResultDto<BattleLogResponseDto>> createBattleResult(
 		@PathVariable("repoId") Long repoId,
-		BattleLogRequestDto battleLogRequestDto) {
+		@RequestBody BattleLogRequestDto battleLogRequestDto) {
 		BattleLogResponseDto battleLog = repomonService.createBattleResult(repoId,
 			battleLogRequestDto);
 
@@ -74,7 +74,7 @@ public class RepomonController {
 	@PutMapping("/stat")
 	@ApiOperation(value = "레포몬의 스텟을 변경합니다.")
 	public ResponseEntity<ResultDto<Boolean>> modifyRepomonStatus(
-		RepomonStatusRequestDto repomonStatusRequestDto) {
+		@RequestBody RepomonStatusRequestDto repomonStatusRequestDto) {
 		repomonService.modifyRepomonStatus(repomonStatusRequestDto);
 
 		return ResponseEntity.ok().body(ResultDto.ofSuccess());
@@ -84,7 +84,7 @@ public class RepomonController {
 	@PutMapping("/nickname")
 	@ApiOperation(value = "레포몬의 닉네임을 변경합니다.")
 	public ResponseEntity<ResultDto<Boolean>> modifyRepomonNickname(
-		RepomonStatusRequestDto repomonStatusRequestDto) {
+		@RequestBody RepomonStatusRequestDto repomonStatusRequestDto) {
 		repomonService.modifyRepomonNickname(repomonStatusRequestDto);
 
 		return ResponseEntity.ok().body(ResultDto.ofSuccess());
