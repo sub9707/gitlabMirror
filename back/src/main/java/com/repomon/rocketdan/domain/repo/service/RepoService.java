@@ -119,6 +119,9 @@ public class RepoService {
         String repoKey = repoEntity.getRepoKey();
         Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
         GHRepository ghRepository = repositories.get(repoKey);
+        if(ghRepository == null){
+            throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
+        }
 
         return RepoResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository);
     }
@@ -216,6 +219,9 @@ public class RepoService {
 
         String repoKey = repoEntity.getRepoKey();
         GHRepository ghRepository = repositories.get(repoKey);
+        if(ghRepository == null){
+            throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
+        }
 
         updateRepositoryInfo(repoEntity, ghRepository);
     }
@@ -296,6 +302,11 @@ public class RepoService {
 
         String repoKey = repoEntity.getRepoKey();
         GHRepository ghRepository = repositories.get(repoKey);
+        if(ghRepository == null){
+            throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
+        }
+
+
         try {
             int totalCommitCount = ghRepository
                 .queryCommits().list()
@@ -339,6 +350,10 @@ public class RepoService {
                 repoOwner);
 
             GHRepository ghRepository = repositories.get(repoEntity.getRepoKey());
+            if(ghRepository == null){
+                throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
+            }
+
             try {
                 List<GHCommit> ghCommits = ghRepository.listCommits().toList();
                 for(GHCommit commit : ghCommits){
