@@ -4,6 +4,7 @@ import com.repomon.rocketdan.common.GHUtils;
 import com.repomon.rocketdan.domain.repo.app.RepoDetail;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoConventionRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoPeriodRequestDto;
+import com.repomon.rocketdan.domain.repo.dto.request.RepoRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.response.RepoBattleResponseDto;
 import com.repomon.rocketdan.domain.repo.dto.response.RepoContributeResponseDto;
 import com.repomon.rocketdan.domain.repo.dto.response.RepoConventionResponseDto;
@@ -41,6 +42,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHRepository.Contributor;
 import org.kohsuke.github.PagedIterable;
@@ -176,7 +178,7 @@ public class RepoService {
 
         RepoConventionResponseDto responseDto = redisConventionRepository.findByRepoOwner(
                 repoOwner)
-            .orElseGet(() -> findConvetionDtoWithGHApi(repoEntity, repoOwner));
+            .orElseGet(() -> findConventionDtoWithGHApi(repoEntity, repoOwner));
 
         return responseDto;
     }
@@ -325,7 +327,7 @@ public class RepoService {
             throw new RuntimeException(e);
         }
     }
-    private RepoConventionResponseDto findConvetionDtoWithGHApi(RepoEntity repoEntity, String repoOwner){
+    private RepoConventionResponseDto findConventionDtoWithGHApi(RepoEntity repoEntity, String repoOwner){
         List<RepoConventionEntity> conventions = conventionRepository.findAllByRepo(repoEntity);
 
         int totalCnt = 0;
