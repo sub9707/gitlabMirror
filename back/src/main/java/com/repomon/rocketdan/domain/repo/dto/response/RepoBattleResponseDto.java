@@ -15,13 +15,13 @@ import lombok.NoArgsConstructor;
 public class RepoBattleResponseDto {
 
     private int rating;
-    private int rank;
+    private Long rank;
     private int winCnt;
     private int loseCnt;
     private Map<String, Float> status;
 
     public static RepoBattleResponseDto fromStatusEntity(RepomonStatusEntity statusEntity,
-        int rank) {
+        Long rank) {
 
         return RepoBattleResponseDto.builder()
             .rating(statusEntity.getRating())
