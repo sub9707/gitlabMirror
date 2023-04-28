@@ -372,7 +372,8 @@ public class RepoService {
             list.addAll(ghUtils.GHCommitToHistory(ghRepository, repoEntity, fromDate));
             list.addAll(ghUtils.GHPullRequestToHistory(ghRepository, repoEntity, fromDate));
             list.addAll(ghUtils.GHIssueToHistory(ghRepository, repoEntity, fromDate));
-            // 리뷰??
+
+            // 효율성 ? 보안성 ?
 
             Long totalExp = 0L;
             for(RepoHistoryEntity item : list){
