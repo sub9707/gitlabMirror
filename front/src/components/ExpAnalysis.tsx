@@ -20,16 +20,16 @@ ChartJS.register(
 );
 
 const data = {
-  labels: ["Commit", "Issue", "Merge", "Review", "Efficiency", "Security"],
+  labels: ["커밋", "이슈", "머지", "리뷰", "효율성", "보안성"],
   datasets: [
     {
-      label: "EXP",
+      label: "경험치",
       data: [5, 7, 5, 9, 7, 4],
-      backgroundColor: "rgba(255, 255, 0, 0.2)",
-      borderColor: "yellow",
-      pointBackgroundColor: "rgb(255, 255, 255)",
-      borderWidth: 1.5,
-      color: "white",
+      backgroundColor: "rgba(127, 255, 212, 0.5)",
+      borderColor: "aquamarine",
+      pointBackgroundColor: "rgb(127, 255, 212)",
+      borderWidth: 3,
+      color: "black",
     },
   ],
 };
@@ -43,34 +43,33 @@ export default function ExpAnalysis() {
         scales: {
           r: {
             angleLines: {
-              color: "rgba(255, 255, 255, 0.8)",
+              color: "rgb(210, 210, 210)",
             },
             grid: {
-              color: "rgba(255, 255, 255, 0.8)",
+              color: "rgb(210, 210, 210)",
             },
             pointLabels: {
               font: {
                 family: "SUIT-Thin",
-                size: 15,
+                size: 16,
+                weight: "bold",
               },
-              color: "white",
+              color: "rgb(50, 50, 50)",
             },
             ticks: {
-              color: "black",
+              color: "rgb(50, 50, 50)",
             },
           },
         },
         plugins: {
-          title: {
-            color: "white",
-          },
           legend: {
             position: "right",
             labels: {
-              color: "white",
+              color: "rgb(50, 50, 50)",
               font: {
                 family: "SUIT-Thin",
                 size: 16,
+                weight: "bold",
               },
             },
           },

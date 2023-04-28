@@ -30,26 +30,28 @@ export const options = {
   scales: {
     x: {
       grid: {
-        color: "rgba(255, 255, 255, 0.6)",
+        color: "rgb(210, 210, 210)",
       },
       ticks: {
         font: {
           size: 16,
           family: "SUIT-Thin",
+          weight: "bold",
         },
-        color: "rgba(255, 255, 255, 0.6)",
+        color: "rgb(50, 50, 50)",
       },
     },
     y: {
       grid: {
-        color: "rgba(255, 255, 255, 0.6)",
+        color: "rgb(210, 210, 210)",
       },
       ticks: {
         font: {
           size: 16,
           family: "SUIT-Thin",
+          weight: "bold",
         },
-        color: "rgba(255, 255, 255, 0.6)",
+        color: "rgb(50, 50, 50)",
       },
     },
   },
@@ -60,8 +62,9 @@ export const options = {
         font: {
           size: 16,
           family: "SUIT-Thin",
+          weight: "bold",
         },
-        color: "white",
+        color: "rgb(50, 50, 50)",
       },
     },
   },
@@ -81,16 +84,10 @@ export const data = {
   labels,
   datasets: [
     {
-      label: "EXP",
+      label: "획득 경험치",
       data: [10, 15, 23, 10, 5, 12, 7],
-      borderColor: "rgba(53, 162, 235)",
-      backgroundColor: "rgba(53, 162, 235, 0.5)",
-    },
-    {
-      label: "Cumulative EXP",
-      data: [10, 25, 48, 58, 64, 76, 83],
-      borderColor: "yellow",
-      backgroundColor: "rgba(255, 255, 0, 0.5)",
+      borderColor: "rgb(194, 106, 246)",
+      backgroundColor: "rgb(204, 128, 248)",
     },
   ],
 };
