@@ -37,12 +37,11 @@ public class RepoResearchResponseDto {
         for(HistoryInfo historyInfo : histories){
             totalGetExp += historyInfo.exp;
 
-            Long nowExp = 0L;
             if(growthFactor.containsKey(historyInfo.type)){
-                nowExp = growthFactor.get(historyInfo.type);
-                growthFactor.replace(historyInfo.type, nowExp + historyInfo.exp);
+                Long prevExp = growthFactor.get(historyInfo.type);
+                growthFactor.replace(historyInfo.type, prevExp + historyInfo.exp);
             }else{
-                growthFactor.put(historyInfo.type, nowExp);
+                growthFactor.put(historyInfo.type, historyInfo.exp);
             }
         }
 
