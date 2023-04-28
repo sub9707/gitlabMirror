@@ -1,6 +1,8 @@
 package com.repomon.rocketdan.domain.repo.controller;
 
+import com.repomon.rocketdan.common.dto.ResultDto;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoCardRequestDto;
+import com.repomon.rocketdan.domain.repo.dto.request.RepoConventionRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.response.RepoBattleResponseDto;
 import com.repomon.rocketdan.domain.repo.dto.response.RepoCardResponseDto;
 import com.repomon.rocketdan.domain.repo.dto.response.RepoContributeResponseDto;
@@ -79,15 +81,11 @@ public class RepoController {
 
     @ApiOperation(value = "개별 레포 정보 갱신")
     @PutMapping("/{repoId}/info")
-    public ResponseEntity<RepoResponseDto> modifyRepoInfo(Long repoId){
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ResultDto> modifyRepoInfo(@PathVariable Long repoId){
+        repoService.modifyRepoInfo(repoId);
+        return ResponseEntity.ok(ResultDto.ofSuccess());
     }
 
-    @ApiOperation(value = "레포몬 닉네임 수정")
-    @PutMapping("/{repoId}/info/nickname")
-    public ResponseEntity modifyRepomonNickname(Long repoId, RepoRequestDto requestDto){
-        return ResponseEntity.ok().build();
-    }
 
     @ApiOperation(value = "레포지토리 기간 설정")
     @PutMapping("/{repoId}/info/period")
@@ -97,7 +95,7 @@ public class RepoController {
 
     @ApiOperation(value = "레포지토리 컨벤션 설정")
     @PutMapping("/{repoId}/info/convention")
-    public ResponseEntity modifyRepoConvention(Long repoId, RepoRequestDto requestDto){
+    public ResponseEntity modifyRepoConvention(Long repoId, RepoConventionRequestDto requestDto){
         return ResponseEntity.ok().build();
     }
 
@@ -106,6 +104,11 @@ public class RepoController {
     public ResponseEntity modifyRepoActive(Long repoId, ActiveRepoRequestDto requestDto){
         return ResponseEntity.ok().build();
     }
+
+
+
+
+
 
     @ApiOperation(value = "대표레포카드 조회 및 발급")
     @GetMapping("/{repoId}/card")

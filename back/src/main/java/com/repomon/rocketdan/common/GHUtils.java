@@ -79,10 +79,13 @@ public class GHUtils {
     }
 
 
-    public Collection<RepoHistoryEntity> GHCommitToHistory(GHRepository ghRepository, RepoEntity repoEntity) throws IOException {
+    public Collection<RepoHistoryEntity> GHCommitToHistory(GHRepository ghRepository, RepoEntity repoEntity, Date date) throws IOException {
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
-        List<GHCommit> ghCommits = ghRepository.listCommits().toList();
+        PagedIterable<GHCommit> ghCommits = ghRepository.queryCommits()
+            .since(date)
+            .list();
+
         for(GHCommit commit : ghCommits){
             LocalDate commitDate = commit.getCommitDate().toInstant()
                 .atZone(ZoneId.systemDefault())
@@ -92,8 +95,12 @@ public class GHUtils {
         }
         return histories.values();
     }
-    public Collection<RepoHistoryEntity> GHPullRequestToHistory(GHRepository ghRepository, RepoEntity repoEntity){
+    public Collection<RepoHistoryEntity> GHPullRequestToHistory(GHRepository ghRepository, RepoEntity repoEntity, Date date){
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
+
+        LocalDate localDate = date.toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate();
 
         PagedIterable<GHPullRequest> pullRequests = ghRepository.queryPullRequests().list();
         for(GHPullRequest pr : pullRequests){
@@ -101,15 +108,20 @@ public class GHUtils {
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
 
-            configureRepoInfo(histories, prDate, repoEntity, GrowthFactor.MERGE);
+            if(prDate.isAfter(localDate)) {
+                configureRepoInfo(histories, prDate, repoEntity, GrowthFactor.MERGE);
+            }
         }
 
         return histories.values();
     }
-    public Collection<RepoHistoryEntity> GHIssueToHistory(GHRepository ghRepository, RepoEntity repoEntity){
+    public Collection<RepoHistoryEntity> GHIssueToHistory(GHRepository ghRepository, RepoEntity repoEntity, Date date){
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
-        PagedIterable<GHIssue> issues = ghRepository.queryIssues().list();
+        PagedIterable<GHIssue> issues = ghRepository.queryIssues()
+            .since(date)
+            .list();
+
         for(GHIssue issue : issues){
             Date closedAt = issue.getClosedAt();
             if(closedAt != null){

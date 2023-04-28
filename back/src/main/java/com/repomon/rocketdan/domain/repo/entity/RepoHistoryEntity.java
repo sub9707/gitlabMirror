@@ -51,4 +51,10 @@ public class RepoHistoryEntity{
             .workedAt(date)
             .build();
     }
+
+    public static RepoHistoryEntity empty() {
+        return RepoHistoryEntity.builder()
+            .workedAt(LocalDate.now())
+            .build();
+    }
 }

@@ -27,7 +27,12 @@ import com.repomon.rocketdan.domain.user.repository.UserRepository;
 import com.repomon.rocketdan.exception.CustomException;
 import com.repomon.rocketdan.exception.ErrorCode;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +88,7 @@ public class RepoService {
             .map(activeRepoEntity -> {
                 RepoEntity repoEntity = activeRepoEntity.getRepo();
                 GHRepository ghRepository = repositories.get(repoEntity.getRepoKey());
-                return convertActiveRepoToRepo(activeRepoEntity, ghRepository);
+                return ActiveRepoEntity.convertToRepo(activeRepoEntity, ghRepository);
             }).collect(Collectors.toList());
 
         long totalElements = activeRepoPage.getTotalElements();
@@ -142,7 +147,6 @@ public class RepoService {
      * @param repoId
      * @return
      */
-
     public RepoBattleResponseDto getRepoBattleInfo(Long repoId){
         RepomonStatusEntity repomonStatusEntity = repomonStatusRepository.findByRepoId(repoId)
             .orElseThrow(() -> {
@@ -194,6 +198,19 @@ public class RepoService {
         return responseDto;
     }
 
+    public void modifyRepoInfo(Long repoId) {
+        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+        });
+
+        String repoOwner = repoEntity.getRepoOwner();
+        Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
+
+        String repoKey = repoEntity.getRepoKey();
+        GHRepository ghRepository = repositories.get(repoKey);
+
+        updateRepositoryInfo(repoEntity, ghRepository);
+    }
 
 
     /**
@@ -214,10 +231,16 @@ public class RepoService {
                     repomonStatusRepository.save(repomonStatusEntity);
                     activeRepoRepository.save(ActiveRepoEntity.of(userEntity, repomonStatusEntity));
 
-                    initRepositoryInfo(repomonStatusEntity, ghRepository);
+                    try {
+                        Date createdAt = ghRepository.getCreatedAt();
+                        initRepositoryInfo(repomonStatusEntity, ghRepository, createdAt);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 });
         });
     }
+
 
     private RepoContributeResponseDto findContributeDtoWithGHApi(RepoEntity repoEntity, String repoOwner){
         Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
@@ -293,13 +316,14 @@ public class RepoService {
         redisConventionRepository.save(responseDto);
         return responseDto;
     }
-    private void initRepositoryInfo(RepoEntity repoEntity, GHRepository ghRepository) {
-        log.info("최초 등록 레포지토리 분석 시작 => {}", repoEntity.getRepoName());
+    private void initRepositoryInfo(RepoEntity repoEntity, GHRepository ghRepository, Date fromDate) {
+        log.info("레포지토리 분석 시작 => {}", repoEntity.getRepoName());
         try {
             List<RepoHistoryEntity> list = new ArrayList<>();
-            list.addAll(ghUtils.GHCommitToHistory(ghRepository, repoEntity));
-            list.addAll(ghUtils.GHPullRequestToHistory(ghRepository, repoEntity));
-            list.addAll(ghUtils.GHIssueToHistory(ghRepository, repoEntity));
+            list.addAll(ghUtils.GHCommitToHistory(ghRepository, repoEntity, fromDate));
+            list.addAll(ghUtils.GHPullRequestToHistory(ghRepository, repoEntity, fromDate));
+            list.addAll(ghUtils.GHIssueToHistory(ghRepository, repoEntity, fromDate));
+            // 리뷰??
 
             Long totalExp = 0L;
             for(RepoHistoryEntity item : list){
@@ -311,14 +335,30 @@ public class RepoService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        log.info("최초 등록 레포지토리 분석 종료 => {}", repoEntity.getRepoName());
+        log.info("레포지토리 분석 종료 => {}", repoEntity.getRepoName());
     }
 
-    private RepoDetail convertActiveRepoToRepo(ActiveRepoEntity activeRepoEntity, GHRepository ghRepository){
-        RepoEntity repoEntity = activeRepoEntity.getRepo();
-        return new RepoDetail(repoEntity
-            , ghRepository == null ? "비공개 처리된 레포지토리입니다." : ghRepository.getDescription()
-            , repoEntity.getIsActive()
-            , ghRepository == null);
+    private void updateRepositoryInfo(RepoEntity repoEntity, GHRepository ghRepository){
+        log.info("기존 레포지토리 업데이트 시작 => {}", repoEntity.getRepoName());
+
+        repoHistoryRepository.findFirstByRepoOrderByWorkedAtDesc(repoEntity).ifPresentOrElse(historyEntity -> {
+            LocalDate workedAt = historyEntity.getWorkedAt();
+            Date workDate = Date.from(workedAt.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(workDate);
+            cal.add(Calendar.DATE, 1);
+
+            initRepositoryInfo(repoEntity, ghRepository, Date.from(cal.toInstant()));
+        }, () -> {
+            try {
+                Date createdAt = ghRepository.getCreatedAt();
+                initRepositoryInfo(repoEntity, ghRepository, createdAt);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        log.info("기존 레포지토리 업데이트 종료 => {}", repoEntity.getRepoName());
     }
+
 }
