@@ -31,9 +31,7 @@ public class UserService {
 
 
 	public void modifyRepresentRepo(Long userId, RepresentRepomonRequestDto requestDto) {
-		log.info("======================== start-point ========================");
-		log.info("userId = ", userId);
-		log.info("requestDto = ", requestDto.toString());
+
 		UserEntity user = userRepository.findById(userId).orElseThrow(
 			() -> new CustomException(NOT_FOUND_ENTITY)
 		);
@@ -48,7 +46,6 @@ public class UserService {
 		user.updateRepresentRepo(activeRepo);
 		userRepository.save(user);
 
-		log.info("======================== end-point ========================");
 	}
 
 
