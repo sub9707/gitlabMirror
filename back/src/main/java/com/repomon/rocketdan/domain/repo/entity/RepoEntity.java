@@ -2,17 +2,17 @@ package com.repomon.rocketdan.domain.repo.entity;
 
 
 import com.repomon.rocketdan.common.entity.CommonEntity;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
-import org.kohsuke.github.GHRepository;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.experimental.SuperBuilder;
+import org.kohsuke.github.GHRepository;
 
 
 @Entity
@@ -69,5 +69,18 @@ public class RepoEntity extends CommonEntity {
 
 	public void updateExp(Long totalExp) {
 		this.repoExp = totalExp;
+	}
+
+	public void activate() {
+		this.isActive = true;
+	}
+
+	public void deActivate(){
+		this.isActive = false;
+	}
+
+	public void updatePeriod(LocalDateTime startAt, LocalDateTime endAt) {
+		this.repoStart = startAt;
+		this.repoEnd = repoEnd;
 	}
 }

@@ -19,14 +19,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RepoResearchResponseDto {
 
-    private int rank;
+    private Long rank;
     private Long repoExp;
     private Long totalGetExp;
     private Map<String, Long> growthFactor;
     private List<HistoryInfo> histories;
 
     public static RepoResearchResponseDto fromHistoryAndRank(
-        List<RepoHistoryEntity> historyEntityList, int rank, Long repoExp) {
+        List<RepoHistoryEntity> historyEntityList, Long rank, Long repoExp) {
 
         List<HistoryInfo> histories = historyEntityList.stream()
             .map(HistoryInfo::fromEntity)

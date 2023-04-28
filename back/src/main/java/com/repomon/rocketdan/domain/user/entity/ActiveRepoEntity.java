@@ -1,10 +1,12 @@
 package com.repomon.rocketdan.domain.user.entity;
 
 
+import com.repomon.rocketdan.domain.repo.app.RepoDetail;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import org.kohsuke.github.GHRepository;
 
 
 @Entity
@@ -33,5 +35,13 @@ public class ActiveRepoEntity {
 			.user(userEntity)
 			.repo(repoEntity)
 			.build();
+	}
+
+	public static RepoDetail convertToRepo(ActiveRepoEntity activeRepoEntity, GHRepository ghRepository){
+		RepoEntity repoEntity = activeRepoEntity.getRepo();
+		return new RepoDetail(repoEntity
+			, ghRepository == null ? "비공개 처리된 레포지토리입니다." : ghRepository.getDescription()
+			, repoEntity.getIsActive()
+			, ghRepository == null);
 	}
 }
