@@ -19,6 +19,7 @@ public class RepomonResponseDto {
 	private String repomonUrl;
 	private String repomonName;
 	private Integer repomonSkill;
+	private String repomonSkillName;
 	private Integer repomonTier;
 	private List<SelectRepomon> selectRepomonList;
 
@@ -30,6 +31,7 @@ public class RepomonResponseDto {
 			.repomonUrl(repomon.getRepomonUrl())
 			.repomonTier(repomon.getRepomonTier())
 			.repomonSkill(repomon.getRepomonSkill())
+			.repomonSkillName(repomon.getRepomonSkillName())
 			.build();
 	}
 
