@@ -7,6 +7,7 @@ import styles from "./page.module.scss";
 import Pagination from "@/components/Pagination";
 import RepositoryCard from "@/components/RepositoryCard";
 import { useRouter } from "next/navigation";
+import DropDown from "@/components/DropDown";
 
 const Page = ({ params }: { params: { userId: string } }) => {
   const router = useRouter();
@@ -68,7 +69,9 @@ const Page = ({ params }: { params: { userId: string } }) => {
                   onClick={() => router.push("/user/123/abc/registRepo")}
                 />
               </div>
-              <div className={styles.filterBox}>필터</div>
+              <div className={styles.filterBox}>
+                <DropDown />
+              </div>
             </div>
             <div className={styles.listCards}>
               <div className="grid grid-cols-2 gap-4 place-content-center">
