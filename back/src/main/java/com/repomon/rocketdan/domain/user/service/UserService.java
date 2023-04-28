@@ -5,6 +5,7 @@ import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.repository.ActiveRepoRepository;
 import com.repomon.rocketdan.domain.repo.repository.RepoRepository;
 import com.repomon.rocketdan.domain.user.dto.RepresentRepomonRequestDto;
+import com.repomon.rocketdan.domain.user.dto.UserResponseDto;
 import com.repomon.rocketdan.domain.user.entity.ActiveRepoEntity;
 import com.repomon.rocketdan.domain.user.entity.UserEntity;
 import com.repomon.rocketdan.domain.user.repository.UserRepository;
@@ -48,6 +49,10 @@ public class UserService {
 		userRepository.save(user);
 
 		log.info("======================== end-point ========================");
+	}
+
+
+	public UserResponseDto getUserInfo(Long userId) {
 	}
 
 }
