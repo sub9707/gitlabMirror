@@ -1,15 +1,20 @@
 package com.repomon.rocketdan.common;
 
+
 import com.repomon.rocketdan.domain.repo.app.GrowthFactor;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepoHistoryEntity;
+import org.kohsuke.github.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.kohsuke.github.GHCommit;
@@ -150,12 +155,28 @@ public class GHUtils {
     }
 
 
-    private void configureRepoInfo(Map<LocalDate, RepoHistoryEntity> histories, LocalDate date, RepoEntity repoEntity, GrowthFactor factor){
-        if(histories.containsKey(date)){
+    private void configureRepoInfo(Map<LocalDate, RepoHistoryEntity> histories, LocalDate date, RepoEntity repoEntity, GrowthFactor factor) {
+        if (histories.containsKey(date)) {
             RepoHistoryEntity repoHistoryEntity = histories.get(date);
             repoHistoryEntity.updateExp(factor.getExp());
-        }else{
+        } else {
             histories.put(date, RepoHistoryEntity.ofGHInfo(date, repoEntity, factor));
         }
     }
+
+
+    public Map<String, String> getUser(String userName) {
+        try {
+            GHUser githubUser = gitHub.getUser(userName);
+            Map<String, String> userInfo = new HashMap<>();
+            userInfo.put("username", githubUser.getLogin());
+            userInfo.put("avatarUrl", githubUser.getAvatarUrl());
+            userInfo.put("nickname", githubUser.getName());
+            return userInfo;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }

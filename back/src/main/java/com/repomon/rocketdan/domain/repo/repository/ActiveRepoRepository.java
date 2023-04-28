@@ -1,8 +1,8 @@
 package com.repomon.rocketdan.domain.repo.repository;
 
 
+import com.repomon.rocketdan.domain.repo.entity.ActiveRepoEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
-import com.repomon.rocketdan.domain.user.entity.ActiveRepoEntity;
 import com.repomon.rocketdan.domain.user.entity.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

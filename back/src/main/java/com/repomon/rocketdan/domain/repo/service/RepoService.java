@@ -16,7 +16,6 @@ import com.repomon.rocketdan.domain.repo.repository.redis.RepoRedisContributeRep
 import com.repomon.rocketdan.domain.repo.repository.redis.RepoRedisConventionRepository;
 import com.repomon.rocketdan.domain.repomon.entity.RepomonStatusEntity;
 import com.repomon.rocketdan.domain.repomon.repository.RepomonStatusRepository;
-import com.repomon.rocketdan.domain.user.entity.ActiveRepoEntity;
 import com.repomon.rocketdan.domain.user.entity.UserEntity;
 import com.repomon.rocketdan.domain.user.repository.UserRepository;
 import com.repomon.rocketdan.domain.user.service.RankService;
@@ -40,9 +39,7 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
-@Service
-@Slf4j
+@Service @Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class RepoService {
