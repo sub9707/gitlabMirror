@@ -89,20 +89,21 @@ public class RepoController {
 
     @ApiOperation(value = "레포지토리 기간 설정")
     @PutMapping("/{repoId}/info/period")
-    public ResponseEntity modifyRepoPeriod(Long repoId, RepoRequestDto requestDto){
+    public ResponseEntity modifyRepoPeriod(@PathVariable Long repoId, RepoRequestDto requestDto){
         return ResponseEntity.ok().build();
     }
 
     @ApiOperation(value = "레포지토리 컨벤션 설정")
     @PutMapping("/{repoId}/info/convention")
-    public ResponseEntity modifyRepoConvention(Long repoId, RepoConventionRequestDto requestDto){
+    public ResponseEntity modifyRepoConvention(@PathVariable Long repoId, RepoConventionRequestDto requestDto){
         return ResponseEntity.ok().build();
     }
 
     @ApiOperation(value = "레포지토리 활성화 설정")
     @PutMapping("/{repoId}/info/active")
-    public ResponseEntity modifyRepoActive(Long repoId, ActiveRepoRequestDto requestDto){
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ResultDto> modifyRepoActive(@PathVariable Long repoId){
+        repoService.activateRepo(repoId);
+        return ResponseEntity.ok(ResultDto.ofSuccess());
     }
 
 

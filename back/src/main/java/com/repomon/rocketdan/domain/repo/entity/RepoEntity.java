@@ -69,4 +69,12 @@ public class RepoEntity extends CommonEntity {
 	public void updateExp(Long totalExp) {
 		this.repoExp = totalExp;
 	}
+
+	public void activate() {
+		this.isActive = true;
+	}
+
+	public void deActivate(){
+		this.isActive = false;
+	}
 }

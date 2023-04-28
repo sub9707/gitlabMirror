@@ -198,6 +198,10 @@ public class RepoService {
         return responseDto;
     }
 
+    /**
+     * 레포 정보 갱신
+     * @param repoId
+     */
     public void modifyRepoInfo(Long repoId) {
         RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
             throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
@@ -212,12 +216,22 @@ public class RepoService {
         updateRepositoryInfo(repoEntity, ghRepository);
     }
 
-
     /**
-     * 신규 레포 등록이라면 상세분석해서 전부 저장해야함
-     * @param repositories
-     * @param userEntity
+     * 레포 활성화
+     * @param repoId
      */
+    public void activateRepo(Long repoId) {
+        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+        });
+
+        if(repoEntity.getIsActive()){
+            repoEntity.deActivate();
+        }else{
+            repoEntity.activate();
+        }
+    }
+
     private void saveAndUpdateRepo(Map<String, GHRepository> repositories, UserEntity userEntity) {
         repositories.forEach((s, ghRepository) -> {
             repoRepository.findByRepoKey(s).ifPresentOrElse(repoEntity -> repoEntity.update(ghRepository),
