@@ -96,13 +96,14 @@ public class RepomonService {
 		RepomonStatusEntity repomonStatus = repomonStatusRepository.findById(repoId).orElseThrow(
 			() -> new CustomException(NOT_FOUND_REPOSITORY)
 		);
+		String repomonOwner = repomonStatus.getRepoOwner();
 		Integer userRating = repomonStatus.getRating();
 		int index = 1;
 		while (index <= 10) {
 			Integer startRating = userRating - (index * 200);
 			Integer endRating = userRating + (index * 200);
 			Optional<RepomonStatusEntity> repomon = repomonStatusRepository.findByRatingBetweenRandom(
-				startRating, endRating, repoId);
+				startRating, endRating, repomonOwner);
 
 			if (repomon.isPresent()) {
 				return RepomonStatusResponseDto.fromEntity(repomon.get());

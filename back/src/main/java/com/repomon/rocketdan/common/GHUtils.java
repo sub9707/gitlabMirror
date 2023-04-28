@@ -16,7 +16,22 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
+import javax.annotation.PostConstruct;
+import org.kohsuke.github.GHCommit;
+import org.kohsuke.github.GHCommitComment;
+import org.kohsuke.github.GHIssue;
+import org.kohsuke.github.GHOrganization;
+import org.kohsuke.github.GHOrganization.Role;
+import org.kohsuke.github.GHPersonSet;
+import org.kohsuke.github.GHPullRequest;
+import org.kohsuke.github.GHPullRequestReviewComment;
+import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GHUser;
+import org.kohsuke.github.GitHub;
+import org.kohsuke.github.GitHubBuilder;
+import org.kohsuke.github.PagedIterable;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 @Component
 public class GHUtils {
@@ -87,7 +102,8 @@ public class GHUtils {
         }
         return histories.values();
     }
-    public Collection<RepoHistoryEntity> GHPullRequestToHistory(GHRepository ghRepository, RepoEntity repoEntity, Date date){
+    public Collection<RepoHistoryEntity> GHPullRequestToHistory(GHRepository ghRepository, RepoEntity repoEntity, Date date)
+        throws IOException {
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
         LocalDate localDate = date.toInstant()
@@ -102,6 +118,17 @@ public class GHUtils {
 
             if(prDate.isAfter(localDate)) {
                 configureRepoInfo(histories, prDate, repoEntity, GrowthFactor.MERGE);
+
+                List<GHPullRequestReviewComment> reviewComments = pr.listReviewComments()
+                    .toList();
+
+                for(GHPullRequestReviewComment reviewComment : reviewComments){
+                    LocalDate reviewDate = reviewComment.getCreatedAt().toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate();
+
+                    configureRepoInfo(histories, reviewDate, repoEntity, GrowthFactor.REVIEW);
+                }
             }
         }
 

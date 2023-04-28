@@ -36,6 +36,7 @@ public enum ErrorCode {
 	UNAUTHORIZED_REISSUE_TOKEN(FORBIDDEN, "토큰 재발급에 문제가 있습니다."),
 
 	/* 404 NOT_FOUND : 대상이 존재하지 않음 */
+	NOT_FOUND_PUBLIC_REPOSITORY(NOT_FOUND, "비공개 처리된 레포지토리입니다."),
 	NOT_FOUND_REPOSITORY(NOT_FOUND, "해당 레포지토리가 존재하지 않습니다."),
 	NOT_FOUND_ENTITY(NOT_FOUND, "엔티티가 존재하지 않습니다."),
 	NOT_FOUND_USER(NOT_FOUND, "유저가 존재하지 않습니다.");

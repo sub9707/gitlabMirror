@@ -7,7 +7,10 @@ import com.repomon.rocketdan.domain.repo.dto.request.RepoConventionRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoPeriodRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.response.*;
-import com.repomon.rocketdan.domain.repo.entity.*;
+import com.repomon.rocketdan.domain.repo.entity.RepoConventionEntity;
+import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
+import com.repomon.rocketdan.domain.repo.entity.RepoHistoryEntity;
+import com.repomon.rocketdan.domain.repo.entity.RepomonEntity;
 import com.repomon.rocketdan.domain.repo.repository.*;
 import com.repomon.rocketdan.domain.repo.repository.redis.RepoRedisContributeRepository;
 import com.repomon.rocketdan.domain.repo.repository.redis.RepoRedisConventionRepository;
@@ -103,6 +106,9 @@ public class RepoService {
         String repoKey = repoEntity.getRepoKey();
         Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
         GHRepository ghRepository = repositories.get(repoKey);
+        if(ghRepository == null){
+            throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
+        }
 
         return RepoResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository);
     }
@@ -200,6 +206,9 @@ public class RepoService {
 
         String repoKey = repoEntity.getRepoKey();
         GHRepository ghRepository = repositories.get(repoKey);
+        if(ghRepository == null){
+            throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
+        }
 
         updateRepositoryInfo(repoEntity, ghRepository);
     }
@@ -280,6 +289,11 @@ public class RepoService {
 
         String repoKey = repoEntity.getRepoKey();
         GHRepository ghRepository = repositories.get(repoKey);
+        if(ghRepository == null){
+            throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
+        }
+
+
         try {
             int totalCommitCount = ghRepository
                 .queryCommits().list()
@@ -323,6 +337,10 @@ public class RepoService {
                 repoOwner);
 
             GHRepository ghRepository = repositories.get(repoEntity.getRepoKey());
+            if(ghRepository == null){
+                throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
+            }
+
             try {
                 List<GHCommit> ghCommits = ghRepository.listCommits().toList();
                 for(GHCommit commit : ghCommits){
@@ -356,7 +374,8 @@ public class RepoService {
             list.addAll(ghUtils.GHCommitToHistory(ghRepository, repoEntity, fromDate));
             list.addAll(ghUtils.GHPullRequestToHistory(ghRepository, repoEntity, fromDate));
             list.addAll(ghUtils.GHIssueToHistory(ghRepository, repoEntity, fromDate));
-            // 리뷰??
+
+            // 효율성 ? 보안성 ?
 
             Long totalExp = 0L;
             for(RepoHistoryEntity item : list){
@@ -399,5 +418,11 @@ public class RepoService {
 
         return repoRepository.existsByRepomonNickname(repoRequestDto.getRepomonNickname());
     }
+
+	public RepomonResponseDto createSelectRepomon() {
+		List<RepomonEntity> repomonList = repomonRepository.findTop3ByRandom();
+
+		return RepomonResponseDto.createSelectRepomon(repomonList);
+	}
 
 }
