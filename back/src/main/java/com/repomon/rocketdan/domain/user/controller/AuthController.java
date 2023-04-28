@@ -1,10 +1,15 @@
 package com.repomon.rocketdan.domain.user.controller;
 
+
 import com.repomon.rocketdan.common.dto.AuthResponseDto;
 import com.repomon.rocketdan.domain.user.service.AuthService;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
 
 
 
@@ -29,6 +34,7 @@ public class AuthController {
      * @param authHeader
      * @return
      */
+    @ApiOperation(value = "로그아웃")
     @GetMapping("/auth/logout")
     public ResponseEntity logout(@RequestHeader("Authorization") String authHeader) {
 
@@ -45,6 +51,7 @@ public class AuthController {
      * @param refreshToken
      * @return
      */
+    @ApiOperation(value = "Access 토큰 재발급")
     @PutMapping("/refresh")
     public ResponseEntity reissueJWT(@RequestHeader("accessToken") String accessToken, @RequestHeader("refreshToken") String refreshToken){
 

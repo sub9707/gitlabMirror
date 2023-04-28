@@ -9,4 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ActiveRepoRepository extends JpaRepository<ActiveRepoEntity, Long> {
 
     Page<ActiveRepoEntity> findByUser(UserEntity userEntity, Pageable pageable);
+    Long countByUser_UserId(Long userId);
 }
