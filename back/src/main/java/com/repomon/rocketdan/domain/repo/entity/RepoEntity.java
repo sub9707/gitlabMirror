@@ -85,7 +85,7 @@ public class RepoEntity extends CommonEntity {
 
 	public void updatePeriod(LocalDateTime startAt, LocalDateTime endAt) {
 		this.repoStart = startAt;
-		this.repoEnd = repoEnd;
+		this.repoEnd = endAt;
 	}
 
 }
