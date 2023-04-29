@@ -2,12 +2,10 @@ package com.repomon.rocketdan.domain.repo.dto.request;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 
 @Data
@@ -24,6 +22,6 @@ public class RepoPeriodRequestDto {
     }
 
     public LocalDateTime getEndAt(){
-        return startedAt.atStartOfDay();
+        return endAt.atStartOfDay();
     }
 }
