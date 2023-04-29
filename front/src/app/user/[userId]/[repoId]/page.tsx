@@ -12,10 +12,51 @@ import {
 } from "@heroicons/react/24/outline";
 import DetailAnalysis from "@/components/DetailAnalysis";
 import DetailBattle from "@/components/DetailBattle";
+import { RepoDetailResearchType, RepoDetailType } from "@/types/repoDetail";
+import {
+  axiosRequestRepoDetail,
+  axiosRequestRepoDetailBattleInfo,
+} from "@/api/repoDetail";
+import { axiosRequestRepoDetailResearch } from "@/api/repoDetail";
+import { pretreatDate } from "@/app/utils/PretreatDate";
+import DatePickerModal from "@/components/DatePickerModal/DatePickerModal";
+import Modal from "react-modal";
+import RenameModal from "@/components/RenameModal/RenameModal";
 
-function Page() {
+Modal.setAppElement("#repo-detail");
+
+function Page({ params }: { params: { repoId: string } }) {
+  const [repoDetailInfo, setRepoDetailInfo] = useState<RepoDetailType>({
+    forkCnt: 0,
+    languages: [],
+    repoEnd: "",
+    repoExp: 0,
+    repoName: "",
+    repoDescription: "",
+    repoStart: "",
+    repomonId: 0,
+    repomonName: "",
+    starCnt: 0,
+    tags: [""],
+  });
   const [tabIndex, setTabIndex] = useState<number>(0);
+  const [isUpdated, setIsUpdated] = useState<boolean>(false);
+  const [repoDetailResearchInfo, setRepoDetailResearchInfo] =
+    useState<RepoDetailResearchType>();
 
+  /** =============================================== useEffect =============================================== */
+  /** 레포 기본 정보 불러오기 + 레포몬 닉네임, 기간 업데이트 시 정보 재요청 */
+  useEffect(() => {
+    requestRepoDetail(parseInt(params.repoId, 10));
+  }, [isUpdated]);
+
+  /** 레포 정보 불러오기 */
+  useEffect(() => {
+    requestRepoDetailResearch(parseInt(params.repoId, 10));
+    requestRepoDetailBattleInfo(parseInt(params.repoId, 10));
+  }, []);
+
+  /** 탭 인덱스 정보 */
   useEffect(() => {
     if (document.referrer !== window.location.href) {
       setTabIndex(1);
@@ -24,6 +65,7 @@ function Page() {
     }
   }, []);
 
+  /** =============================================== Event Hadler =============================================== */
   const onClickTabBtn = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
 
@@ -33,14 +75,52 @@ function Page() {
     sessionStorage.setItem("tabIndex", target.id);
   };
 
+  /** =============================================== Axios =============================================== */
+  /** 레포 디테일 기본 정보 */
+  const requestRepoDetail = async (repoId: number) => {
+    try {
+      const res = await axiosRequestRepoDetail(repoId);
+      console.log("레포 디테일 기본 정보: ", res);
+      setRepoDetailInfo(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  /** 레포 디테일 분석 정보 */
+  const requestRepoDetailResearch = async (repoId: number) => {
+    try {
+      const res = await axiosRequestRepoDetailResearch(repoId);
+      console.log("레포 디테일 분석 정보: ", res);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  /** 레포 디테일 배틀 정보 */
+  const requestRepoDetailBattleInfo = async (repoId: number) => {
+    try {
+      const res = await axiosRequestRepoDetailBattleInfo(repoId);
+      console.log("레포 디테일 배틀 정보: ", res);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
-    <div className={styles.pageContainer}>
+    <div id="repo-detail" className={styles.pageContainer}>
       <div className={styles.info}>
         <div className={styles["repo-mon-card-div"]}>
           <div className={styles["repo-mon-card"]}>
             <DetailRepomon />
             <div className={styles["repo-mon-info"]}>
-              <p>칙칙폭폭스</p>
+              <p>
+                {repoDetailInfo.repomonName}
+                <RenameModal
+                  repoId={params.repoId}
+                  setIsUpdated={setIsUpdated}
+                />
+              </p>
               <p>
                 <span
                   style={{
@@ -53,64 +133,59 @@ function Page() {
                 >
                   LV
                 </span>
-                <span className={styles.exp}>204</span>
+                <span className={styles.exp}>
+                  {Math.floor(repoDetailInfo.repoExp / 100)}
+                </span>
               </p>
-              <ProgressBar />
+              <ProgressBar restExp={repoDetailInfo.repoExp % 100} />
             </div>
           </div>
         </div>
         <div className={styles["default-info-div"]}>
           <div className={styles.first}>
-            <span className={styles.title}>Funteer</span>
+            <span className={styles.title}>{repoDetailInfo.repoName}</span>
             <div className={styles["icon-div"]}>
               <span className={styles.star}>
                 <StarIcon
                   width="1.25rem"
                   style={{ display: "inline", marginRight: "0.3rem" }}
                 />
-                12
+                {repoDetailInfo.starCnt}
               </span>
               <span className={styles.share}>
                 <ShareIcon
                   width="1.25rem"
                   style={{ display: "inline", marginRight: "0.45rem" }}
                 />
-                15
+                {repoDetailInfo.forkCnt}
               </span>
             </div>
           </div>
-          <p className={styles.date}>23.01.02 ~ 23.02.17</p>
+          <p className={styles.date}>
+            <span>{pretreatDate(repoDetailInfo.repoStart) + " ~"}</span>
+            {repoDetailInfo.repoEnd ? (
+              <span>{pretreatDate(repoDetailInfo.repoEnd)}</span>
+            ) : (
+              <span className={styles.end}>프로젝트 기간을 설정해주세요.</span>
+            )}
+            <DatePickerModal
+              repoId={params.repoId}
+              setIsUpdated={setIsUpdated}
+            />
+          </p>
           <div className={styles["lan-div"]}>
-            <span>TypeScript</span>
-            <span>Java</span>
-            <span>SCSS</span>
-            <span>HTML</span>
-            <span>TypeScript</span>
-            <span>Java</span>
-            <span>SCSS</span>
-            <span>HTML</span>
-            <span>TypeScript</span>
-            <span>Java</span>
-            <span>SCSS</span>
-            <span>HTML</span>
+            {repoDetailInfo.languages &&
+              repoDetailInfo.languages.map((lan, index) => (
+                <span key={index}>{lan}</span>
+              ))}
           </div>
           <div className={styles["tag-div"]}>
-            <span>Kakao Login</span>
-            <span>KG Inicis</span>
-            <span>WebRTC</span>
-            <span>Socket IO</span>
-            <span>Kakao Login</span>
-            <span>KG Inicis</span>
-            <span>WebRTC</span>
-            <span>Socket IO</span>
-            <span>Kakao Login</span>
-            <span>KG Inicis</span>
-            <span>WebRTC</span>
-            <span>Socket IO</span>
+            {repoDetailInfo.tags &&
+              repoDetailInfo.tags.map((tag, index) => (
+                <span key={index}>{tag}</span>
+              ))}
           </div>
-          <p className={styles.des}>
-            기부형 크라우드 펀딩을 통한 봉사활동 중개 플랫폼입니다.
-          </p>
+          <p className={styles.des}>{repoDetailInfo.repoDescription}</p>
           <div className={styles.tab}>
             <button
               id="1"
