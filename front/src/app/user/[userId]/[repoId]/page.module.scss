@@ -36,6 +36,9 @@
           bottom: 2.7rem;
 
           & p {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             margin: 0 0 1rem 0;
             text-align: center;
             font-size: 2rem;
@@ -83,8 +86,28 @@
       }
 
       .date {
+        display: flex;
+        align-items: center;
         margin: 1% 0 0 0;
         font-size: 1.75rem;
+
+        .end {
+          margin-left: 0.45rem;
+          font-size: 1.25rem;
+          animation: twinkle 3s ease-in-out infinite;
+
+          @keyframes twinkle {
+            0% {
+              opacity: 1;
+            }
+            50% {
+              opacity: 0;
+            }
+            100% {
+              opacity: 1;
+            }
+          }
+        }
       }
 
       .lan-div {
