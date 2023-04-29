@@ -23,8 +23,6 @@ import DatePickerModal from "@/components/DatePickerModal/DatePickerModal";
 import Modal from "react-modal";
 import RenameModal from "@/components/RenameModal/RenameModal";
 
-Modal.setAppElement("#repo-detail");
-
 function Page({ params }: { params: { repoId: string } }) {
   const [repoDetailInfo, setRepoDetailInfo] = useState<RepoDetailType>({
     forkCnt: 0,
@@ -45,6 +43,10 @@ function Page({ params }: { params: { repoId: string } }) {
     useState<RepoDetailResearchType>();
 
   /** =============================================== useEffect =============================================== */
+  useEffect(() => {
+    Modal.setAppElement("#repo-detail");
+  }, []);
+
   /** 레포 기본 정보 불러오기 + 레포몬 닉네임, 기간 업데이트 시 정보 재요청 */
   useEffect(() => {
     requestRepoDetail(parseInt(params.repoId, 10));

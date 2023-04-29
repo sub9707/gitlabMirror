@@ -50,8 +50,9 @@ const RenameModal = ({
     setIsOpen(false);
   };
 
-  const onChangeNickname = (e: React.ChangeEvent) => {
+  const onChangeNickname = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsDuplicated(true);
+
     setNickName(e.target.value);
   };
 
