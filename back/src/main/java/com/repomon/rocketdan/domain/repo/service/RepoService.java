@@ -426,4 +426,35 @@ public class RepoService {
 		return RepomonResponseDto.createSelectRepomon(repomonList);
 	}
 
+
+    /**
+     * 레포 detail
+     * 레포 이름
+     * 레포 기간
+     * 레포 포크, 스타
+     * 레포 description
+     * 레포 언어
+     * 전체 커밋, 코드, 보안성, 효율성
+     * 레포몬, 전체 경험치
+     * 컨트리뷰터 수
+     */
+
+
+    public RepoCardResponseDto RepoCardDetail(Long repoId) {
+        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+        });
+
+        String repoOwner = repoEntity.getRepoOwner();
+
+        String repoKey = repoEntity.getRepoKey();
+        Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
+        GHRepository ghRepository = repositories.get(repoKey);
+        if(ghRepository == null){
+            throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
+        }
+
+        return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository);
+    }
+
 }
