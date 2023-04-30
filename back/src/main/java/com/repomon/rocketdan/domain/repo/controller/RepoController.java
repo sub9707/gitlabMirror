@@ -117,6 +117,12 @@ public class RepoController {
 		return ResponseEntity.ok().build();
 	}
 
+	@ApiOperation(value = "대표레포카드 정보******")
+	@GetMapping("/{repoId}/card/detail")
+	public ResponseEntity<RepoCardResponseDto> getRepoCardDetail(Long repoId) {
+		RepoCardResponseDto responseDto = repoService.RepoCardDetail(repoId);
+		return ResponseEntity.ok(responseDto);
+	}
 
 	@ApiOperation(value = "개인레포카드 조회")
 	@GetMapping("/{repoId}/card/personal")
