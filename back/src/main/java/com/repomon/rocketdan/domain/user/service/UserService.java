@@ -10,7 +10,6 @@ import com.repomon.rocketdan.domain.repo.repository.ActiveRepoRepository;
 import com.repomon.rocketdan.domain.repo.repository.RepoRepository;
 import com.repomon.rocketdan.domain.user.dto.RepresentRepomonRequestDto;
 import com.repomon.rocketdan.domain.user.dto.UserResponseDto;
-import com.repomon.rocketdan.domain.user.entity.UserCardEntity;
 import com.repomon.rocketdan.domain.user.entity.UserEntity;
 import com.repomon.rocketdan.domain.user.repository.UserCardRepository;
 import com.repomon.rocketdan.domain.user.repository.UserRepository;
@@ -21,6 +20,7 @@ import org.kohsuke.github.GHRepository;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Map;
 
 import static com.repomon.rocketdan.exception.ErrorCode.*;
@@ -65,8 +65,12 @@ public class UserService {
 		UserResponseDto userResponseDto = UserResponseDto.fromEntity(user, userInfo);
 
 		// 총 경험치 조회
-		UserCardEntity userCard = userCardRepository.findById(userId).orElseThrow(() -> new CustomException(NOT_FOUND_ENTITY));
-		userResponseDto.setTotalExp(userCard.getTotalExp());
+		Long totalExp = 0L;
+		List<ActiveRepoEntity> activeRepoEntityList = activeRepoRepository.findAllByUser(user);
+		for (ActiveRepoEntity activeRepo : activeRepoEntityList) {
+			totalExp = activeRepo.getRepo().getIsActive() ? totalExp + activeRepo.getRepo().getRepoExp() : totalExp;
+		}
+		userResponseDto.setTotalExp(totalExp);
 
 		// 깃허브에 레포 정보 조회
 		Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(user.getUserName());
