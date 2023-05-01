@@ -21,9 +21,9 @@ public class UserRankResponseDto {
 
 	public static UserRankResponseDto fromEntity(UserCardEntity userCard) {
 		return UserRankResponseDto.builder()
-			.userId(userCard.getUserId())
+			.userId(userCard.getUser().getUserId())
 			.totalExp(userCard.getTotalExp())
-			.username(userCard.getUserName())
+			.username(userCard.getUser().getUserName())
 			.build();
 	}
 

@@ -1,7 +1,6 @@
 package com.repomon.rocketdan.domain.user.entity;
 
 
-import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,15 +16,20 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "user_card")
-public class UserCardEntity extends UserEntity {
+public class UserCardEntity {
 
-    private Long totalExp;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "user_card_id")
+	private Long userCardId;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "repo_id")
-    private RepoEntity repo;
+	private Long totalExp;
 
-    @OneToMany(mappedBy = "userCard")
-    private List<UserLanguageEntity> userLanguageList = new ArrayList<>();
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	private UserEntity user;
+
+	@OneToMany(mappedBy = "userCard")
+	private List<UserLanguageEntity> userLanguageList = new ArrayList<>();
 
 }
