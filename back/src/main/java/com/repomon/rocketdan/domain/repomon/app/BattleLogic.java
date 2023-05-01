@@ -55,9 +55,13 @@ public class BattleLogic {
 	public static Float createCritical(Integer startPoint, Integer nowPoint) {
 		return (startPoint + nowPoint) * criticalValue + defaultCritical;
 	}
+
+
 	public static Float createHit(Integer startPoint, Integer nowPoint) {
 		return (startPoint + nowPoint) * hitValue + defaultHit;
 	}
+
+
 	public static Integer createHp(Long exp) {
 		return (int) (exp * hpValue) + defaultHp;
 	}
@@ -71,7 +75,6 @@ public class BattleLogic {
 		Float critical = createCritical(repomon.getStartCritical(), repomon.getCriticalPoint());
 		Float hit = createHit(repomon.getStartHit(), repomon.getHitPoint());
 		Float hp = (float) createHp(repomon.getRepoExp());
-
 
 		return new HashMap<>() {
 			{
@@ -94,7 +97,7 @@ public class BattleLogic {
 	 */
 	public static Integer getAllStat(RepomonStatusEntity repomon) {
 		return (repomon.getAtkPoint() + repomon.getDefPoint() + repomon.getDodgePoint()
-			+ repomon.getCriticalPoint() + repomon.getHitPoint());
+			+ repomon.getCriticalPoint() + repomon.getHitPoint() + (int) (repomon.getRepoExp() / 100)) + 1;
 	}
 
 
@@ -106,7 +109,7 @@ public class BattleLogic {
 	 * @return
 	 */
 	public static Integer createGap(RepomonStatusEntity offenseRepomon,
-	                                RepomonStatusEntity defenseRepomon) {
+		RepomonStatusEntity defenseRepomon) {
 		return ((getAllStat(defenseRepomon)
 			+ (int) ((defenseRepomon.getRepoExp()) / 100))
 			- (getAllStat(offenseRepomon)
@@ -149,7 +152,7 @@ public class BattleLogic {
 
 
 	public static HashMap<String, Object> battle(Integer turn, RepomonStatusEntity offenseRepomon,
-	                                             RepomonStatusEntity defenseRepomon, Integer skillDmg) {
+		RepomonStatusEntity defenseRepomon, Integer skillDmg) {
 		HashMap<String, Float> offenseStatus = createStatus(offenseRepomon);
 		HashMap<String, Float> defenseStatus = createStatus(defenseRepomon);
 		Random random = new Random();
