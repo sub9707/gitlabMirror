@@ -11,7 +11,6 @@ import com.repomon.rocketdan.domain.repo.repository.RepoRepository;
 import com.repomon.rocketdan.domain.user.dto.RepresentRepomonRequestDto;
 import com.repomon.rocketdan.domain.user.dto.UserResponseDto;
 import com.repomon.rocketdan.domain.user.entity.UserEntity;
-import com.repomon.rocketdan.domain.user.repository.UserCardRepository;
 import com.repomon.rocketdan.domain.user.repository.UserRepository;
 import com.repomon.rocketdan.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +34,6 @@ public class UserService {
 	private final ActiveRepoRepository activeRepoRepository;
 	private final RepoRepository repoRepository;
 	private final UserRepository userRepository;
-	private final UserCardRepository userCardRepository;
 	private final GHUtils ghUtils;
 
 
