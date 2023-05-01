@@ -16,9 +16,11 @@ public interface ActiveRepoRepository extends JpaRepository<ActiveRepoEntity, Lo
 
 	Page<ActiveRepoEntity> findByUser(UserEntity userEntity, Pageable pageable);
 	Optional<ActiveRepoEntity> findByRepoAndUser(RepoEntity repoEntity, UserEntity userEntity);
-	Long countByUser_UserId(Long userId);
 
 	List<ActiveRepoEntity> findAllByUser(UserEntity user);
 	List<ActiveRepoEntity> findAllByRepo(RepoEntity user);
+
+	boolean existsByUserAndRepo(UserEntity userEntity, RepoEntity repoEntity);
+	Long countByUserAndRepoIsActive(UserEntity user, boolean b);
 
 }

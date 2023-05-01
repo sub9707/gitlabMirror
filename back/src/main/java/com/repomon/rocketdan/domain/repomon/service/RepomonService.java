@@ -67,7 +67,7 @@ public class RepomonService {
 
 		// 중복 닉네임이 있는 지 다시 확인
 		if (repoService.checkRepomonNickname(repomonStartStatusRequestDto.getRepomonNickname())) {
-			throw new CustomException(DATA_BAD_REQUEST);
+			throw new CustomException(DUPLICATE_RESOURCE);
 		}
 
 		// 스텟이 30을 초과할 경우 에러처리
@@ -286,7 +286,7 @@ public class RepomonService {
 
 		// 중복 닉네임이 있는 지 다시 확인
 		if (repoService.checkRepomonNickname(repomonNicknameRequestDto.getRepomonNickname())) {
-			throw new CustomException(DATA_BAD_REQUEST);
+			throw new CustomException(DUPLICATE_RESOURCE);
 		}
 
 		RepomonStatusEntity repomon = repomonStatusRepository.findById(

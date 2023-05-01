@@ -55,9 +55,13 @@ public class BattleLogic {
 	public static Float createCritical(Integer startPoint, Integer nowPoint) {
 		return (startPoint + nowPoint) * criticalValue + defaultCritical;
 	}
+
+
 	public static Float createHit(Integer startPoint, Integer nowPoint) {
 		return (startPoint + nowPoint) * hitValue + defaultHit;
 	}
+
+
 	public static Integer createHp(Long exp) {
 		return (int) (exp * hpValue) + defaultHp;
 	}
@@ -71,7 +75,6 @@ public class BattleLogic {
 		Float critical = createCritical(repomon.getStartCritical(), repomon.getCriticalPoint());
 		Float hit = createHit(repomon.getStartHit(), repomon.getHitPoint());
 		Float hp = (float) createHp(repomon.getRepoExp());
-
 
 		return new HashMap<>() {
 			{
@@ -94,7 +97,7 @@ public class BattleLogic {
 	 */
 	public static Integer getAllStat(RepomonStatusEntity repomon) {
 		return (repomon.getAtkPoint() + repomon.getDefPoint() + repomon.getDodgePoint()
-			+ repomon.getCriticalPoint() + repomon.getHitPoint());
+			+ repomon.getCriticalPoint() + repomon.getHitPoint() + (int) ((repomon.getRepoExp() + 1) / 100)) + 1;
 	}
 
 
@@ -106,11 +109,8 @@ public class BattleLogic {
 	 * @return
 	 */
 	public static Integer createGap(RepomonStatusEntity offenseRepomon,
-	                                RepomonStatusEntity defenseRepomon) {
-		return ((getAllStat(defenseRepomon)
-			+ (int) ((defenseRepomon.getRepoExp()) / 100))
-			- (getAllStat(offenseRepomon)
-			+ (int) ((offenseRepomon.getRepoExp()) / 100)));
+		RepomonStatusEntity defenseRepomon) {
+		return getAllStat(defenseRepomon) - getAllStat(offenseRepomon);
 
 	}
 
@@ -149,7 +149,7 @@ public class BattleLogic {
 
 
 	public static HashMap<String, Object> battle(Integer turn, RepomonStatusEntity offenseRepomon,
-	                                             RepomonStatusEntity defenseRepomon, Integer skillDmg) {
+		RepomonStatusEntity defenseRepomon, Integer skillDmg) {
 		HashMap<String, Float> offenseStatus = createStatus(offenseRepomon);
 		HashMap<String, Float> defenseStatus = createStatus(defenseRepomon);
 		Random random = new Random();
@@ -164,22 +164,20 @@ public class BattleLogic {
 		} else {
 			// 명중 여부 확인
 			float dodgePercent = defenseStatus.get("dodge") - offenseStatus.get("hit");
-			boolean dodge = false;
 			int isDodge = random.nextInt(100);
-			if (isDodge < dodgePercent) {
-				dodge = true;
-			}
+			boolean dodge = (isDodge < dodgePercent);
+
 			// 치명타 여부 확인
 			int isCritical = random.nextInt(100);
 			if (isCritical < offenseStatus.get("critical")) {
 				Integer dmg = attackDamageCalc(offenseRepomon, defenseStatus.get("def")) * 2;
-				return (dodge)
+				return dodge
 					? useDodgeLog(turn, offenseRepomon.getRepoId(), defenseRepomon.getRepoId(), 2)
 					: useAttackLog(turn, offenseRepomon.getRepoId(), defenseRepomon.getRepoId(), 2,
 						dmg);
 			} else {
 				Integer dmg = attackDamageCalc(offenseRepomon, defenseStatus.get("def"));
-				return (dodge)
+				return dodge
 					? useDodgeLog(turn, offenseRepomon.getRepoId(), defenseRepomon.getRepoId(), 1)
 					: useAttackLog(turn, offenseRepomon.getRepoId(), defenseRepomon.getRepoId(), 1,
 						dmg);
