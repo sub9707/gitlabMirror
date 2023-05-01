@@ -3,8 +3,15 @@ package com.repomon.rocketdan.domain.repomon.service;
 
 import com.repomon.rocketdan.domain.repo.entity.RepomonEntity;
 import com.repomon.rocketdan.domain.repo.repository.RepomonRepository;
+import com.repomon.rocketdan.domain.repo.service.RepoService;
 import com.repomon.rocketdan.domain.repomon.app.BattleLogic;
-import com.repomon.rocketdan.domain.repomon.dto.*;
+import com.repomon.rocketdan.domain.repomon.dto.request.BattleLogRequestDto;
+import com.repomon.rocketdan.domain.repomon.dto.request.RepomonNicknameRequestDto;
+import com.repomon.rocketdan.domain.repomon.dto.request.RepomonStartStatusRequestDto;
+import com.repomon.rocketdan.domain.repomon.dto.request.RepomonStatusRequestDto;
+import com.repomon.rocketdan.domain.repomon.dto.response.BattleLogListResponseDto;
+import com.repomon.rocketdan.domain.repomon.dto.response.BattleLogResponseDto;
+import com.repomon.rocketdan.domain.repomon.dto.response.RepomonStatusResponseDto;
 import com.repomon.rocketdan.domain.repomon.entity.BattleLogEntity;
 import com.repomon.rocketdan.domain.repomon.entity.RepomonStatusEntity;
 import com.repomon.rocketdan.domain.repomon.repository.BattleLogRepository;
@@ -33,6 +40,8 @@ public class RepomonService {
 
 	private final RepomonStatusRepository repomonStatusRepository;
 
+	private final RepoService repoService;
+
 
 	/**
 	 * 해당 레포에 속한 레포몬의 상세 정보 반환
@@ -52,34 +61,36 @@ public class RepomonService {
 	/**
 	 * 레포몬의 초기 닉네임, 스텟 정보, 레포몬 등록
 	 *
-	 * @param repomonStatusRequestDto
+	 * @param repomonStartStatusRequestDto
 	 */
-	public void createRepomonStatus(RepomonStatusRequestDto repomonStatusRequestDto) {
-		if (repomonStatusRequestDto.getStartAtk() > 10 ||
-			repomonStatusRequestDto.getStartDodge() > 10 ||
-			repomonStatusRequestDto.getStartCritical() > 10 ||
-			repomonStatusRequestDto.getStartHit() > 10 ||
-			repomonStatusRequestDto.getStartDef() > 10
-		) {
+	public void createRepomonStatus(RepomonStartStatusRequestDto repomonStartStatusRequestDto) {
+
+		// 중복 닉네임이 있는 지 다시 확인
+		if (repoService.checkRepomonNickname(repomonStartStatusRequestDto.getRepomonNickname())) {
+			throw new CustomException(DATA_BAD_REQUEST);
+		}
+
+		// 스텟이 30을 초과할 경우 에러처리
+		if (RepomonStartStatusRequestDto.isValid(repomonStartStatusRequestDto)) {
 			throw new CustomException(DATA_BAD_REQUEST);
 		}
 
 		RepomonStatusEntity repomon = repomonStatusRepository.findById(
-			repomonStatusRequestDto.getRepoId()).orElseThrow(
+			repomonStartStatusRequestDto.getRepoId()).orElseThrow(
 			() -> new CustomException(NOT_FOUND_REPOSITORY)
 		);
 
 		RepomonEntity selectedRepomon = repomonRepository.findById(
-			repomonStatusRequestDto.getRepomonId()).orElseThrow(
+			repomonStartStatusRequestDto.getRepomonId()).orElseThrow(
 			() -> new CustomException(NOT_FOUND_ENTITY)
 		);
 
-		repomon.updateNickname(repomonStatusRequestDto.getRepomonNickname());
-		repomon.setStartStatus(repomonStatusRequestDto.getStartAtk(),
-			repomonStatusRequestDto.getStartDodge(),
-			repomonStatusRequestDto.getStartDef(),
-			repomonStatusRequestDto.getStartCritical(),
-			repomonStatusRequestDto.getStartHit()
+		repomon.updateNickname(repomonStartStatusRequestDto.getRepomonNickname());
+		repomon.setStartStatus(repomonStartStatusRequestDto.getStartAtk(),
+			repomonStartStatusRequestDto.getStartDodge(),
+			repomonStartStatusRequestDto.getStartDef(),
+			repomonStartStatusRequestDto.getStartCritical(),
+			repomonStartStatusRequestDto.getStartHit()
 		);
 		repomon.updateRepomon(selectedRepomon);
 		repomonStatusRepository.save(repomon);
@@ -100,8 +111,8 @@ public class RepomonService {
 		Integer userRating = repomonStatus.getRating();
 		int index = 1;
 		while (index <= 10) {
-			Integer startRating = userRating - (index * 200);
-			Integer endRating = userRating + (index * 200);
+			Integer startRating = userRating - (index * 100);
+			Integer endRating = userRating + (index * 100);
 			Optional<RepomonStatusEntity> repomon = repomonStatusRepository.findByRatingBetweenRandom(
 				startRating, endRating, repomonOwner);
 
@@ -228,7 +239,7 @@ public class RepomonService {
 	 * @return
 	 */
 	public BattleLogListResponseDto getBattleLogList(Long repoId) {
-		List<BattleLogEntity> battleLogList = battleLogRepository.findTop5ByRepoIdOrderByDesc(
+		List<BattleLogEntity> battleLogList = battleLogRepository.findTop10ByRepoIdOrderByDesc(
 			repoId);
 		if (battleLogList.isEmpty()) {
 			throw new CustomException(NOT_FOUND_ENTITY);
@@ -244,6 +255,18 @@ public class RepomonService {
 			() -> new CustomException(NOT_FOUND_REPOSITORY)
 		);
 
+		// 계산된 남은스탯이 음수가 될 경우 에러처리
+		if (RepomonStatusResponseDto.remainStat(
+			repomon.getRepoExp(),
+			repomon.getAtkPoint() + repomonStatusRequestDto.getAtkPoint(),
+			repomon.getDodgePoint() + repomonStatusRequestDto.getDodgePoint(),
+			repomon.getDefPoint() + repomonStatusRequestDto.getDefPoint(),
+			repomon.getCriticalPoint() + repomonStatusRequestDto.getCriticalPoint(),
+			repomon.getHitPoint() + repomonStatusRequestDto.getHitPoint()
+		) < 0) {
+			throw new CustomException(DATA_BAD_REQUEST);
+		}
+
 		repomon.updateStatus(repomonStatusRequestDto.getAtkPoint(),
 			repomonStatusRequestDto.getDodgePoint(),
 			repomonStatusRequestDto.getDefPoint(),
@@ -257,14 +280,20 @@ public class RepomonService {
 	/**
 	 * 레포몬의 닉네임을 변경
 	 *
-	 * @param repomonStatusRequestDto
+	 * @param repomonNicknameRequestDto
 	 */
-	public void modifyRepomonNickname(RepomonStatusRequestDto repomonStatusRequestDto) {
+	public void modifyRepomonNickname(RepomonNicknameRequestDto repomonNicknameRequestDto) {
+
+		// 중복 닉네임이 있는 지 다시 확인
+		if (repoService.checkRepomonNickname(repomonNicknameRequestDto.getRepomonNickname())) {
+			throw new CustomException(DATA_BAD_REQUEST);
+		}
+
 		RepomonStatusEntity repomon = repomonStatusRepository.findById(
-			repomonStatusRequestDto.getRepoId()).orElseThrow(
+			repomonNicknameRequestDto.getRepoId()).orElseThrow(
 			() -> new CustomException(NOT_FOUND_REPOSITORY)
 		);
-		repomon.updateNickname(repomonStatusRequestDto.getRepomonNickname());
+		repomon.updateNickname(repomonNicknameRequestDto.getRepomonNickname());
 		repomonStatusRepository.save(repomon);
 
 	}

@@ -1,4 +1,4 @@
-package com.repomon.rocketdan.domain.repomon.dto;
+package com.repomon.rocketdan.domain.repomon.dto.response;
 
 
 import com.repomon.rocketdan.domain.repo.dto.response.RepomonResponseDto;
@@ -14,6 +14,7 @@ import lombok.*;
 @Builder
 public class RepomonStatusResponseDto {
 
+	private Long repoId;
 	private String repoName;
 	private String repomonNickname;
 	private Integer repomonTier;
@@ -55,6 +56,7 @@ public class RepomonStatusResponseDto {
 
 	public static RepomonStatusResponseDto fromEntity(RepomonStatusEntity repomonStatus) {
 		return RepomonStatusResponseDto.builder()
+			.repoId(repomonStatus.getRepoId())
 			.repoName(repomonStatus.getRepoName())
 			.repomonNickname(repomonStatus.getRepomonNickname())
 			.repomonTier(repomonStatus.getRepomon().getRepomonTier())
