@@ -8,6 +8,7 @@ import com.repomon.rocketdan.domain.repo.dto.request.RepoPeriodRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.response.*;
 import com.repomon.rocketdan.domain.repo.service.RepoService;
+import com.repomon.rocketdan.exception.CustomException;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,8 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import static com.repomon.rocketdan.exception.ErrorCode.DUPLICATE_RESOURCE;
 
 
 @RestController
@@ -146,7 +149,7 @@ public class RepoController {
 		if (!repoService.checkRepomonNickname(repoRequestDto.getRepomonNickname())) {
 			return ResponseEntity.ok().body(ResultDto.ofSuccess());
 		}
-		return ResponseEntity.ok().body(ResultDto.ofFail());
+		throw new CustomException(DUPLICATE_RESOURCE);
 	}
 
 
