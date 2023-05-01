@@ -10,6 +10,7 @@ import card from "../../public/service_card.png";
 import { Canvas, useLoader, useFrame } from "@react-three/fiber";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "@react-three/drei";
+import { useRouter } from "next/router";
 
 const Model = () => {
   const gltf = useLoader(GLTFLoader, "/static/models/Penguin.glb");
@@ -27,11 +28,19 @@ const Home = () => {
   const spRef = useRef<HTMLImageElement>(null);
   const tpRef = useRef<HTMLImageElement>(null);
   const params = useSearchParams();
+  const router = useRouter();
 
   useEffect(() => {
-    localStorage.setItem("accessToken", params.get("access-token") as string);
-    localStorage.setItem("refreshToken", params.get("refresh-token") as string);
-  }, []);
+    if (localStorage.getItem("accessToken")) {
+      router.push("/");
+    } else {
+      localStorage.setItem("accessToken", params.get("access-token") as string);
+      localStorage.setItem(
+        "refreshToken",
+        params.get("refresh-token") as string
+      );
+    }
+  }, [localStorage]);
 
   useEffect(() => {
     const handleScroll = () => {
