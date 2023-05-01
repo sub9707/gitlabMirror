@@ -97,7 +97,7 @@ public class BattleLogic {
 	 */
 	public static Integer getAllStat(RepomonStatusEntity repomon) {
 		return (repomon.getAtkPoint() + repomon.getDefPoint() + repomon.getDodgePoint()
-			+ repomon.getCriticalPoint() + repomon.getHitPoint() + (int) (repomon.getRepoExp() / 100)) + 1;
+			+ repomon.getCriticalPoint() + repomon.getHitPoint() + (int) ((repomon.getRepoExp() + 1) / 100)) + 1;
 	}
 
 
@@ -110,10 +110,7 @@ public class BattleLogic {
 	 */
 	public static Integer createGap(RepomonStatusEntity offenseRepomon,
 		RepomonStatusEntity defenseRepomon) {
-		return ((getAllStat(defenseRepomon)
-			+ (int) ((defenseRepomon.getRepoExp()) / 100))
-			- (getAllStat(offenseRepomon)
-			+ (int) ((offenseRepomon.getRepoExp()) / 100)));
+		return getAllStat(defenseRepomon) - getAllStat(offenseRepomon);
 
 	}
 
@@ -167,22 +164,20 @@ public class BattleLogic {
 		} else {
 			// 명중 여부 확인
 			float dodgePercent = defenseStatus.get("dodge") - offenseStatus.get("hit");
-			boolean dodge = false;
 			int isDodge = random.nextInt(100);
-			if (isDodge < dodgePercent) {
-				dodge = true;
-			}
+			boolean dodge = (isDodge < dodgePercent);
+
 			// 치명타 여부 확인
 			int isCritical = random.nextInt(100);
 			if (isCritical < offenseStatus.get("critical")) {
 				Integer dmg = attackDamageCalc(offenseRepomon, defenseStatus.get("def")) * 2;
-				return (dodge)
+				return dodge
 					? useDodgeLog(turn, offenseRepomon.getRepoId(), defenseRepomon.getRepoId(), 2)
 					: useAttackLog(turn, offenseRepomon.getRepoId(), defenseRepomon.getRepoId(), 2,
 						dmg);
 			} else {
 				Integer dmg = attackDamageCalc(offenseRepomon, defenseStatus.get("def"));
-				return (dodge)
+				return dodge
 					? useDodgeLog(turn, offenseRepomon.getRepoId(), defenseRepomon.getRepoId(), 1)
 					: useAttackLog(turn, offenseRepomon.getRepoId(), defenseRepomon.getRepoId(), 1,
 						dmg);
