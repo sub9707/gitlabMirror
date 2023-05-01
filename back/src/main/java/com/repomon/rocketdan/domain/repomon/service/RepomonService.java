@@ -1,7 +1,10 @@
 package com.repomon.rocketdan.domain.repomon.service;
 
 
+import com.repomon.rocketdan.common.utils.SecurityUtils;
+import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepomonEntity;
+import com.repomon.rocketdan.domain.repo.repository.RepoRepository;
 import com.repomon.rocketdan.domain.repo.repository.RepomonRepository;
 import com.repomon.rocketdan.domain.repo.service.RepoService;
 import com.repomon.rocketdan.domain.repomon.app.BattleLogic;
@@ -17,6 +20,7 @@ import com.repomon.rocketdan.domain.repomon.entity.RepomonStatusEntity;
 import com.repomon.rocketdan.domain.repomon.repository.BattleLogRepository;
 import com.repomon.rocketdan.domain.repomon.repository.RepomonStatusRepository;
 import com.repomon.rocketdan.exception.CustomException;
+import com.repomon.rocketdan.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -41,6 +45,7 @@ public class RepomonService {
 	private final RepomonStatusRepository repomonStatusRepository;
 
 	private final RepoService repoService;
+	private final RepoRepository repoRepository;
 
 
 	/**
@@ -283,6 +288,13 @@ public class RepomonService {
 	 * @param repomonNicknameRequestDto
 	 */
 	public void modifyRepomonNickname(RepomonNicknameRequestDto repomonNicknameRequestDto) {
+
+		// 권한 검사 로직
+		RepoEntity repo = repoRepository.findById(repomonNicknameRequestDto.getRepoId()).orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED_USER));
+		System.out.println("repo.getRepoOwner() = " + repo.getRepoOwner());
+		if (SecurityUtils.getCurrentUserId() != repo.getRepoOwner()) {
+			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
+		}
 
 		// 중복 닉네임이 있는 지 다시 확인
 		if (repoService.checkRepomonNickname(repomonNicknameRequestDto.getRepomonNickname())) {
