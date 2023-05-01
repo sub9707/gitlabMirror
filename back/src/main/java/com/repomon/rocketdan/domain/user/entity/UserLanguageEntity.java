@@ -24,6 +24,6 @@ public class UserLanguageEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private UserCardEntity userCard;
+    private UserEntity user;
 
 }
