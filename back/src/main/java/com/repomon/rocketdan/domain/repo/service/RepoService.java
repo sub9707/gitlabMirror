@@ -2,6 +2,7 @@ package com.repomon.rocketdan.domain.repo.service;
 
 
 import com.repomon.rocketdan.common.utils.GHUtils;
+import com.repomon.rocketdan.common.utils.SecurityUtils;
 import com.repomon.rocketdan.domain.repo.app.RepoDetail;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoConventionRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoPeriodRequestDto;
@@ -243,9 +244,15 @@ public class RepoService {
      * @param requestDto
      */
     public void modifyRepoPeriod(Long repoId, RepoPeriodRequestDto requestDto) {
+        String userName = SecurityUtils.getCurrentUserId();
+
         RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
             throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
         });
+
+        if(!repoEntity.getRepoOwner().equals(userName)){
+            throw new CustomException(ErrorCode.NO_ACCESS);
+        }
 
         LocalDateTime startedAt = requestDto.getStartedAt();
         LocalDateTime endAt = requestDto.getEndAt();
@@ -258,9 +265,15 @@ public class RepoService {
      * @param requestDto
      */
     public void modifyRepoConvention(Long repoId, RepoConventionRequestDto requestDto) {
+        String userName = SecurityUtils.getCurrentUserId();
+
         RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
             throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
         });
+
+        if(!repoEntity.getRepoOwner().equals(userName)){
+            throw new CustomException(ErrorCode.NO_ACCESS);
+        }
 
         conventionRepository.deleteAllByRepo(repoEntity);
         List<RepoConventionEntity> entities = requestDto.toEntities(repoEntity);
@@ -272,9 +285,15 @@ public class RepoService {
      * @param repoId
      */
     public void activateRepo(Long repoId) {
+        String userName = SecurityUtils.getCurrentUserId();
+
         RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
             throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
         });
+
+        if(!repoEntity.getRepoOwner().equals(userName)){
+            throw new CustomException(ErrorCode.NO_ACCESS);
+        }
 
         if(repoEntity.getIsActive()){
             repoEntity.deActivate();
