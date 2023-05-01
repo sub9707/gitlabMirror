@@ -5,7 +5,13 @@ import com.repomon.rocketdan.domain.repo.app.GrowthFactor;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepoHistoryEntity;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.kohsuke.github.*;
+import org.kohsuke.github.GHRepositoryStatistics.CodeFrequency;
+import org.kohsuke.github.GHRepositoryStatistics.CommitActivity;
+import org.kohsuke.github.GHRepositoryStatistics.ContributorStats;
+import org.kohsuke.github.GHRepositoryStatistics.ContributorStats.Week;
+import org.kohsuke.github.GHRepositoryStatistics.Participation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -90,11 +96,14 @@ public class GHUtils {
     public Collection<RepoHistoryEntity> GHCommitToHistory(GHRepository ghRepository, RepoEntity repoEntity, Date date) throws IOException {
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
-        PagedIterable<GHCommit> ghCommits = ghRepository.queryCommits()
-            .since(date)
-            .list();
+        PagedIterable<GHCommit> ghCommits = date == null ?
+            ghRepository.queryCommits().list() :
+            ghRepository.queryCommits()
+                .since(date)
+                .list();
 
         for(GHCommit commit : ghCommits){
+            if(commit.getParentSHA1s().size() > 1) continue;
             LocalDate commitDate = commit.getCommitDate().toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
@@ -107,7 +116,7 @@ public class GHUtils {
         throws IOException {
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
-        LocalDate localDate = date.toInstant()
+        LocalDate localDate = date == null ? null : date.toInstant()
             .atZone(ZoneId.systemDefault())
             .toLocalDate();
 
@@ -117,7 +126,7 @@ public class GHUtils {
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
 
-            if(prDate.isAfter(localDate)) {
+            if(localDate == null || prDate.isAfter(localDate)) {
                 configureRepoInfo(histories, prDate, repoEntity, GrowthFactor.MERGE);
 
                 List<GHPullRequestReviewComment> reviewComments = pr.listReviewComments()
@@ -138,9 +147,11 @@ public class GHUtils {
     public Collection<RepoHistoryEntity> GHIssueToHistory(GHRepository ghRepository, RepoEntity repoEntity, Date date){
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
-        PagedIterable<GHIssue> issues = ghRepository.queryIssues()
-            .since(date)
-            .list();
+        PagedIterable<GHIssue> issues = date == null ?
+            ghRepository.queryIssues().list() :
+            ghRepository.queryIssues()
+                .since(date)
+                .list();
 
         for(GHIssue issue : issues){
             Date closedAt = issue.getClosedAt();
@@ -180,4 +191,73 @@ public class GHUtils {
         }
     }
 
+    public long getTotalLineCount(GHRepositoryStatistics statistics)
+        throws IOException {
+        long totalLineCount = 0L;
+        List<CodeFrequency> codeFrequencies = statistics.getCodeFrequency();
+        for(CodeFrequency codeFrequency : codeFrequencies) {
+            totalLineCount += codeFrequency.getAdditions();
+            totalLineCount += codeFrequency.getDeletions();
+        }
+
+        return totalLineCount;
+    }
+
+    public Map<String, Integer> getCommitterInfoMap(GHRepositoryStatistics statistics)
+        throws IOException, InterruptedException {
+        Map<String, Integer> commitCountMap = new HashMap<>();
+        List<ContributorStats> contributorStatList = statistics.getContributorStats().toList();
+        for (ContributorStats contributorStats : contributorStatList) {
+            String author = contributorStats.getAuthor().getLogin();
+            int authorCommitCnt = contributorStats.getTotal();
+            commitCountMap.put(author, authorCommitCnt);
+        }
+
+        return commitCountMap;
+    }
+
+
+    /**
+     * 유저 이름의 총 라인 수
+     * @param statistics
+     * @param userName
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public long getLineCountWithUser(GHRepositoryStatistics statistics, String userName) throws IOException, InterruptedException {
+        long lineCount = 0L;
+        List<ContributorStats> contributorStatList = statistics.getContributorStats().toList();
+        for (ContributorStats contributorStats : contributorStatList) {
+            String author = contributorStats.getAuthor().getLogin();
+            if(author.equals(userName)){
+                for(Week week : contributorStats.getWeeks()){
+                    lineCount += week.getNumberOfAdditions();
+                    lineCount += week.getNumberOfDeletions();
+                }
+            }
+        }
+        return lineCount;
+    }
+
+    /**
+     * 유저 이름의 총 커밋 수
+     * @param statistics
+     * @param userName
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public int getCommitCountWithUser(GHRepositoryStatistics statistics, String userName) throws IOException, InterruptedException {
+        int commitCount = 0;
+        List<ContributorStats> contributorStatList = statistics.getContributorStats().toList();
+        for (ContributorStats contributorStats : contributorStatList) {
+            String author = contributorStats.getAuthor().getLogin();
+            if(author.equals(userName)){
+                commitCount += contributorStats.getTotal();
+            }
+        }
+
+        return commitCount;
+    }
 }

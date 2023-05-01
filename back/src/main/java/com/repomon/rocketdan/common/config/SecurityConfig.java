@@ -71,7 +71,7 @@ public class SecurityConfig{
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.addAllowedOriginPattern("*");
-//        configuration.addAllowedOrigin("https://i8e204.p.ssafy.io");
+//        configuration.addAllowedOrigin("https://repomon.kr");
         configuration.setAllowedMethods(List.of("HEAD","POST","GET","DELETE","PUT"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("*"));
