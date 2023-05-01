@@ -3,7 +3,7 @@ package com.repomon.rocketdan.domain.repomon.dto.request;
 
 import lombok.Data;
 
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 
 @Data
@@ -11,15 +11,15 @@ public class RepomonStatusRequestDto {
 
 	private Long repoId;
 
-	@Positive
+	@PositiveOrZero
 	private Integer atkPoint = 0;
-	@Positive
+	@PositiveOrZero
 	private Integer dodgePoint = 0;
-	@Positive
+	@PositiveOrZero
 	private Integer defPoint = 0;
-	@Positive
+	@PositiveOrZero
 	private Integer criticalPoint = 0;
-	@Positive
+	@PositiveOrZero
 	private Integer hitPoint = 0;
 
 }
