@@ -471,7 +471,8 @@ public class RepoService {
 			throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
 		}
 
-        return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository);
+        return null;
+//        return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository);
     }
 
 }
