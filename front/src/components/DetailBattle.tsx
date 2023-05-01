@@ -2,12 +2,12 @@ import React from "react";
 import Image from "next/image";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import styles from "./DetailBattle.module.scss";
-import heart from "../../public/heart_icon.png";
-import attack from "../../public/attack_icon.png";
-import avoid from "../../public/avoid_icon.png";
-import critical from "../../public/critical_icon.png";
-import hit from "../../public/hit_icon.png";
-import shield from "../../public/shield_icon.png";
+import heart from "../../public/static/icons/heart_icon.png";
+import attack from "../../public/static/icons/attack_icon.png";
+import avoid from "../../public/static/icons/avoid_icon.png";
+import critical from "../../public/static/icons/critical_icon.png";
+import hit from "../../public/static/icons/hit_icon.png";
+import shield from "../../public/static/icons/shield_icon.png";
 
 function DetailBattle() {
   return (
