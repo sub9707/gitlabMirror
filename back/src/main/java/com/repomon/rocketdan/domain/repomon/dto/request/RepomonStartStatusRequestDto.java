@@ -4,7 +4,7 @@ package com.repomon.rocketdan.domain.repomon.dto.request;
 import lombok.Data;
 
 import javax.validation.constraints.Max;
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 
 @Data
@@ -15,23 +15,23 @@ public class RepomonStartStatusRequestDto {
 	private String repomonNickname;
 
 	@Max(value = 10)
-	@Positive
+	@PositiveOrZero
 	private Integer startAtk;
 
 	@Max(value = 10)
-	@Positive
+	@PositiveOrZero
 	private Integer startDodge;
 
 	@Max(value = 10)
-	@Positive
+	@PositiveOrZero
 	private Integer startDef;
 
 	@Max(value = 10)
-	@Positive
+	@PositiveOrZero
 	private Integer startCritical;
 
 	@Max(value = 10)
-	@Positive
+	@PositiveOrZero
 	private Integer startHit;
 
 
