@@ -2,11 +2,9 @@ package com.repomon.rocketdan.domain.repo.service;
 
 
 import com.repomon.rocketdan.common.utils.GHUtils;
-import com.repomon.rocketdan.common.utils.SecurityUtils;
 import com.repomon.rocketdan.domain.repo.app.RepoDetail;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoConventionRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoPeriodRequestDto;
-import com.repomon.rocketdan.domain.repo.dto.request.RepoRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.response.*;
 import com.repomon.rocketdan.domain.repo.entity.ActiveRepoEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepoConventionEntity;
@@ -16,6 +14,7 @@ import com.repomon.rocketdan.domain.repo.entity.RepomonEntity;
 import com.repomon.rocketdan.domain.repo.repository.*;
 import com.repomon.rocketdan.domain.repo.repository.redis.RepoRedisContributeRepository;
 import com.repomon.rocketdan.domain.repo.repository.redis.RepoRedisConventionRepository;
+import com.repomon.rocketdan.domain.repo.repository.redis.RepoRedisListRepository;
 import com.repomon.rocketdan.domain.repomon.entity.RepomonStatusEntity;
 import com.repomon.rocketdan.domain.repomon.repository.RepomonStatusRepository;
 import com.repomon.rocketdan.domain.user.entity.UserEntity;
@@ -23,18 +22,13 @@ import com.repomon.rocketdan.domain.user.repository.UserRepository;
 import com.repomon.rocketdan.domain.user.service.RankService;
 import com.repomon.rocketdan.exception.CustomException;
 import com.repomon.rocketdan.exception.ErrorCode;
-import java.util.Map.Entry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GHRepository.Contributor;
 import org.kohsuke.github.GHRepositoryStatistics;
-import org.kohsuke.github.GHRepositoryStatistics.CodeFrequency;
-import org.kohsuke.github.GHRepositoryStatistics.ContributorStats;
-import org.kohsuke.github.GHRepositoryStatistics.ContributorStats.Week;
-import org.kohsuke.github.PagedIterable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,6 +56,7 @@ public class RepoService {
     private final ActiveRepoRepository activeRepoRepository;
 
     // redis repository
+    private final RepoRedisListRepository redisListRepository;
     private final RepoRedisContributeRepository redisContributeRepository;
     private final RepoRedisConventionRepository redisConventionRepository;
 
@@ -77,22 +72,38 @@ public class RepoService {
         });
 
         String userName = userEntity.getUserName();
-        Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(userName);
 
-        saveAndUpdateRepo(repositories, userEntity);
+        PageRequest redisPageable = PageRequest.of(pageable.getPageNumber(), 1);
+        List<RepoListResponseDto> dtoList = redisListRepository.findByUserName(userName, redisPageable);
+        RepoListResponseDto responseDto = dtoList.isEmpty() ?
+            RepoListResponseDto.empty(userName) :
+            dtoList.get(0);
 
+        if(responseDto.getRepoListItems().size() < pageable.getPageSize()){
+            Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(userName);
 
-        Page<ActiveRepoEntity> activeRepoPage = activeRepoRepository.findByUser(userEntity, pageable);
-        List<RepoDetail> repoDetails = activeRepoPage.stream()
-            .map(activeRepoEntity -> {
-                RepoEntity repoEntity = activeRepoEntity.getRepo();
-                GHRepository ghRepository = repositories.get(repoEntity.getRepoKey());
-                return ActiveRepoEntity.convertToRepo(activeRepoEntity, ghRepository);
-            }).collect(Collectors.toList());
+            saveAndUpdateRepo(repositories, userEntity);
 
-        long totalElements = activeRepoPage.getTotalElements();
-        int totalPages = activeRepoPage.getTotalPages();
-        return RepoListResponseDto.fromDetails(repoDetails, totalElements, totalPages);
+            Page<ActiveRepoEntity> activeRepoPage = activeRepoRepository.findByUser(userEntity,
+                pageable);
+            List<RepoDetail> repoDetails = activeRepoPage.stream()
+                .map(activeRepoEntity -> {
+                    RepoEntity repoEntity = activeRepoEntity.getRepo();
+                    GHRepository ghRepository = repositories.get(repoEntity.getRepoKey());
+                    return ActiveRepoEntity.convertToRepo(activeRepoEntity, ghRepository);
+                }).collect(Collectors.toList());
+
+            long totalElements = activeRepoPage.getTotalElements();
+            int totalPages = activeRepoPage.getTotalPages();
+
+            responseDto.updateFromDetails(repoDetails, totalElements, totalPages);
+
+            if(responseDto.getId() == null) {
+                redisListRepository.save(responseDto);
+            }
+        }
+
+        return responseDto;
     }
 
     /**
@@ -283,8 +294,7 @@ public class RepoService {
 
                         RepomonStatusEntity repomonStatusEntity = RepomonStatusEntity.fromGHRepository(ghRepository, repomonEntity);
                         repomonStatusRepository.save(repomonStatusEntity);
-                        activeRepoRepository.save(
-                            ActiveRepoEntity.of(userEntity, repomonStatusEntity));
+                        activeRepoRepository.save(ActiveRepoEntity.of(userEntity, repomonStatusEntity));
 
                         Long exp = initRepositoryInfo(repomonStatusEntity, ghRepository, null);
                         userEntity.updateTotalExp(exp);
