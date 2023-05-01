@@ -1,7 +1,6 @@
 package com.repomon.rocketdan.domain.user.dto;
 
 
-import com.repomon.rocketdan.domain.user.entity.UserCardEntity;
 import lombok.Builder;
 import lombok.Data;
 
@@ -19,22 +18,5 @@ public class UserRankResponseDto {
 	private Long repoCount;
 
 
-	public static UserRankResponseDto fromEntity(UserCardEntity userCard) {
-		return UserRankResponseDto.builder()
-			.userId(userCard.getUser().getUserId())
-			.totalExp(userCard.getTotalExp())
-			.username(userCard.getUser().getUserName())
-			.build();
-	}
-
-
-	public static List<UserRankResponseDto> fromEntityList(List<UserCardEntity> userCardList) {
-		List<UserRankResponseDto> result = new ArrayList<>();
-		for (UserCardEntity usersCard : userCardList) {
-			UserRankResponseDto repoRankResponseDto = UserRankResponseDto.fromEntity(usersCard);
-			result.add(repoRankResponseDto);
-		}
-		return result;
-	}
 
 }

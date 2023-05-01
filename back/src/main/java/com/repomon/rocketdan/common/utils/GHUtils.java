@@ -1,4 +1,4 @@
-package com.repomon.rocketdan.common;
+package com.repomon.rocketdan.common.utils;
 
 
 import com.repomon.rocketdan.domain.repo.app.GrowthFactor;

@@ -22,6 +22,7 @@ public class UserEntity {
 	@Column(name = "user_id")
 	private Long userId;
 	private String userName;
+	private Long totalExp;
 
 	@OneToOne
 	@JoinColumn(name = "represent_repo_id")
@@ -37,4 +38,7 @@ public class UserEntity {
 		return Optional.ofNullable(representRepo);
 	}
 
+	public void updateTotalExp(Long exp) {
+		this.totalExp += exp;
+	}
 }
