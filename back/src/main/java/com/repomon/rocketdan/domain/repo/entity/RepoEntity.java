@@ -69,7 +69,7 @@ public class RepoEntity extends CommonEntity {
 
 
 	public void updateExp(Long totalExp) {
-		this.repoExp = totalExp;
+		this.repoExp += totalExp;
 	}
 
 

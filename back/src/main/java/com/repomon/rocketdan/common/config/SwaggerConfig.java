@@ -31,7 +31,7 @@ public class SwaggerConfig {
     @Bean
     public Docket api(TypeResolver typeResolver) {
         Server serverLocal = new Server("local", "http://localhost:8080", "local", Collections.emptyList(), Collections.emptyList());
-        Server devServer = new Server("test", "https://k8e105.p.ssafy.io", "dev", Collections.emptyList(), Collections.emptyList());
+        Server devServer = new Server("test", "https://repomon.kr", "dev", Collections.emptyList(), Collections.emptyList());
         return new Docket(DocumentationType.OAS_30)
             .servers(serverLocal, devServer)
             .alternateTypeRules(AlternateTypeRules.newRule(typeResolver.resolve(Pageable.class),
