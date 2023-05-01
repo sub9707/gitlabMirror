@@ -204,19 +204,14 @@ public class RepoService {
      * @param repoId
      */
     public void modifyRepoInfo(Long repoId) {
-        Long userId = 2L;
-//        Long userId = Long.valueOf(SecurityUtils.getCurrentUserId());
-        UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> {
-            throw new CustomException(ErrorCode.NOT_FOUND_USER);
-        });
-
         RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
             throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
         });
 
-        if(!activeRepoRepository.existsByUserAndRepo(userEntity, repoEntity)){
-            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-        };
+        List<ActiveRepoEntity> activeRepoEntities = activeRepoRepository.findAllByRepo(repoEntity);
+        List<UserEntity> userEntities = activeRepoEntities.stream()
+            .map(entity -> entity.getUser())
+            .collect(Collectors.toList());
 
         String repoOwner = repoEntity.getRepoOwner();
         Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
@@ -227,7 +222,7 @@ public class RepoService {
             throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
         }
 
-        updateRepositoryInfo(repoEntity, ghRepository, userEntity);
+        updateRepositoryInfo(repoEntity, ghRepository, userEntities);
     }
 
 
@@ -402,7 +397,7 @@ public class RepoService {
         }
     }
 
-    private void updateRepositoryInfo(RepoEntity repoEntity, GHRepository ghRepository, UserEntity userEntity){
+    private void updateRepositoryInfo(RepoEntity repoEntity, GHRepository ghRepository, List<UserEntity> userEntities){
         log.info("기존 레포지토리 업데이트 시작 => {}", repoEntity.getRepoName());
 
 		repoHistoryRepository.findFirstByRepoOrderByWorkedAtDesc(repoEntity).ifPresentOrElse(historyEntity -> {
@@ -413,11 +408,11 @@ public class RepoService {
 			cal.add(Calendar.DATE, 1);
 
             Long exp = initRepositoryInfo(repoEntity, ghRepository, Date.from(cal.toInstant()));
-            userEntity.updateTotalExp(exp);
+            userEntities.forEach(userEntity -> userEntity.updateTotalExp(exp));
             repoEntity.updateExp(exp);
         }, () -> {
             Long exp = initRepositoryInfo(repoEntity, ghRepository, null);
-            userEntity.updateTotalExp(exp);
+            userEntities.forEach(userEntity -> userEntity.updateTotalExp(exp));
             repoEntity.updateExp(exp);
         });
 
