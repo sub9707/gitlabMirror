@@ -10,7 +10,6 @@ import com.repomon.rocketdan.exception.CustomException;
 import com.repomon.rocketdan.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
@@ -21,12 +20,7 @@ public class AuthService {
 	private final UserRepository userRepository;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RedisService redisService;
-
-	@Value("${jwt.expire.access}")
-	private Long accessExpiry; // 토큰 만료일
-	@Value("${jwt.expire.refresh}")
-	private Long refreshExpiry; // 토큰 만료일
-
+	
 
 	/**
 	 * 로그인: 깃허브 소셜 로그인

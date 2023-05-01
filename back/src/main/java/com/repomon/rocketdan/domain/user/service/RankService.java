@@ -6,20 +6,27 @@ import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.repository.ActiveRepoRepository;
 import com.repomon.rocketdan.domain.repo.repository.RepoRepository;
 import com.repomon.rocketdan.domain.user.dto.UserRankResponseDto;
-import com.repomon.rocketdan.exception.CustomException;
-import com.repomon.rocketdan.exception.ErrorCode;
+import com.repomon.rocketdan.domain.user.entity.UserEntity;
+import com.repomon.rocketdan.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Service
+@Transactional
 @Slf4j
 @RequiredArgsConstructor
 public class RankService {
 
+	private final UserRepository userRepository;
 	private final RepoRepository repoRepository;
 	private final ActiveRepoRepository activeRepoRepository;
 
@@ -33,21 +40,14 @@ public class RankService {
 	 */
 	public Page<UserRankResponseDto> getUserRankList(String search, Pageable pageable) {
 
-		//		List<UserRankResponseDto> userRankResponseDtoList = new ArrayList<>();
-		//		Page<UserCardEntity> userCardEntityList;
-		//		if (search.isEmpty()) {
-		//			userCardEntityList = userCardRepository.findAll(pageable);
-		//		} else {
-		//			userCardEntityList = userCardRepository.findByUserNameContaining(search, pageable);
-		//		}
-		//		for (UserCardEntity userCard : userCardEntityList) {
-		//			Long repoCount = activeRepoRepository.countByUser_UserId(userCard.getUser().getUserId());
-		//			UserRankResponseDto userRankResponseDto = UserRankResponseDto.fromEntity(userCard);
-		//			userRankResponseDto.setRepoCount(repoCount);
-		//			userRankResponseDtoList.add(userRankResponseDto);
-		//		}
-		throw new CustomException(ErrorCode.DATA_BAD_REQUEST);
-		//		return new PageImpl<>(userRankResponseDtoList, pageable, userCardEntityList.getTotalElements());
+		List<UserRankResponseDto> userRankResponseDtoList = new ArrayList<>();
+		Page<UserEntity> userEntityList = search.isEmpty() ? userRepository.findAll(pageable) : userRepository.findByUserNameContaining(search, pageable);
+
+		for (UserEntity user : userEntityList) {
+			Long activeRepoCount = activeRepoRepository.countByUserAndRepoIsActive(user, true);
+			userRankResponseDtoList.add(UserRankResponseDto.fromEntity(user, activeRepoCount));
+		}
+		return new PageImpl<>(userRankResponseDtoList, pageable, userEntityList.getTotalElements());
 	}
 
 
