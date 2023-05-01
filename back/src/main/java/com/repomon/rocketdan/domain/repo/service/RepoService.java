@@ -297,84 +297,85 @@ public class RepoService {
     }
 
 
-    private RepoContributeResponseDto findContributeDtoWithGHApi(RepoEntity repoEntity, String repoOwner){
-        Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
+	private RepoContributeResponseDto findContributeDtoWithGHApi(RepoEntity repoEntity, String repoOwner) {
+		Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
 
-        String repoKey = repoEntity.getRepoKey();
-        GHRepository ghRepository = repositories.get(repoKey);
-        if(ghRepository == null){
-            throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
-        }
+		String repoKey = repoEntity.getRepoKey();
+		GHRepository ghRepository = repositories.get(repoKey);
+		if (ghRepository == null) {
+			throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
+		}
+
+		try {
+			int totalCommitCount = ghRepository
+				.queryCommits().list()
+				.toList().size();
+
+			Map<String, Integer> commitCountMap = new HashMap<>();
+			PagedIterable<Contributor> contributors = ghRepository.listContributors();
+			for (Contributor contributor : contributors) {
+				String author = contributor.getLogin();
+				int authorCommitCnt = ghRepository.queryCommits()
+					.author(author).list()
+					.toList().size();
+
+				commitCountMap.put(author, authorCommitCnt);
+			}
+
+			String mvp = null;
+			for (String user : commitCountMap.keySet()) {
+				if (mvp == null || commitCountMap.get(user) > commitCountMap.get(mvp)) {
+					mvp = user;
+				}
+			}
+
+			RepoContributeResponseDto responseDto = RepoContributeResponseDto.of(totalCommitCount, commitCountMap, mvp, repoOwner);
+
+			redisContributeRepository.save(responseDto);
+			return responseDto;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 
-        try {
-            int totalCommitCount = ghRepository
-                .queryCommits().list()
-                .toList().size();
+	private RepoConventionResponseDto findConventionDtoWithGHApi(RepoEntity repoEntity, String repoOwner) {
+		List<RepoConventionEntity> conventions = conventionRepository.findAllByRepo(repoEntity);
 
-            Map<String, Integer> commitCountMap = new HashMap<>();
-            PagedIterable<Contributor> contributors = ghRepository.listContributors();
-            for(Contributor contributor : contributors){
-                String author = contributor.getLogin();
-                int authorCommitCnt = ghRepository.queryCommits()
-                    .author(author).list()
-                    .toList().size();
+		int totalCnt = 0;
+		int collectCnt = 0;
+		if (!conventions.isEmpty()) {
+			log.info("컨벤션 분석 시작");
 
-                commitCountMap.put(author, authorCommitCnt);
-            }
+			Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(
+				repoOwner);
 
-            String mvp = null;
-            for (String user : commitCountMap.keySet()) {
-                if(mvp == null || commitCountMap.get(user) > commitCountMap.get(mvp)){
-                    mvp = user;
-                }
-            }
+			GHRepository ghRepository = repositories.get(repoEntity.getRepoKey());
+			if (ghRepository == null) {
+				throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
+			}
 
-            RepoContributeResponseDto responseDto = RepoContributeResponseDto.of(totalCommitCount, commitCountMap, mvp, repoOwner);
+			try {
+				List<GHCommit> ghCommits = ghRepository.listCommits().toList();
+				for (GHCommit commit : ghCommits) {
+					totalCnt++;
+					String message = commit.getCommitShortInfo().getMessage();
 
-            redisContributeRepository.save(responseDto);
-            return responseDto;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    private RepoConventionResponseDto findConventionDtoWithGHApi(RepoEntity repoEntity, String repoOwner){
-        List<RepoConventionEntity> conventions = conventionRepository.findAllByRepo(repoEntity);
+					boolean present = conventions.stream().anyMatch(convention -> {
+						String prefix = convention.getRepoConventionType();
+						return message.startsWith(prefix);
+					});
 
-        int totalCnt = 0;
-        int collectCnt = 0;
-        if(!conventions.isEmpty()) {
-            log.info("컨벤션 분석 시작");
+					if (present) {
+						collectCnt++;
+					}
+				}
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 
-            Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(
-                repoOwner);
-
-            GHRepository ghRepository = repositories.get(repoEntity.getRepoKey());
-            if(ghRepository == null){
-                throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
-            }
-
-            try {
-                List<GHCommit> ghCommits = ghRepository.listCommits().toList();
-                for(GHCommit commit : ghCommits){
-                    totalCnt++;
-                    String message = commit.getCommitShortInfo().getMessage();
-
-                    boolean present = conventions.stream().anyMatch(convention -> {
-                        String prefix = convention.getRepoConventionType();
-                        return message.startsWith(prefix);
-                    });
-
-                    if(present){
-                        collectCnt++;
-                    }
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            log.info("컨벤션 분석 끝");
-        }
+			log.info("컨벤션 분석 끝");
+		}
 
         RepoConventionResponseDto responseDto = RepoConventionResponseDto.fronEntities(repoOwner, conventions, totalCnt, collectCnt);
         redisConventionRepository.save(responseDto);
@@ -409,12 +410,12 @@ public class RepoService {
     private void updateRepositoryInfo(RepoEntity repoEntity, GHRepository ghRepository, UserEntity userEntity){
         log.info("기존 레포지토리 업데이트 시작 => {}", repoEntity.getRepoName());
 
-        repoHistoryRepository.findFirstByRepoOrderByWorkedAtDesc(repoEntity).ifPresentOrElse(historyEntity -> {
-            LocalDate workedAt = historyEntity.getWorkedAt();
-            Date workDate = Date.from(workedAt.atStartOfDay(ZoneId.systemDefault()).toInstant());
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(workDate);
-            cal.add(Calendar.DATE, 1);
+		repoHistoryRepository.findFirstByRepoOrderByWorkedAtDesc(repoEntity).ifPresentOrElse(historyEntity -> {
+			LocalDate workedAt = historyEntity.getWorkedAt();
+			Date workDate = Date.from(workedAt.atStartOfDay(ZoneId.systemDefault()).toInstant());
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(workDate);
+			cal.add(Calendar.DATE, 1);
 
             Long exp = initRepositoryInfo(repoEntity, ghRepository, Date.from(cal.toInstant()));
             userEntity.updateTotalExp(exp);
@@ -428,14 +429,15 @@ public class RepoService {
             }
         });
 
-        log.info("기존 레포지토리 업데이트 종료 => {}", repoEntity.getRepoName());
-    }
+		log.info("기존 레포지토리 업데이트 종료 => {}", repoEntity.getRepoName());
+	}
 
 
-    public Boolean checkRepomonNickname(RepoRequestDto repoRequestDto) {
+	public Boolean checkRepomonNickname(String nickName) {
 
-        return repoRepository.existsByRepomonNickname(repoRequestDto.getRepomonNickname());
-    }
+		return repoRepository.existsByRepomonNickname(nickName);
+	}
+
 
 	public RepomonResponseDto createSelectRepomon() {
 		List<RepomonEntity> repomonList = repomonRepository.findTop3ByRandom();
@@ -460,14 +462,14 @@ public class RepoService {
             throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
         });
 
-        String repoOwner = repoEntity.getRepoOwner();
+		String repoOwner = repoEntity.getRepoOwner();
 
-        String repoKey = repoEntity.getRepoKey();
-        Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
-        GHRepository ghRepository = repositories.get(repoKey);
-        if(ghRepository == null){
-            throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
-        }
+		String repoKey = repoEntity.getRepoKey();
+		Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
+		GHRepository ghRepository = repositories.get(repoKey);
+		if (ghRepository == null) {
+			throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
+		}
 
         return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository);
     }

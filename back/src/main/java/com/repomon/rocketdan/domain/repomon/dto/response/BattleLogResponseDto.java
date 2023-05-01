@@ -1,4 +1,4 @@
-package com.repomon.rocketdan.domain.repomon.dto;
+package com.repomon.rocketdan.domain.repomon.dto.response;
 
 
 import com.repomon.rocketdan.domain.repomon.entity.BattleLogEntity;

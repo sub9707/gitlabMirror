@@ -2,13 +2,25 @@ package com.repomon.rocketdan.domain.repomon.controller;
 
 
 import com.repomon.rocketdan.common.dto.ResultDto;
-import com.repomon.rocketdan.domain.repomon.dto.*;
+import com.repomon.rocketdan.domain.repomon.dto.request.BattleLogRequestDto;
+import com.repomon.rocketdan.domain.repomon.dto.request.RepomonNicknameRequestDto;
+import com.repomon.rocketdan.domain.repomon.dto.request.RepomonStartStatusRequestDto;
+import com.repomon.rocketdan.domain.repomon.dto.request.RepomonStatusRequestDto;
+import com.repomon.rocketdan.domain.repomon.dto.response.BattleLogListResponseDto;
+import com.repomon.rocketdan.domain.repomon.dto.response.BattleLogResponseDto;
+import com.repomon.rocketdan.domain.repomon.dto.response.RepomonStatusResponseDto;
 import com.repomon.rocketdan.domain.repomon.service.RepomonService;
+import com.repomon.rocketdan.exception.CustomException;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+
+import static com.repomon.rocketdan.exception.ErrorCode.DATA_BAD_REQUEST;
 
 
 @RestController
@@ -23,8 +35,11 @@ public class RepomonController {
 	@PostMapping("/start")
 	@ApiOperation(value = "레포몬의 초기 정보를 등록합니다.")
 	public ResponseEntity<ResultDto<Boolean>> createRepomonStatus(
-		@RequestBody RepomonStatusRequestDto repomonStatusRequestDto) {
-		repomonService.createRepomonStatus(repomonStatusRequestDto);
+		@Valid @RequestBody RepomonStartStatusRequestDto repomonStartStatusRequestDto, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			throw new CustomException(DATA_BAD_REQUEST);
+		}
+		repomonService.createRepomonStatus(repomonStartStatusRequestDto);
 
 		return ResponseEntity.ok().body(ResultDto.ofSuccess());
 	}
@@ -74,7 +89,11 @@ public class RepomonController {
 	@PutMapping("/stat")
 	@ApiOperation(value = "레포몬의 스텟을 변경합니다.")
 	public ResponseEntity<ResultDto<Boolean>> modifyRepomonStatus(
-		@RequestBody RepomonStatusRequestDto repomonStatusRequestDto) {
+		@Valid @RequestBody RepomonStatusRequestDto repomonStatusRequestDto, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			throw new CustomException(DATA_BAD_REQUEST);
+		}
+
 		repomonService.modifyRepomonStatus(repomonStatusRequestDto);
 
 		return ResponseEntity.ok().body(ResultDto.ofSuccess());
@@ -84,8 +103,13 @@ public class RepomonController {
 	@PutMapping("/nickname")
 	@ApiOperation(value = "레포몬의 닉네임을 변경합니다.")
 	public ResponseEntity<ResultDto<Boolean>> modifyRepomonNickname(
-		@RequestBody RepomonStatusRequestDto repomonStatusRequestDto) {
-		repomonService.modifyRepomonNickname(repomonStatusRequestDto);
+		@Valid @RequestBody RepomonNicknameRequestDto repomonNicknameRequestDto, BindingResult bindingResult) {
+
+		if (bindingResult.hasErrors()) {
+			throw new CustomException(DATA_BAD_REQUEST);
+		}
+
+		repomonService.modifyRepomonNickname(repomonNicknameRequestDto);
 
 		return ResponseEntity.ok().body(ResultDto.ofSuccess());
 	}
