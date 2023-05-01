@@ -1,7 +1,7 @@
 package com.repomon.rocketdan.domain.user.service;
 
 
-import com.repomon.rocketdan.common.GHUtils;
+import com.repomon.rocketdan.common.utils.GHUtils;
 import com.repomon.rocketdan.domain.repo.app.RepoDetail;
 import com.repomon.rocketdan.domain.repo.app.RepoListItem;
 import com.repomon.rocketdan.domain.repo.entity.ActiveRepoEntity;

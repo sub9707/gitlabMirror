@@ -1,12 +1,9 @@
 package com.repomon.rocketdan.domain.user.dto;
 
 
-import com.repomon.rocketdan.domain.user.entity.UserCardEntity;
+import com.repomon.rocketdan.domain.user.entity.UserEntity;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Data
@@ -16,25 +13,17 @@ public class UserRankResponseDto {
 	private Long userId;
 	private Long totalExp;
 	private String username;
-	private Long repoCount;
+	private Long activeRepoCount;
 
 
-	public static UserRankResponseDto fromEntity(UserCardEntity userCard) {
+	public static UserRankResponseDto fromEntity(UserEntity user, Long activeRepoCount) {
+
 		return UserRankResponseDto.builder()
-			.userId(userCard.getUser().getUserId())
-			.totalExp(userCard.getTotalExp())
-			.username(userCard.getUser().getUserName())
+			.userId(user.getUserId())
+			.username(user.getUserName())
+			.totalExp(user.getTotalExp())
+			.activeRepoCount(activeRepoCount)
 			.build();
-	}
-
-
-	public static List<UserRankResponseDto> fromEntityList(List<UserCardEntity> userCardList) {
-		List<UserRankResponseDto> result = new ArrayList<>();
-		for (UserCardEntity usersCard : userCardList) {
-			UserRankResponseDto repoRankResponseDto = UserRankResponseDto.fromEntity(usersCard);
-			result.add(repoRankResponseDto);
-		}
-		return result;
 	}
 
 }
