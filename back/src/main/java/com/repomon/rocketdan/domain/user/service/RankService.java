@@ -6,17 +6,14 @@ import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.repository.ActiveRepoRepository;
 import com.repomon.rocketdan.domain.repo.repository.RepoRepository;
 import com.repomon.rocketdan.domain.user.dto.UserRankResponseDto;
-import com.repomon.rocketdan.domain.user.entity.UserCardEntity;
 import com.repomon.rocketdan.domain.user.repository.UserCardRepository;
+import com.repomon.rocketdan.exception.CustomException;
+import com.repomon.rocketdan.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Service
@@ -38,20 +35,21 @@ public class RankService {
 	 */
 	public Page<UserRankResponseDto> getUserRankList(String search, Pageable pageable) {
 
-		List<UserRankResponseDto> userRankResponseDtoList = new ArrayList<>();
-		Page<UserCardEntity> userCardEntityList;
-		if (search.isEmpty()) {
-			userCardEntityList = userCardRepository.findAll(pageable);
-		} else {
-			userCardEntityList = userCardRepository.findByUserNameContaining(search, pageable);
-		}
-		for (UserCardEntity userCard : userCardEntityList) {
-			Long repoCount = activeRepoRepository.countByUser_UserId(userCard.getUserId());
-			UserRankResponseDto userRankResponseDto = UserRankResponseDto.fromEntity(userCard);
-			userRankResponseDto.setRepoCount(repoCount);
-			userRankResponseDtoList.add(userRankResponseDto);
-		}
-		return new PageImpl<>(userRankResponseDtoList, pageable, userCardEntityList.getTotalElements());
+		//		List<UserRankResponseDto> userRankResponseDtoList = new ArrayList<>();
+		//		Page<UserCardEntity> userCardEntityList;
+		//		if (search.isEmpty()) {
+		//			userCardEntityList = userCardRepository.findAll(pageable);
+		//		} else {
+		//			userCardEntityList = userCardRepository.findByUserNameContaining(search, pageable);
+		//		}
+		//		for (UserCardEntity userCard : userCardEntityList) {
+		//			Long repoCount = activeRepoRepository.countByUser_UserId(userCard.getUser().getUserId());
+		//			UserRankResponseDto userRankResponseDto = UserRankResponseDto.fromEntity(userCard);
+		//			userRankResponseDto.setRepoCount(repoCount);
+		//			userRankResponseDtoList.add(userRankResponseDto);
+		//		}
+		throw new CustomException(ErrorCode.DATA_BAD_REQUEST);
+		//		return new PageImpl<>(userRankResponseDtoList, pageable, userCardEntityList.getTotalElements());
 	}
 
 
