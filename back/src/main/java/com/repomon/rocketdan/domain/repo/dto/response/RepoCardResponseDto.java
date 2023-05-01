@@ -1,16 +1,18 @@
 package com.repomon.rocketdan.domain.repo.dto.response;
 
+import com.repomon.rocketdan.domain.repo.app.GrowthFactor;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.stream.Collectors;
+
+import com.repomon.rocketdan.domain.repo.entity.RepoHistoryEntity;
 import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GHTag;
+
 
 
     @AllArgsConstructor
@@ -58,7 +60,7 @@ import org.kohsuke.github.GHTag;
         private Long totalcommit;
         private Long totalcode;
 
-        public static RepoCardResponseDto fromEntityAndGHRepository(RepoEntity repoEntity, GHRepository ghRepository) {
+        public static RepoCardResponseDto fromEntityAndGHRepository(RepoEntity repoEntity, GHRepository ghRepository, List<RepoHistoryEntity> historyEntityList) {
             try {
                 Map<String, Long> languageMap = ghRepository.listLanguages();
 
@@ -66,6 +68,32 @@ import org.kohsuke.github.GHTag;
 
                 languages.addAll(languageMap.keySet());
 
+                Long totalCommit = 0L;
+                Long commitsExp = 0L;
+                Long mergesExp = 0L;
+                Long issuesExp = 0L;
+                Long reviewsExp = 0L;
+
+                for (RepoHistoryEntity repoHistory : historyEntityList) {
+                    Integer repoHistoryType = repoHistory.getRepoHistoryType();
+                    GrowthFactor growthFactor = GrowthFactor.idxToEnum(repoHistoryType);
+
+                    switch(repoHistoryType){
+                        case 1:
+                            totalCommit += 1L;
+                            commitsExp += growthFactor.getExp();
+                            break;
+                        case 2:
+                            mergesExp += growthFactor.getExp();
+                            break;
+                        case 3:
+                            issuesExp += growthFactor.getExp();
+                            break;
+                        case 4:
+                            reviewsExp += growthFactor.getExp();
+                            break;
+                    }
+                }
 
                 return RepoCardResponseDto.builder()
                         .repoName(repoEntity.getRepoName())
@@ -77,16 +105,15 @@ import org.kohsuke.github.GHTag;
                         .repoStart(repoEntity.getRepoStart())
                         .repoEnd(repoEntity.getRepoEnd())
                         .languages(languages)
-                        .repoExp(repoEntity.getRepoExp())
                         .contributers(6)
-                        .commits(60L)
-                        .issues(80L)
-                        .merges(70L)
-                        .reviews(60L)
+                        .commits(commitsExp)
+                        .issues(issuesExp)
+                        .merges(mergesExp)
+                        .reviews(reviewsExp)
                         .efficiency(80)
                         .security(70)
-                        .totalcommit(17870L)
-                        .totalcode(1217870L)
+                        .totalcommit(totalCommit)
+                        .totalcode(125770L)
                         .build();
             } catch (IOException e) {
                 throw new RuntimeException(e);
