@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum GrowthFactor {
-    COMMIT(1, 10L), MERGE(2, 5L), ISSUE(3, 2L), REVIEW(4, 0L), SECURITY(5, 0L), EFFICIENCY(6, 0L);
+    COMMIT(1, 10L), MERGE(2, 50L), ISSUE(3, 20L), REVIEW(4, 20L), SECURITY(5, 0L), EFFICIENCY(6, 0L);
 
     Integer idx;
     Long exp;

@@ -180,22 +180,14 @@ public class RepoService {
 	}
 
 
-	/**
-	 * 레포 기여도 조회
-	 * 작성한 코드 수 or 커밋 수로 통계 내려주기
-	 *
-	 * @param repoId
-	 * @return
-	 */
-	public RepoContributeResponseDto getRepoContributeInfo(Long repoId) {
-		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-		});
+    /**
+     * repo card detail
+     */
 
-		String repoOwner = repoEntity.getRepoOwner();
-
-		RepoContributeResponseDto responseDto = redisContributeRepository.findByRepoOwner(repoOwner)
-			.orElseGet(() -> findContributeDtoWithGHApi(repoEntity, repoOwner));
+    public RepoCardResponseDto RepoCardDetail(Long repoId) {
+        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+        });
 
 		return responseDto;
 	}
