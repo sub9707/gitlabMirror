@@ -3,9 +3,12 @@
 .pageContainer {
   width: 85%;
   min-height: 100vh;
-  margin: 0 auto;
+  margin: 0 auto 2rem auto;
   padding: 70px 0 0 0;
   background: rgb(201, 226, 255);
+  box-shadow: 0 8px 20px rgb(240, 240, 240);
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
 
   .info {
     display: flex;
@@ -21,7 +24,7 @@
         width: 80%;
         height: 620px;
         background: rgba(255, 255, 255, 0.35);
-        box-shadow: 0 8px 15px 0 rgba(31, 38, 135, 0.37);
+        box-shadow: 0 8px 15px 0 rgba(31, 38, 135, 0.1);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
         border-radius: 10px;
@@ -33,6 +36,9 @@
           bottom: 2.7rem;
 
           & p {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             margin: 0 0 1rem 0;
             text-align: center;
             font-size: 2rem;
@@ -80,8 +86,28 @@
       }
 
       .date {
+        display: flex;
+        align-items: center;
         margin: 1% 0 0 0;
         font-size: 1.75rem;
+
+        .end {
+          margin-left: 0.45rem;
+          font-size: 1.25rem;
+          animation: twinkle 3s ease-in-out infinite;
+
+          @keyframes twinkle {
+            0% {
+              opacity: 1;
+            }
+            50% {
+              opacity: 0;
+            }
+            100% {
+              opacity: 1;
+            }
+          }
+        }
       }
 
       .lan-div {
@@ -197,5 +223,7 @@
     background-color: white;
     margin: 4rem 0 0 0;
     padding: 5%;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
   }
 }
