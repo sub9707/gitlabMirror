@@ -19,14 +19,16 @@ public class RepoContributeResponseDto {
     @Indexed
     private String repoOwner;
     private int totalCommitCount;
+    private long totalLineCount;
     private Map<String, Integer> committers;
     private String mvp;
 
 
-    public static RepoContributeResponseDto of(int totalCommitCount,
+    public static RepoContributeResponseDto of(int totalCommitCount, long totalLineCount,
         Map<String, Integer> committers, String mvp, String repoOwner) {
         return RepoContributeResponseDto.builder()
             .totalCommitCount(totalCommitCount)
+            .totalLineCount(totalLineCount)
             .committers(committers)
             .mvp(mvp)
             .repoOwner(repoOwner)

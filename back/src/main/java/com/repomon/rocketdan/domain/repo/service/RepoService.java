@@ -23,11 +23,16 @@ import com.repomon.rocketdan.domain.user.repository.UserRepository;
 import com.repomon.rocketdan.domain.user.service.RankService;
 import com.repomon.rocketdan.exception.CustomException;
 import com.repomon.rocketdan.exception.ErrorCode;
+import java.util.Map.Entry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHRepository.Contributor;
+import org.kohsuke.github.GHRepositoryStatistics;
+import org.kohsuke.github.GHRepositoryStatistics.CodeFrequency;
+import org.kohsuke.github.GHRepositoryStatistics.ContributorStats;
+import org.kohsuke.github.GHRepositoryStatistics.ContributorStats.Week;
 import org.kohsuke.github.PagedIterable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -199,7 +204,8 @@ public class RepoService {
      * @param repoId
      */
     public void modifyRepoInfo(Long repoId) {
-        Long userId = Long.valueOf(SecurityUtils.getCurrentUserId());
+        Long userId = 2L;
+//        Long userId = Long.valueOf(SecurityUtils.getCurrentUserId());
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> {
             throw new CustomException(ErrorCode.NOT_FOUND_USER);
         });
@@ -280,17 +286,12 @@ public class RepoService {
                                 throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
                             });
 
-                        RepomonStatusEntity repomonStatusEntity = RepomonStatusEntity.fromGHRepository(
-                            ghRepository,
-                            repomonEntity);
+                        RepomonStatusEntity repomonStatusEntity = RepomonStatusEntity.fromGHRepository(ghRepository, repomonEntity);
                         repomonStatusRepository.save(repomonStatusEntity);
                         activeRepoRepository.save(
                             ActiveRepoEntity.of(userEntity, repomonStatusEntity));
 
-                        Date createdAt = Date.from(LocalDate.of(2000, 1, 1)
-                            .atStartOfDay(ZoneId.systemDefault())
-                            .toInstant());
-                        Long exp = initRepositoryInfo(repomonStatusEntity, ghRepository, createdAt);
+                        Long exp = initRepositoryInfo(repomonStatusEntity, ghRepository, null);
                         userEntity.updateTotalExp(exp);
                     });
         });
@@ -307,36 +308,30 @@ public class RepoService {
 		}
 
 		try {
-			int totalCommitCount = ghRepository
-				.queryCommits().list()
-				.toList().size();
+            GHRepositoryStatistics statistics = ghRepository.getStatistics();
 
-			Map<String, Integer> commitCountMap = new HashMap<>();
-			PagedIterable<Contributor> contributors = ghRepository.listContributors();
-			for (Contributor contributor : contributors) {
-				String author = contributor.getLogin();
-				int authorCommitCnt = ghRepository.queryCommits()
-					.author(author).list()
-					.toList().size();
+            long totalLineCount = ghUtils.getTotalLineCount(statistics);
+            Map<String, Integer> commitCountMap = ghUtils.getCommitterInfoMap(statistics);
 
-				commitCountMap.put(author, authorCommitCnt);
-			}
-
-			String mvp = null;
-			for (String user : commitCountMap.keySet()) {
+            String mvp = null;
+            int totalCommitCount = 0;
+            for (String user : commitCountMap.keySet()) {
 				if (mvp == null || commitCountMap.get(user) > commitCountMap.get(mvp)) {
 					mvp = user;
 				}
+                totalCommitCount += commitCountMap.get(user);
 			}
 
-			RepoContributeResponseDto responseDto = RepoContributeResponseDto.of(totalCommitCount, commitCountMap, mvp, repoOwner);
+			RepoContributeResponseDto responseDto = RepoContributeResponseDto.of(totalCommitCount, totalLineCount, commitCountMap, mvp, repoOwner);
 
 			redisContributeRepository.save(responseDto);
 			return responseDto;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
-		}
-	}
+		} catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
 	private RepoConventionResponseDto findConventionDtoWithGHApi(RepoEntity repoEntity, String repoOwner) {
@@ -419,14 +414,11 @@ public class RepoService {
 
             Long exp = initRepositoryInfo(repoEntity, ghRepository, Date.from(cal.toInstant()));
             userEntity.updateTotalExp(exp);
+            repoEntity.updateExp(exp);
         }, () -> {
-            try {
-                Date createdAt = ghRepository.getCreatedAt();
-                Long exp = initRepositoryInfo(repoEntity, ghRepository, createdAt);
-                userEntity.updateTotalExp(exp);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            Long exp = initRepositoryInfo(repoEntity, ghRepository, null);
+            userEntity.updateTotalExp(exp);
+            repoEntity.updateExp(exp);
         });
 
 		log.info("기존 레포지토리 업데이트 종료 => {}", repoEntity.getRepoName());
@@ -434,14 +426,12 @@ public class RepoService {
 
 
 	public Boolean checkRepomonNickname(String nickName) {
-
 		return repoRepository.existsByRepomonNickname(nickName);
 	}
 
 
 	public RepomonResponseDto createSelectRepomon() {
 		List<RepomonEntity> repomonList = repomonRepository.findTop3ByRandom();
-
 		return RepomonResponseDto.createSelectRepomon(repomonList);
 	}
 
