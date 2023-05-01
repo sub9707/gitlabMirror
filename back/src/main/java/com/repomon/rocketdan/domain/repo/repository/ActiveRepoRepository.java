@@ -19,6 +19,6 @@ public interface ActiveRepoRepository extends JpaRepository<ActiveRepoEntity, Lo
 	Long countByUser_UserId(Long userId);
 
 	List<ActiveRepoEntity> findAllByUser(UserEntity user);
+	List<ActiveRepoEntity> findAllByRepo(RepoEntity user);
 
-    boolean existsByUserAndRepo(UserEntity userEntity, RepoEntity repoEntity);
 }
