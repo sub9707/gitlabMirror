@@ -1,12 +1,18 @@
 package com.repomon.rocketdan.domain.repo.service;
 
 
-import com.repomon.rocketdan.common.GHUtils;
+import com.repomon.rocketdan.common.utils.GHUtils;
+import com.repomon.rocketdan.common.utils.SecurityUtils;
 import com.repomon.rocketdan.domain.repo.app.RepoDetail;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoConventionRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoPeriodRequestDto;
+import com.repomon.rocketdan.domain.repo.dto.request.RepoRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.response.*;
-import com.repomon.rocketdan.domain.repo.entity.*;
+import com.repomon.rocketdan.domain.repo.entity.ActiveRepoEntity;
+import com.repomon.rocketdan.domain.repo.entity.RepoConventionEntity;
+import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
+import com.repomon.rocketdan.domain.repo.entity.RepoHistoryEntity;
+import com.repomon.rocketdan.domain.repo.entity.RepomonEntity;
 import com.repomon.rocketdan.domain.repo.repository.*;
 import com.repomon.rocketdan.domain.repo.repository.redis.RepoRedisContributeRepository;
 import com.repomon.rocketdan.domain.repo.repository.redis.RepoRedisConventionRepository;
@@ -35,261 +41,260 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
-@Service
-@Slf4j
+@Service @Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class RepoService {
 
-	private final GHUtils ghUtils;
-	private final RankService rankService;
-	private final UserRepository userRepository;
-	private final RepoRepository repoRepository;
-	private final RepomonRepository repomonRepository;
-	private final RepomonStatusRepository repomonStatusRepository;
-	private final RepoHistoryRepository repoHistoryRepository;
-	private final RepoConventionRepository conventionRepository;
-	private final ActiveRepoRepository activeRepoRepository;
+    private final GHUtils ghUtils;
+    private final RankService rankService;
+    private final UserRepository userRepository;
+    private final RepoRepository repoRepository;
+    private final RepomonRepository repomonRepository;
+    private final RepomonStatusRepository repomonStatusRepository;
+    private final RepoHistoryRepository repoHistoryRepository;
+    private final RepoConventionRepository conventionRepository;
+    private final ActiveRepoRepository activeRepoRepository;
 
-	// redis repository
-	private final RepoRedisContributeRepository redisContributeRepository;
-	private final RepoRedisConventionRepository redisConventionRepository;
-
-
-	/**
-	 * 레포 전체 조회
-	 *
-	 * @param userId
-	 * @param pageable
-	 * @return
-	 */
-	public RepoListResponseDto getUserRepoList(Long userId, Pageable pageable) {
-		UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> {
-			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-		});
-
-		String userName = userEntity.getUserName();
-		Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(userName);
-
-		saveAndUpdateRepo(repositories, userEntity);
-
-		Page<ActiveRepoEntity> activeRepoPage = activeRepoRepository.findByUser(userEntity, pageable);
-		List<RepoDetail> repoDetails = activeRepoPage.stream()
-			.map(activeRepoEntity -> {
-				RepoEntity repoEntity = activeRepoEntity.getRepo();
-				GHRepository ghRepository = repositories.get(repoEntity.getRepoKey());
-				return ActiveRepoEntity.convertToRepo(activeRepoEntity, ghRepository);
-			}).collect(Collectors.toList());
-
-		long totalElements = activeRepoPage.getTotalElements();
-		int totalPages = activeRepoPage.getTotalPages();
-		return RepoListResponseDto.fromDetails(repoDetails, totalElements, totalPages);
-	}
-
-
-	/**
-	 * 레포 상세 조회
-	 * 레포 이름, 스타, 포크 수
-	 * 레포몬 이름, 레포 시작날짜, 종료날짜
-	 * 경험치, 랭킹, 성장요소 ( 히스토리 분석 ), 히스토리
-	 *
-	 * @param repoId
-	 * @return
-	 */
-	public RepoResponseDto getUserRepoInfo(Long repoId) {
-		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-		});
-
-		String repoOwner = repoEntity.getRepoOwner();
-
-		String repoKey = repoEntity.getRepoKey();
-		Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
-		GHRepository ghRepository = repositories.get(repoKey);
-		if (ghRepository == null) {
-			throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
-		}
-
-		return RepoResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository);
-	}
-
-
-	/**
-	 * 레포 분석 조회
-	 * 경험치, 랭킹
-	 * 커밋, 머지, 이슈, 리뷰, 보안성, 효율성
-	 * 레포 히스토리 데이터 내려주기
-	 *
-	 * @param repoId
-	 * @return
-	 */
-	public RepoResearchResponseDto getRepoResearchInfo(Long repoId) {
-		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-		});
-
-		Long rank = rankService.getRepoRank(repoEntity);
-
-		List<RepoHistoryEntity> historyEntityList = repoHistoryRepository.findAllByRepo(repoEntity);
-
-		return RepoResearchResponseDto.fromHistoryAndRank(historyEntityList, rank, repoEntity.getRepoExp());
-	}
-
-
-	/**
-	 * 레포 배틀 조회
-	 * 레이팅, 랭킹, 승, 패
-	 * 능력치 내려주기
-	 *
-	 * @param repoId
-	 * @return
-	 */
-
-	public RepoBattleResponseDto getRepoBattleInfo(Long repoId) {
-		RepomonStatusEntity repomonStatusEntity = repomonStatusRepository.findByRepoId(repoId)
-			.orElseThrow(() -> {
-				throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-			});
-
-		Long rank = rankService.getRepomonRank(repomonStatusEntity);
-
-		return RepoBattleResponseDto.fromStatusEntity(repomonStatusEntity, rank);
-	}
-
-
-	/**
-	 * 레포 컨벤션 조회
-	 * 현재 등록된 컨벤션 목록
-	 * 컨벤션 준수율 내려주기
-	 *
-	 * @param repoId
-	 * @return
-	 */
-	public RepoConventionResponseDto getRepoConventionInfo(Long repoId) {
-		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-		});
-		String repoOwner = repoEntity.getRepoOwner();
-
-		RepoConventionResponseDto responseDto = redisConventionRepository.findByRepoOwner(
-				repoOwner)
-			.orElseGet(() -> findConventionDtoWithGHApi(repoEntity, repoOwner));
-
-		return responseDto;
-	}
-
+    // redis repository
+    private final RepoRedisContributeRepository redisContributeRepository;
+    private final RepoRedisConventionRepository redisConventionRepository;
 
     /**
-     * repo card detail
+     * 레포 전체 조회
+     * @param userId
+     * @param pageable
+     * @return
      */
+    public RepoListResponseDto getUserRepoList(Long userId, Pageable pageable){
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(() ->{
+            throw new CustomException(ErrorCode.NOT_FOUND_USER);
+        });
 
-    public RepoCardResponseDto RepoCardDetail(Long repoId) {
+        String userName = userEntity.getUserName();
+        Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(userName);
+
+        saveAndUpdateRepo(repositories, userEntity);
+
+
+        Page<ActiveRepoEntity> activeRepoPage = activeRepoRepository.findByUser(userEntity, pageable);
+        List<RepoDetail> repoDetails = activeRepoPage.stream()
+            .map(activeRepoEntity -> {
+                RepoEntity repoEntity = activeRepoEntity.getRepo();
+                GHRepository ghRepository = repositories.get(repoEntity.getRepoKey());
+                return ActiveRepoEntity.convertToRepo(activeRepoEntity, ghRepository);
+            }).collect(Collectors.toList());
+
+        long totalElements = activeRepoPage.getTotalElements();
+        int totalPages = activeRepoPage.getTotalPages();
+        return RepoListResponseDto.fromDetails(repoDetails, totalElements, totalPages);
+    }
+
+    /**
+     * 레포 상세 조회
+     * 레포 이름, 스타, 포크 수
+     * 레포몬 이름, 레포 시작날짜, 종료날짜
+     * 경험치, 랭킹, 성장요소 ( 히스토리 분석 ), 히스토리
+     * @param repoId
+     * @return
+     */
+    public RepoResponseDto getUserRepoInfo(Long repoId) {
         RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
             throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
         });
 
-		return responseDto;
-	}
+        String repoOwner = repoEntity.getRepoOwner();
+
+        String repoKey = repoEntity.getRepoKey();
+        Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
+        GHRepository ghRepository = repositories.get(repoKey);
+        if(ghRepository == null){
+            throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
+        }
+
+        return RepoResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository);
+    }
+
+    /**
+     * 레포 분석 조회
+     * 경험치, 랭킹
+     * 커밋, 머지, 이슈, 리뷰, 보안성, 효율성
+     * 레포 히스토리 데이터 내려주기
+     * @param repoId
+     * @return
+     */
+    public RepoResearchResponseDto getRepoResearchInfo(Long repoId){
+        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+        });
+
+        Long rank = rankService.getRepoRank(repoEntity);
 
 
-	/**
-	 * 레포 정보 갱신
-	 *
-	 * @param repoId
-	 */
-	public void modifyRepoInfo(Long repoId) {
-		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-		});
+        List<RepoHistoryEntity> historyEntityList = repoHistoryRepository.findAllByRepo(repoEntity);
 
-		String repoOwner = repoEntity.getRepoOwner();
-		Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
+        return RepoResearchResponseDto.fromHistoryAndRank(historyEntityList, rank, repoEntity.getRepoExp());
+    }
 
-		String repoKey = repoEntity.getRepoKey();
-		GHRepository ghRepository = repositories.get(repoKey);
-		if (ghRepository == null) {
-			throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
-		}
+    /**
+     * 레포 배틀 조회
+     * 레이팅, 랭킹, 승, 패
+     * 능력치 내려주기
+     * @param repoId
+     * @return
+     */
 
-		updateRepositoryInfo(repoEntity, ghRepository);
-	}
+    public RepoBattleResponseDto getRepoBattleInfo(Long repoId){
+        RepomonStatusEntity repomonStatusEntity = repomonStatusRepository.findByRepoId(repoId)
+            .orElseThrow(() -> {
+                throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+            });
+
+        Long rank = rankService.getRepomonRank(repomonStatusEntity);
+
+        return RepoBattleResponseDto.fromStatusEntity(repomonStatusEntity, rank);
+    }
+
+    /**
+     * 레포 컨벤션 조회
+     * 현재 등록된 컨벤션 목록
+     * 컨벤션 준수율 내려주기
+     * @param repoId
+     * @return
+     */
+    public RepoConventionResponseDto getRepoConventionInfo(Long repoId){
+        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+        });
+        String repoOwner = repoEntity.getRepoOwner();
+
+        RepoConventionResponseDto responseDto = redisConventionRepository.findByRepoOwner(
+                repoOwner)
+            .orElseGet(() -> findConventionDtoWithGHApi(repoEntity, repoOwner));
+
+        return responseDto;
+    }
+
+    /**
+     * 레포 기여도 조회
+     * 작성한 코드 수 or 커밋 수로 통계 내려주기
+     * @param repoId
+     * @return
+     */
+    public RepoContributeResponseDto getRepoContributeInfo(Long repoId){
+        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+        });
+
+        String repoOwner = repoEntity.getRepoOwner();
+
+        RepoContributeResponseDto responseDto = redisContributeRepository.findByRepoOwner(repoOwner)
+            .orElseGet(() -> findContributeDtoWithGHApi(repoEntity, repoOwner));
+
+        return responseDto;
+    }
+
+    /**
+     * 레포 정보 갱신
+     * @param repoId
+     */
+    public void modifyRepoInfo(Long repoId) {
+        Long userId = Long.valueOf(SecurityUtils.getCurrentUserId());
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.NOT_FOUND_USER);
+        });
+
+        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+        });
+
+        if(!activeRepoRepository.existsByUserAndRepo(userEntity, repoEntity)){
+            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+        };
+
+        String repoOwner = repoEntity.getRepoOwner();
+        Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
+
+        String repoKey = repoEntity.getRepoKey();
+        GHRepository ghRepository = repositories.get(repoKey);
+        if(ghRepository == null){
+            throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
+        }
+
+        updateRepositoryInfo(repoEntity, ghRepository, userEntity);
+    }
 
 
-	/**
-	 * 레포 기간 설정
-	 *
-	 * @param repoId
-	 * @param requestDto
-	 */
-	public void modifyRepoPeriod(Long repoId, RepoPeriodRequestDto requestDto) {
-		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-		});
+    /**
+     * 레포 기간 설정
+     * @param repoId
+     * @param requestDto
+     */
+    public void modifyRepoPeriod(Long repoId, RepoPeriodRequestDto requestDto) {
+        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+        });
 
-		LocalDateTime startedAt = requestDto.getStartedAt();
-		LocalDateTime endAt = requestDto.getEndAt();
-		repoEntity.updatePeriod(startedAt, endAt);
-	}
+        LocalDateTime startedAt = requestDto.getStartedAt();
+        LocalDateTime endAt = requestDto.getEndAt();
+        repoEntity.updatePeriod(startedAt, endAt);
+    }
 
+    /**
+     * 레포 컨벤션 수정 및 등록
+     * @param repoId
+     * @param requestDto
+     */
+    public void modifyRepoConvention(Long repoId, RepoConventionRequestDto requestDto) {
+        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+        });
 
-	/**
-	 * 레포 컨벤션 수정 및 등록
-	 *
-	 * @param repoId
-	 * @param requestDto
-	 */
-	public void modifyRepoConvention(Long repoId, RepoConventionRequestDto requestDto) {
-		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-		});
+        conventionRepository.deleteAllByRepo(repoEntity);
+        List<RepoConventionEntity> entities = requestDto.toEntities(repoEntity);
+        conventionRepository.saveAll(entities);
+    }
 
-		conventionRepository.deleteAllByRepo(repoEntity);
-		List<RepoConventionEntity> entities = requestDto.toEntities(repoEntity);
-		conventionRepository.saveAll(entities);
-	}
+    /**
+     * 레포 활성화
+     * @param repoId
+     */
+    public void activateRepo(Long repoId) {
+        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+        });
 
+        if(repoEntity.getIsActive()){
+            repoEntity.deActivate();
+        }else{
+            repoEntity.activate();
+        }
+    }
 
-	/**
-	 * 레포 활성화
-	 *
-	 * @param repoId
-	 */
-	public void activateRepo(Long repoId) {
-		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-		});
+    private void saveAndUpdateRepo(Map<String, GHRepository> repositories, UserEntity userEntity) {
+        repositories.forEach((repoKey, ghRepository) -> {
+            repoRepository.findByRepoKey(repoKey).ifPresentOrElse(repoEntity -> repoEntity.update(ghRepository),
+                    () -> {
+                        RepomonEntity repomonEntity = repomonRepository.findById(9999L)
+                            .orElseThrow(() -> {
+                                throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+                            });
 
-		if (repoEntity.getIsActive()) {
-			repoEntity.deActivate();
-		} else {
-			repoEntity.activate();
-		}
-	}
+                        RepomonStatusEntity repomonStatusEntity = RepomonStatusEntity.fromGHRepository(
+                            ghRepository,
+                            repomonEntity);
+                        repomonStatusRepository.save(repomonStatusEntity);
+                        activeRepoRepository.save(
+                            ActiveRepoEntity.of(userEntity, repomonStatusEntity));
 
-
-	private void saveAndUpdateRepo(Map<String, GHRepository> repositories, UserEntity userEntity) {
-		repositories.forEach((s, ghRepository) -> {
-			repoRepository.findByRepoKey(s).ifPresentOrElse(repoEntity -> repoEntity.update(ghRepository),
-				() -> {
-					RepomonEntity repomonEntity = repomonRepository.findById(9999L).orElseThrow(() -> {
-						throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-					});
-
-					RepomonStatusEntity repomonStatusEntity = RepomonStatusEntity.fromGHRepository(ghRepository,
-						repomonEntity);
-					repomonStatusRepository.save(repomonStatusEntity);
-					activeRepoRepository.save(ActiveRepoEntity.of(userEntity, repomonStatusEntity));
-
-					try {
-						Date createdAt = ghRepository.getCreatedAt();
-						initRepositoryInfo(repomonStatusEntity, ghRepository, createdAt);
-					} catch (IOException e) {
-						throw new RuntimeException(e);
-					}
-				});
-		});
-	}
+                        Date createdAt = Date.from(LocalDate.of(2000, 1, 1)
+                            .atStartOfDay(ZoneId.systemDefault())
+                            .toInstant());
+                        Long exp = initRepositoryInfo(repomonStatusEntity, ghRepository, createdAt);
+                        userEntity.updateTotalExp(exp);
+                    });
+        });
+    }
 
 
 	private RepoContributeResponseDto findContributeDtoWithGHApi(RepoEntity repoEntity, String repoOwner) {
@@ -372,38 +377,38 @@ public class RepoService {
 			log.info("컨벤션 분석 끝");
 		}
 
-		RepoConventionResponseDto responseDto = RepoConventionResponseDto.fronEntities(repoOwner, conventions, totalCnt, collectCnt);
-		redisConventionRepository.save(responseDto);
-		return responseDto;
-	}
+        RepoConventionResponseDto responseDto = RepoConventionResponseDto.fronEntities(repoOwner, conventions, totalCnt, collectCnt);
+        redisConventionRepository.save(responseDto);
+        return responseDto;
+    }
+    private Long initRepositoryInfo(RepoEntity repoEntity, GHRepository ghRepository, Date fromDate) {
+        log.info("레포지토리 분석 시작 => {}", repoEntity.getRepoName());
+        try {
+            List<RepoHistoryEntity> list = new ArrayList<>();
+            list.addAll(ghUtils.GHCommitToHistory(ghRepository, repoEntity, fromDate));
+            list.addAll(ghUtils.GHPullRequestToHistory(ghRepository, repoEntity, fromDate));
+            list.addAll(ghUtils.GHIssueToHistory(ghRepository, repoEntity, fromDate));
 
+            // 효율성 ? 보안성 ?
 
-	private void initRepositoryInfo(RepoEntity repoEntity, GHRepository ghRepository, Date fromDate) {
-		log.info("레포지토리 분석 시작 => {}", repoEntity.getRepoName());
-		try {
-			List<RepoHistoryEntity> list = new ArrayList<>();
-			list.addAll(ghUtils.GHCommitToHistory(ghRepository, repoEntity, fromDate));
-			list.addAll(ghUtils.GHPullRequestToHistory(ghRepository, repoEntity, fromDate));
-			list.addAll(ghUtils.GHIssueToHistory(ghRepository, repoEntity, fromDate));
+            Long totalExp = 0L;
+            for(RepoHistoryEntity item : list){
+                totalExp += item.getRepoHistoryExp();
+            }
 
-			// 효율성 ? 보안성 ?
+            repoEntity.updateExp(totalExp);
+            repoHistoryRepository.saveAll(list);
 
-			Long totalExp = 0L;
-			for (RepoHistoryEntity item : list) {
-				totalExp += item.getRepoHistoryExp();
-			}
+            log.info("레포지토리 분석 종료 => {}", repoEntity.getRepoName());
 
-			repoEntity.updateExp(totalExp);
-			repoHistoryRepository.saveAll(list);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		log.info("레포지토리 분석 종료 => {}", repoEntity.getRepoName());
-	}
+            return totalExp;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-
-	private void updateRepositoryInfo(RepoEntity repoEntity, GHRepository ghRepository) {
-		log.info("기존 레포지토리 업데이트 시작 => {}", repoEntity.getRepoName());
+    private void updateRepositoryInfo(RepoEntity repoEntity, GHRepository ghRepository, UserEntity userEntity){
+        log.info("기존 레포지토리 업데이트 시작 => {}", repoEntity.getRepoName());
 
 		repoHistoryRepository.findFirstByRepoOrderByWorkedAtDesc(repoEntity).ifPresentOrElse(historyEntity -> {
 			LocalDate workedAt = historyEntity.getWorkedAt();
@@ -412,15 +417,17 @@ public class RepoService {
 			cal.setTime(workDate);
 			cal.add(Calendar.DATE, 1);
 
-			initRepositoryInfo(repoEntity, ghRepository, Date.from(cal.toInstant()));
-		}, () -> {
-			try {
-				Date createdAt = ghRepository.getCreatedAt();
-				initRepositoryInfo(repoEntity, ghRepository, createdAt);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		});
+            Long exp = initRepositoryInfo(repoEntity, ghRepository, Date.from(cal.toInstant()));
+            userEntity.updateTotalExp(exp);
+        }, () -> {
+            try {
+                Date createdAt = ghRepository.getCreatedAt();
+                Long exp = initRepositoryInfo(repoEntity, ghRepository, createdAt);
+                userEntity.updateTotalExp(exp);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
 		log.info("기존 레포지토리 업데이트 종료 => {}", repoEntity.getRepoName());
 	}
@@ -439,22 +446,21 @@ public class RepoService {
 	}
 
 
-	/**
-	 * 레포 detail
-	 * 레포 이름
-	 * 레포 기간
-	 * 레포 포크, 스타
-	 * 레포 description
-	 * 레포 언어
-	 * 전체 커밋, 코드, 보안성, 효율성
-	 * 레포몬, 전체 경험치
-	 * 컨트리뷰터 수
-	 */
-
-	public RepoCardResponseDto RepoCardDetail(Long repoId) {
-		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-		});
+    /**
+     * 레포 detail
+     * 레포 이름
+     * 레포 기간
+     * 레포 포크, 스타
+     * 레포 description
+     * 레포 언어
+     * 전체 커밋, 코드, 보안성, 효율성
+     * 레포몬, 전체 경험치
+     * 컨트리뷰터 수
+     */
+    public RepoCardResponseDto RepoCardDetail(Long repoId) {
+        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+        });
 
 		String repoOwner = repoEntity.getRepoOwner();
 
@@ -465,7 +471,8 @@ public class RepoService {
 			throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
 		}
 
-		return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository);
-	}
+        return null;
+//        return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository);
+    }
 
 }

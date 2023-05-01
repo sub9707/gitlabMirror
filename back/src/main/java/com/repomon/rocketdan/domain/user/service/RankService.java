@@ -6,7 +6,6 @@ import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.repository.ActiveRepoRepository;
 import com.repomon.rocketdan.domain.repo.repository.RepoRepository;
 import com.repomon.rocketdan.domain.user.dto.UserRankResponseDto;
-import com.repomon.rocketdan.domain.user.repository.UserCardRepository;
 import com.repomon.rocketdan.exception.CustomException;
 import com.repomon.rocketdan.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
 public class RankService {
 
 	private final RepoRepository repoRepository;
-	private final UserCardRepository userCardRepository;
 	private final ActiveRepoRepository activeRepoRepository;
 
 

@@ -35,7 +35,11 @@ public class AuthService {
 	public Long login(String userName) {
 
 		UserEntity user = userRepository.findByUserName(userName).orElseGet(() -> {
-			UserEntity userEntity = UserEntity.builder().userName(userName).build();
+			UserEntity userEntity = UserEntity.builder()
+				.userName(userName)
+				.totalExp(0L)
+				.build();
+
 			return userRepository.save(userEntity);
 		});
 
