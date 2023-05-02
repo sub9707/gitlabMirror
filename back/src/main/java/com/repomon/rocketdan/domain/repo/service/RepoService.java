@@ -465,9 +465,18 @@ public class RepoService {
 		if (ghRepository == null) {
 			throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
 		}
+        List<RepoHistoryEntity> historyEntityList = repoHistoryRepository.findAllByRepo(repoEntity);
 
-        return null;
-//        return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository);
+        GHRepositoryStatistics statistics = ghRepository.getStatistics();
+
+        long totalLineCount = 0;
+        try {
+            totalLineCount = ghUtils.getTotalLineCount(statistics);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository,historyEntityList, totalLineCount);
     }
 
 }
