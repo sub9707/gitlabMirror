@@ -46,7 +46,14 @@ public class SecurityConfig{
             .accessDeniedHandler(jwtAccessDeniedHandler)
             .and()
             .authorizeRequests()
-            .antMatchers("/login/success", "/repomon/nickname").authenticated() // 권한이 필요한 요청은 /user/** 패턴으로 지정
+            .antMatchers("/login/success")
+            .authenticated()
+            .antMatchers("/repo/{repoId}/info/convention", "/repo/{repoId}/info/period", "/repo/{repoId}/info/active")
+            .authenticated()
+            .antMatchers("/repomon/{repoId}/match", "/repomon/nickname", "/repomon/start", "/repomon/stat")
+            .authenticated()
+            .antMatchers("/user/{userId}/represent")
+            .authenticated()
             .anyRequest().permitAll() // 그 외 요청은 모두 permitAll 처리
             .and()
                 .addFilterBefore(jwtExceptionFilter, OAuth2LoginAuthenticationFilter.class)
