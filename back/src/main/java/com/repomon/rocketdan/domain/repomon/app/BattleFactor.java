@@ -8,9 +8,8 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum BattleFactor {
-	ATTACK(1, "attack"), CRITICAL(2, "critical"), SKILL(3, "skill"), DODGE(1, "dodge"), ATTACKED(2, "attacked");
+	ATTACK(1), CRITICAL(2), SKILL(3), DODGE(1), ATTACKED(2);
 
 	Integer idx;
-	String act;
 
 }
