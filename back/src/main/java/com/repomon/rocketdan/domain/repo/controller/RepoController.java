@@ -120,7 +120,7 @@ public class RepoController {
 		return ResponseEntity.ok().build();
 	}
 
-	@ApiOperation(value = "대표레포카드 정보")
+	@ApiOperation(value = "대표 레포 카드 정보")
 	@GetMapping("/{repoId}/card/detail")
 	public ResponseEntity<RepoCardResponseDto> getRepoCardDetail(Long repoId) {
 		RepoCardResponseDto responseDto = repoService.RepoCardDetail(repoId);
@@ -128,10 +128,11 @@ public class RepoController {
 	}
 
 
-	@ApiOperation(value = "개인레포카드 조회")
+	@ApiOperation(value = "개인 레포 카드 정보")
 	@GetMapping("/{repoId}/card/personal")
-	public ResponseEntity<RepoCardResponseDto> getPersonalRepoCard(Long repoId) {
-		return ResponseEntity.ok().build();
+	public ResponseEntity<RepoPersonalCardResponseDto> getPersonalRepoCard(Long repoId,Long userId) {
+		RepoPersonalCardResponseDto responseDto = repoService.RepoPersonalCardDetail(repoId, userId);
+		return ResponseEntity.ok(responseDto);
 	}
 
 
