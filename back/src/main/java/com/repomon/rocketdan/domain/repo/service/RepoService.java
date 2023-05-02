@@ -7,11 +7,7 @@ import com.repomon.rocketdan.domain.repo.app.RepoDetail;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoConventionRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoPeriodRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.response.*;
-import com.repomon.rocketdan.domain.repo.entity.ActiveRepoEntity;
-import com.repomon.rocketdan.domain.repo.entity.RepoConventionEntity;
-import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
-import com.repomon.rocketdan.domain.repo.entity.RepoHistoryEntity;
-import com.repomon.rocketdan.domain.repo.entity.RepomonEntity;
+import com.repomon.rocketdan.domain.repo.entity.*;
 import com.repomon.rocketdan.domain.repo.repository.*;
 import com.repomon.rocketdan.domain.repo.repository.redis.RepoRedisContributeRepository;
 import com.repomon.rocketdan.domain.repo.repository.redis.RepoRedisConventionRepository;
@@ -244,19 +240,20 @@ public class RepoService {
      * @param requestDto
      */
     public void modifyRepoPeriod(Long repoId, RepoPeriodRequestDto requestDto) {
-        String userName = SecurityUtils.getCurrentUserId();
 
-        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-        });
+	    String userName = SecurityUtils.getCurrentUserId();
 
-        if(!repoEntity.getRepoOwner().equals(userName)){
-            throw new CustomException(ErrorCode.NO_ACCESS);
-        }
+	    RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+		    throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+	    });
 
-        LocalDateTime startedAt = requestDto.getStartedAt();
-        LocalDateTime endAt = requestDto.getEndAt();
-        repoEntity.updatePeriod(startedAt, endAt);
+	    if (!repoEntity.getRepoOwner().equals(userName)) {
+		    throw new CustomException(ErrorCode.NO_ACCESS);
+	    }
+
+	    LocalDateTime startedAt = requestDto.getStartedAt();
+	    LocalDateTime endAt = requestDto.getEndAt();
+	    repoEntity.updatePeriod(startedAt, endAt);
     }
 
     /**
@@ -265,19 +262,20 @@ public class RepoService {
      * @param requestDto
      */
     public void modifyRepoConvention(Long repoId, RepoConventionRequestDto requestDto) {
-        String userName = SecurityUtils.getCurrentUserId();
 
-        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-        });
+	    String userName = SecurityUtils.getCurrentUserId();
 
-        if(!repoEntity.getRepoOwner().equals(userName)){
-            throw new CustomException(ErrorCode.NO_ACCESS);
-        }
+	    RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+		    throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+	    });
 
-        conventionRepository.deleteAllByRepo(repoEntity);
-        List<RepoConventionEntity> entities = requestDto.toEntities(repoEntity);
-        conventionRepository.saveAll(entities);
+	    if (!repoEntity.getRepoOwner().equals(userName)) {
+		    throw new CustomException(ErrorCode.NO_ACCESS);
+	    }
+
+	    conventionRepository.deleteAllByRepo(repoEntity);
+	    List<RepoConventionEntity> entities = requestDto.toEntities(repoEntity);
+	    conventionRepository.saveAll(entities);
     }
 
     /**
@@ -285,21 +283,22 @@ public class RepoService {
      * @param repoId
      */
     public void activateRepo(Long repoId) {
-        String userName = SecurityUtils.getCurrentUserId();
 
-        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-        });
+	    String userName = SecurityUtils.getCurrentUserId();
 
-        if(!repoEntity.getRepoOwner().equals(userName)){
-            throw new CustomException(ErrorCode.NO_ACCESS);
-        }
+	    RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+		    throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+	    });
 
-        if(repoEntity.getIsActive()){
-            repoEntity.deActivate();
-        }else{
-            repoEntity.activate();
-        }
+	    if (!repoEntity.getRepoOwner().equals(userName)) {
+		    throw new CustomException(ErrorCode.NO_ACCESS);
+	    }
+
+	    if (repoEntity.getIsActive()) {
+		    repoEntity.deActivate();
+	    } else {
+		    repoEntity.activate();
+	    }
     }
 
     private void saveAndUpdateRepo(Map<String, GHRepository> repositories, UserEntity userEntity) {
@@ -472,21 +471,27 @@ public class RepoService {
      * 컨트리뷰터 수
      */
     public RepoCardResponseDto RepoCardDetail(Long repoId) {
-        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-        });
+	    RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+		    throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+	    });
 
-		String repoOwner = repoEntity.getRepoOwner();
+	    String repoOwner = repoEntity.getRepoOwner();
 
-		String repoKey = repoEntity.getRepoKey();
-		Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
-		GHRepository ghRepository = repositories.get(repoKey);
-		if (ghRepository == null) {
-			throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
-		}
+	    String repoKey = repoEntity.getRepoKey();
+	    Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
+	    GHRepository ghRepository = repositories.get(repoKey);
+	    if (ghRepository == null) {
+		    throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
+	    }
 
-        return null;
-//        return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository);
+	    return null;
+	    //        return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository);
     }
+
+
+	public String getRepoOwnerByRepoId(Long repoId) {
+		RepoEntity repo = repoRepository.findById(repoId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_REPOSITORY));
+		return repo.getRepoOwner();
+	}
 
 }
