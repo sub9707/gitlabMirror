@@ -18,7 +18,6 @@ import com.repomon.rocketdan.domain.repomon.entity.RepomonStatusEntity;
 import com.repomon.rocketdan.domain.repomon.repository.BattleLogRepository;
 import com.repomon.rocketdan.domain.repomon.repository.RepomonStatusRepository;
 import com.repomon.rocketdan.exception.CustomException;
-import com.repomon.rocketdan.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -64,11 +63,20 @@ public class RepomonService {
 	 */
 	public void createRepomonStatus(RepomonStartStatusRequestDto repomonStartStatusRequestDto) {
 
+		RepomonStatusEntity repomon = repomonStatusRepository.findById(
+			repomonStartStatusRequestDto.getRepoId()).orElseThrow(
+			() -> new CustomException(NOT_FOUND_REPOSITORY)
+		);
+
 		// 권한 검증
-		String repoOwner = repoService.getRepoOwnerByRepoId(repomonStartStatusRequestDto.getRepoId());
-		if (!SecurityUtils.getCurrentUserId().equals(repoOwner)) {
-			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
+		if (!SecurityUtils.getCurrentUserId().equals(repomon.getRepoOwner())) {
+			throw new CustomException(NO_ACCESS);
 		}
+
+		RepomonEntity selectedRepomon = repomonRepository.findById(
+			repomonStartStatusRequestDto.getRepomonId()).orElseThrow(
+			() -> new CustomException(NOT_FOUND_ENTITY)
+		);
 
 		// 중복 닉네임이 있는 지 다시 확인
 		if (repoService.checkRepomonNickname(repomonStartStatusRequestDto.getRepomonNickname())) {
@@ -80,15 +88,6 @@ public class RepomonService {
 			throw new CustomException(DATA_BAD_REQUEST);
 		}
 
-		RepomonStatusEntity repomon = repomonStatusRepository.findById(
-			repomonStartStatusRequestDto.getRepoId()).orElseThrow(
-			() -> new CustomException(NOT_FOUND_REPOSITORY)
-		);
-
-		RepomonEntity selectedRepomon = repomonRepository.findById(
-			repomonStartStatusRequestDto.getRepomonId()).orElseThrow(
-			() -> new CustomException(NOT_FOUND_ENTITY)
-		);
 
 		repomon.updateNickname(repomonStartStatusRequestDto.getRepomonNickname());
 		repomon.setStartStatus(repomonStartStatusRequestDto.getStartAtk(),
@@ -110,15 +109,15 @@ public class RepomonService {
 	 */
 	public RepomonStatusResponseDto getBattleTarget(Long repoId) {
 
-		// 권한 검증
-		String repoOwner = repoService.getRepoOwnerByRepoId(repoId);
-		if (!SecurityUtils.getCurrentUserId().equals(repoOwner)) {
-			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
-		}
-
 		RepomonStatusEntity repomonStatus = repomonStatusRepository.findById(repoId).orElseThrow(
 			() -> new CustomException(NOT_FOUND_REPOSITORY)
 		);
+
+		// 권한 검증
+		if (!SecurityUtils.getCurrentUserId().equals(repomonStatus.getRepoOwner())) {
+			throw new CustomException(NO_ACCESS);
+		}
+
 		String repomonOwner = repomonStatus.getRepoOwner();
 		Integer userRating = repomonStatus.getRating();
 		int index = 1;
@@ -149,15 +148,15 @@ public class RepomonService {
 	 */
 	public BattleLogResponseDto createBattleResult(Long repoId, BattleLogRequestDto battleLogRequestDto) {
 
-		// 권한 검증
-		String repoOwner = repoService.getRepoOwnerByRepoId(repoId);
-		if (!SecurityUtils.getCurrentUserId().equals(repoOwner)) {
-			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
-		}
-
 		RepomonStatusEntity myRepomon = repomonStatusRepository.findById(repoId).orElseThrow(
 			() -> new CustomException(NOT_FOUND_REPOSITORY)
 		);
+
+		// 권한 검증
+		if (!SecurityUtils.getCurrentUserId().equals(myRepomon.getRepoOwner())) {
+			throw new CustomException(NO_ACCESS);
+		}
+
 		RepomonStatusEntity yourRepomon = repomonStatusRepository.findById(
 			battleLogRequestDto.getOpponentRepoId()).orElseThrow(
 			() -> new CustomException(NOT_FOUND_REPOSITORY)
@@ -269,16 +268,15 @@ public class RepomonService {
 
 	public void modifyRepomonStatus(RepomonStatusRequestDto repomonStatusRequestDto) {
 
-		// 권한 검증
-		String repoOwner = repoService.getRepoOwnerByRepoId(repomonStatusRequestDto.getRepoId());
-		if (!SecurityUtils.getCurrentUserId().equals(repoOwner)) {
-			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
-		}
-
 		RepomonStatusEntity repomon = repomonStatusRepository.findById(
 			repomonStatusRequestDto.getRepoId()).orElseThrow(
 			() -> new CustomException(NOT_FOUND_REPOSITORY)
 		);
+
+		// 권한 검증
+		if (!SecurityUtils.getCurrentUserId().equals(repomon.getRepoOwner())) {
+			throw new CustomException(NO_ACCESS);
+		}
 
 		// 계산된 남은스탯이 음수가 될 경우 에러처리
 		if (RepomonStatusResponseDto.remainStat(
@@ -309,10 +307,14 @@ public class RepomonService {
 	 */
 	public void modifyRepomonNickname(RepomonNicknameRequestDto repomonNicknameRequestDto) {
 
+		RepomonStatusEntity repomon = repomonStatusRepository.findById(
+			repomonNicknameRequestDto.getRepoId()).orElseThrow(
+			() -> new CustomException(NOT_FOUND_REPOSITORY)
+		);
+
 		// 권한 검증
-		String repoOwner = repoService.getRepoOwnerByRepoId(repomonNicknameRequestDto.getRepoId());
-		if (!SecurityUtils.getCurrentUserId().equals(repoOwner)) {
-			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
+		if (!SecurityUtils.getCurrentUserId().equals(repomon.getRepoOwner())) {
+			throw new CustomException(NO_ACCESS);
 		}
 
 		// 중복 닉네임이 있는 지 다시 확인
@@ -320,10 +322,6 @@ public class RepomonService {
 			throw new CustomException(DUPLICATE_RESOURCE);
 		}
 
-		RepomonStatusEntity repomon = repomonStatusRepository.findById(
-			repomonNicknameRequestDto.getRepoId()).orElseThrow(
-			() -> new CustomException(NOT_FOUND_REPOSITORY)
-		);
 		repomon.updateNickname(repomonNicknameRequestDto.getRepomonNickname());
 		repomonStatusRepository.save(repomon);
 

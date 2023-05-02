@@ -241,12 +241,6 @@ public class RepoService {
      */
     public void modifyRepoPeriod(Long repoId, RepoPeriodRequestDto requestDto) {
 
-	    // 권한 검증
-	    String repoOwner = getRepoOwnerByRepoId(repoId);
-	    if (!SecurityUtils.getCurrentUserId().equals(repoOwner)) {
-		    throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
-	    }
-
 	    String userName = SecurityUtils.getCurrentUserId();
 
 	    RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
@@ -269,12 +263,6 @@ public class RepoService {
      */
     public void modifyRepoConvention(Long repoId, RepoConventionRequestDto requestDto) {
 
-	    // 권한 검증
-	    String repoOwner = getRepoOwnerByRepoId(repoId);
-	    if (!SecurityUtils.getCurrentUserId().equals(repoOwner)) {
-		    throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
-	    }
-
 	    String userName = SecurityUtils.getCurrentUserId();
 
 	    RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
@@ -295,12 +283,6 @@ public class RepoService {
      * @param repoId
      */
     public void activateRepo(Long repoId) {
-
-	    // 권한 검증
-	    String repoOwner = getRepoOwnerByRepoId(repoId);
-	    if (!SecurityUtils.getCurrentUserId().equals(repoOwner)) {
-		    throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
-	    }
 
 	    String userName = SecurityUtils.getCurrentUserId();
 
