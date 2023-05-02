@@ -378,6 +378,8 @@ public class RepoService {
 			try {
 				List<GHCommit> ghCommits = ghRepository.listCommits().toList();
 				for (GHCommit commit : ghCommits) {
+                    if(commit.getParentSHA1s().size() > 1) continue;
+                    
 					totalCnt++;
 					String message = commit.getCommitShortInfo().getMessage();
 
