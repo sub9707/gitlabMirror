@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import styles from "./page.module.scss";
@@ -8,9 +8,46 @@ import Pagination from "@/components/Pagination";
 import RepositoryCard from "@/components/RepositoryCard";
 import { useRouter } from "next/navigation";
 import DropDown from "@/components/DropDown";
+import { getTotalRepoList, getUserDetail } from "@/api/userRepo";
+import { RepoListType, UserInfoType } from "@/types/repoInfo";
 
 const Page = ({ params }: { params: { userId: string } }) => {
   const router = useRouter();
+
+  // 레포지터리 유저 정보 GET
+  const [userInfo, setUserInfo] = useState<UserInfoType>();
+  const [repoInfo, setRepoInfo] = useState<RepoListType>();
+
+  function getUserInfo(userId: string) {
+    return getUserDetail(Number(userId));
+  }
+  useEffect(() => {
+    const data = getUserInfo(params.userId)
+      .then((response) => {
+        const res = response.data;
+        console.log(res);
+        setUserInfo(res);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
+  // 레포지터리 리스트 GET
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getTotalRepoList(Number(params.userId), 1, 6);
+        const data = response.data;
+        console.log(data);
+        setRepoInfo(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <>
@@ -31,12 +68,15 @@ const Page = ({ params }: { params: { userId: string } }) => {
               <div
                 className={styles.chracter}
                 style={{
-                  backgroundImage:
-                    "url('https://avatars.githubusercontent.com/u/88614621?v=4')",
+                  backgroundImage: `url('${userInfo?.avatarUrl}')`,
                 }}
               />
-              <p className={styles.boxTitle}>Becoding84</p>
-              <p className={styles.boxContent}>총 경험치 : 146523 (14위)</p>
+              <p className={styles.boxTitle}>
+                {userInfo?.userId}({userInfo?.nickname})
+              </p>
+              <p className={styles.boxContent}>
+                총 경험치 : {userInfo?.totalExp}(14위)
+              </p>
             </div>
             <div>
               <p className={styles.boxTitle}>대표 레포몬</p>
@@ -74,16 +114,26 @@ const Page = ({ params }: { params: { userId: string } }) => {
               </div>
             </div>
             <div className={styles.listCards}>
-              <div className="grid grid-cols-2 gap-4 place-content-center">
-                <RepositoryCard />
-                <RepositoryCard />
-                <RepositoryCard />
-                <RepositoryCard />
-                <RepositoryCard />
-                <RepositoryCard />
+              <div className="grid grid-cols-2 gap-4">
+                {Array(repoInfo?.totalElements)
+                  .fill(null)
+                  .map((items, i) =>
+                    repoInfo?.repoListItems &&
+                    i < repoInfo.repoListItems.length ? (
+                      <RepositoryCard
+                        key={i}
+                        title={repoInfo.repoListItems.at(i)?.repoName}
+                        desc={repoInfo.repoListItems.at(i)?.repoDescription}
+                        exp={repoInfo.repoListItems.at(i)?.repoExp}
+                        rating={repoInfo.repoListItems.at(i)?.repoRating}
+                        isActive={repoInfo.repoListItems.at(i)?.isActive}
+                      />
+                    ) : null
+                  )}
               </div>
+
               <div className={styles.paginations}>
-                <Pagination />
+                <Pagination totalPage={1} totalElement={3} />
               </div>
             </div>
           </div>
