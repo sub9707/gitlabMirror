@@ -473,35 +473,32 @@ public class RepoService {
      * 컨트리뷰터 수
      */
     public RepoCardResponseDto RepoCardDetail(Long repoId) {
-        try{
-            RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-                throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-            });
+        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+        });
 
-            String repoOwner = repoEntity.getRepoOwner();
+        String repoOwner = repoEntity.getRepoOwner();
 
-            String repoKey = repoEntity.getRepoKey();
-            Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
-            GHRepository ghRepository = repositories.get(repoKey);
-            if (ghRepository == null) {
-                throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
-            }
-            List<RepoHistoryEntity> historyEntityList = repoHistoryRepository.findAllByRepo(repoEntity);
+        String repoKey = repoEntity.getRepoKey();
+        Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
+        GHRepository ghRepository = repositories.get(repoKey);
 
-            GHRepositoryStatistics statistics = ghRepository.getStatistics();
+        if (ghRepository == null) {
+            throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
+        }
+        //레포 기록 불러오기
+        List<RepoHistoryEntity> historyEntityList = repoHistoryRepository.findAllByRepo(repoEntity);
 
         GHRepositoryStatistics statistics = ghRepository.getStatistics();
-        int contributers = 0;
-        try {
-            contributers = ghRepository.listContributors().toList().size();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
-            return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository,historyEntityList, totalLineCount);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        //컨트리뷰터 수, Total Code 수
+        int contributers = 0;
+        long totalLineCount = 0;
+
+        try {
+            totalLineCount = ghUtils.getTotalLineCount(statistics);
+            contributers = ghRepository.listContributors().toList().size();
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
 
