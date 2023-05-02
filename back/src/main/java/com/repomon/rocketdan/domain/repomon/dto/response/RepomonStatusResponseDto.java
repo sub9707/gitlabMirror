@@ -63,7 +63,7 @@ public class RepomonStatusResponseDto {
 			.repoId(repomonStatus.getRepoId())
 			.repoName(repomonStatus.getRepoName())
 			.repomonNickname(repomonStatus.getRepomonNickname())
-			.repomonUrl(S3Utils.getS3Url(repomon.getRepomonUrl()))
+			.repomonUrl(S3Utils.modelUrl(repomon.getRepomonUrl()))
 			.repomonTier(repomon.getRepomonTier())
 			.rating(repomonStatus.getRating())
 			.statPoint(remainStat(repomonStatus.getRepoExp(),
