@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
 import java.util.Random;
 
+import static com.repomon.rocketdan.domain.repomon.app.BattleFactor.*;
+
 
 @Getter
 @Slf4j
@@ -157,7 +159,6 @@ public class BattleLogic {
 		int isSkilled = random.nextInt(100);
 		// 스킬 발동 여부 확인
 		if (isSkilled < skillProbability) {
-
 			return useSkillLog(turn, offenseRepomon.getRepoId(), defenseRepomon.getRepoId(),
 				skillDmg);
 
@@ -172,14 +173,14 @@ public class BattleLogic {
 			if (isCritical < offenseStatus.get("critical")) {
 				Integer dmg = attackDamageCalc(offenseRepomon, defenseStatus.get("def")) * 2;
 				return dodge
-					? useDodgeLog(turn, offenseRepomon.getRepoId(), defenseRepomon.getRepoId(), 2)
-					: useAttackLog(turn, offenseRepomon.getRepoId(), defenseRepomon.getRepoId(), 2,
+					? useDodgeLog(turn, offenseRepomon.getRepoId(), defenseRepomon.getRepoId(), CRITICAL)
+					: useAttackLog(turn, offenseRepomon.getRepoId(), defenseRepomon.getRepoId(), CRITICAL,
 						dmg);
 			} else {
 				Integer dmg = attackDamageCalc(offenseRepomon, defenseStatus.get("def"));
 				return dodge
-					? useDodgeLog(turn, offenseRepomon.getRepoId(), defenseRepomon.getRepoId(), 1)
-					: useAttackLog(turn, offenseRepomon.getRepoId(), defenseRepomon.getRepoId(), 1,
+					? useDodgeLog(turn, offenseRepomon.getRepoId(), defenseRepomon.getRepoId(), ATTACK)
+					: useAttackLog(turn, offenseRepomon.getRepoId(), defenseRepomon.getRepoId(), ATTACK,
 						dmg);
 			}
 
@@ -189,14 +190,14 @@ public class BattleLogic {
 
 
 	public static HashMap<String, Object> useAttackLog(Integer turn, Long attackRepoId,
-		Long defenseRepoId, Integer attackType, Integer dmg) {
+		Long defenseRepoId, BattleFactor battleFactor, Integer dmg) {
 		return new HashMap<>() {
 			{
 				put("turn", turn);
 				put("attacker", attackRepoId);
 				put("defender", defenseRepoId);
-				put("attack_act", attackType);
-				put("defense_act", 1);
+				put("attack_act", battleFactor.idx);
+				put("defense_act", ATTACKED.idx);
 				put("damage", dmg);
 			}
 		};
@@ -204,14 +205,14 @@ public class BattleLogic {
 
 
 	public static HashMap<String, Object> useDodgeLog(Integer turn, Long attackRepoId,
-		Long defenseRepoId, Integer attackType) {
+		Long defenseRepoId, BattleFactor battleFactor) {
 		return new HashMap<>() {
 			{
 				put("turn", turn);
 				put("attacker", attackRepoId);
 				put("defender", defenseRepoId);
-				put("attack_act", attackType);
-				put("defense_act", 2);
+				put("attack_act", battleFactor.idx);
+				put("defense_act", DODGE.idx);
 				put("damage", 0);
 			}
 		};
@@ -225,8 +226,8 @@ public class BattleLogic {
 				put("turn", turn);
 				put("attacker", attackRepoId);
 				put("defender", defenseRepoId);
-				put("attack_act", 3);
-				put("defense_act", 1);
+				put("attack_act", SKILL.idx);
+				put("defense_act", ATTACKED.idx);
 				put("damage", skillDmg);
 			}
 		};
