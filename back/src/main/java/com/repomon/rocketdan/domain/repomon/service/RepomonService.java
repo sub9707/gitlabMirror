@@ -2,7 +2,6 @@ package com.repomon.rocketdan.domain.repomon.service;
 
 
 import com.repomon.rocketdan.common.utils.SecurityUtils;
-import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepomonEntity;
 import com.repomon.rocketdan.domain.repo.repository.RepoRepository;
 import com.repomon.rocketdan.domain.repo.repository.RepomonRepository;
@@ -39,11 +38,8 @@ import static com.repomon.rocketdan.exception.ErrorCode.*;
 public class RepomonService {
 
 	private final RepomonRepository repomonRepository;
-
 	private final BattleLogRepository battleLogRepository;
-
 	private final RepomonStatusRepository repomonStatusRepository;
-
 	private final RepoService repoService;
 	private final RepoRepository repoRepository;
 
@@ -289,10 +285,9 @@ public class RepomonService {
 	 */
 	public void modifyRepomonNickname(RepomonNicknameRequestDto repomonNicknameRequestDto) {
 
-		// 권한 검사 로직
-		RepoEntity repo = repoRepository.findById(repomonNicknameRequestDto.getRepoId()).orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED_USER));
-		System.out.println("repo.getRepoOwner() = " + repo.getRepoOwner());
-		if (SecurityUtils.getCurrentUserId() != repo.getRepoOwner()) {
+		// 권한 검증
+		String repoOwner = repoService.getRepoOwnerByRepoId(repomonNicknameRequestDto.getRepoId());
+		if (!SecurityUtils.getCurrentUserId().equals(repoOwner)) {
 			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
 		}
 
