@@ -58,3 +58,15 @@ export const axiosRequestChangeNickname = async (
 
   return res;
 };
+
+export const axiosRequestBattleRanking = async (repoId: number) => {
+  const res = await http.get(`repo/${repoId}/info/battle`);
+
+  return res;
+};
+
+export const axiosRequestBattleRecord = async (repoId: number) => {
+  const res = await http.get(`repomon/${repoId}/match/result`);
+
+  return res;
+};

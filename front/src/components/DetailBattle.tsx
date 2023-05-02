@@ -8,8 +8,15 @@ import avoid from "../../public/static/icons/avoid_icon.png";
 import critical from "../../public/static/icons/critical_icon.png";
 import hit from "../../public/static/icons/hit_icon.png";
 import shield from "../../public/static/icons/shield_icon.png";
+import { RepoDetailBattleType } from "@/types/repoDetail";
 
-function DetailBattle() {
+function DetailBattle({
+  battleInfo,
+  rank,
+}: {
+  battleInfo: RepoDetailBattleType;
+  rank: number;
+}) {
   return (
     <div>
       <p className={styles["tab-title"]}>레포몬 배틀 정보</p>
@@ -25,10 +32,10 @@ function DetailBattle() {
             <span>패</span>
           </div>
           <div className={styles.att} style={{ color: "red" }}>
-            <span>2,042</span>
-            <span>16위</span>
-            <span>33</span>
-            <span>11</span>
+            <span>{battleInfo.rating}</span>
+            <span>{rank}위</span>
+            <span>{battleInfo.winCnt}</span>
+            <span>{battleInfo.loseCnt}</span>
           </div>
         </div>
         <button>

@@ -88,13 +88,13 @@
       .date {
         display: flex;
         align-items: center;
-        margin: 1% 0 0 0;
-        font-size: 1.75rem;
+        margin: 2% 0 0 0.5%;
+        font-size: 1.5rem;
+        color: rgb(87, 87, 87);
 
         .end {
-          margin-left: 0.45rem;
           font-size: 1.25rem;
-          animation: twinkle 3s ease-in-out infinite;
+          animation: twinkle 4s ease-in-out infinite;
 
           @keyframes twinkle {
             0% {
