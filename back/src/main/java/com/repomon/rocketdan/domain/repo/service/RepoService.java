@@ -480,21 +480,21 @@ public class RepoService {
 		String repoKey = repoEntity.getRepoKey();
 		Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
 		GHRepository ghRepository = repositories.get(repoKey);
+
 		if (ghRepository == null) {
 			throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
 		}
+        //레포 기록 불러오기
         List<RepoHistoryEntity> historyEntityList = repoHistoryRepository.findAllByRepo(repoEntity);
 
         GHRepositoryStatistics statistics = ghRepository.getStatistics();
+
+        //컨트리뷰터 수, Total Code 수
         int contributers = 0;
+        long totalLineCount = 0;
+
         try {
             contributers = ghRepository.listContributors().toList().size();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        long totalLineCount = 0;
-        try {
             totalLineCount = ghUtils.getTotalLineCount(statistics);
         } catch (IOException e) {
             throw new RuntimeException(e);
