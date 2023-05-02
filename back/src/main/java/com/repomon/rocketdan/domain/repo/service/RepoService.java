@@ -489,7 +489,13 @@ public class RepoService {
 
             GHRepositoryStatistics statistics = ghRepository.getStatistics();
 
-            long totalLineCount = ghUtils.getTotalLineCount(statistics);
+        GHRepositoryStatistics statistics = ghRepository.getStatistics();
+        int contributers = 0;
+        try {
+            contributers = ghRepository.listContributors().toList().size();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
             return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository,historyEntityList, totalLineCount);
         } catch (IOException e) {
@@ -497,5 +503,7 @@ public class RepoService {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+        return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository,historyEntityList, totalLineCount, contributers);
     }
 }

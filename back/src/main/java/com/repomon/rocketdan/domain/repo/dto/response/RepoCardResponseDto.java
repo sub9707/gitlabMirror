@@ -60,7 +60,7 @@ import org.kohsuke.github.GHRepository;
         private Long totalcommit;
         private Long totalcode;
 
-        public static RepoCardResponseDto fromEntityAndGHRepository(RepoEntity repoEntity, GHRepository ghRepository, List<RepoHistoryEntity> historyEntityList, Long totalcode) {
+        public static RepoCardResponseDto fromEntityAndGHRepository(RepoEntity repoEntity, GHRepository ghRepository, List<RepoHistoryEntity> historyEntityList, Long totalcode, Integer contributers) {
             try {
                 Map<String, Long> languageMap = ghRepository.listLanguages();
 
@@ -105,7 +105,7 @@ import org.kohsuke.github.GHRepository;
                         .repoStart(repoEntity.getRepoStart())
                         .repoEnd(repoEntity.getRepoEnd())
                         .languages(languages)
-                        .contributers(6)
+                        .contributers(contributers)
                         .commits(commitsExp)
                         .issues(issuesExp)
                         .merges(mergesExp)
