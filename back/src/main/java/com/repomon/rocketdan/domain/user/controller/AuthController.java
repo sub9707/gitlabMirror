@@ -6,29 +6,15 @@ import com.repomon.rocketdan.domain.user.service.AuthService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/auth")
 public class AuthController {
 
     private final AuthService authService;
-
-//    @GetMapping("/login/success")
-//    public ResponseEntity handleSuccessfulLogin(@RequestParam(value="access-token") String accessToken,
-//        @RequestParam(value="refresh-token") String refreshToken) {
-//
-//        return ResponseEntity.ok().headers(httpHeaders -> {
-//            httpHeaders.add("accessToken", accessToken);
-//            httpHeaders.add("refreshToken", refreshToken);
-//        }).build();
-//    }
 
 
     /**
@@ -36,7 +22,7 @@ public class AuthController {
      * @return
      */
     @ApiOperation(value = "로그아웃")
-    @GetMapping("/auth/logout")
+    @GetMapping("/logout")
     public ResponseEntity logout(@RequestHeader("Authorization") String authHeader) {
 
         String refreshToken = authHeader.replace("Bearer ", "");
