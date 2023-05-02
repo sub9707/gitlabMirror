@@ -27,7 +27,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GHRepository.Contributor;
 import org.kohsuke.github.GHRepositoryStatistics;
+import org.kohsuke.github.PagedIterable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -333,9 +335,8 @@ public class RepoService {
 
 		try {
             GHRepositoryStatistics statistics = ghRepository.getStatistics();
-
-            long totalLineCount = ghUtils.getTotalLineCount(statistics);
-            Map<String, Integer> commitCountMap = ghUtils.getCommitterInfoMap(statistics);
+            long totalLineCount = ghUtils.getTotalLineCount(statistics, 10);
+            Map<String, Integer> commitCountMap = ghUtils.getCommitterInfoMap(statistics, 10);
 
             String mvp = null;
             int totalCommitCount = 0;

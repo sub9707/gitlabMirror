@@ -191,29 +191,45 @@ public class GHUtils {
         }
     }
 
-    public long getTotalLineCount(GHRepositoryStatistics statistics)
-        throws IOException {
-        long totalLineCount = 0L;
-        List<CodeFrequency> codeFrequencies = statistics.getCodeFrequency();
-        for(CodeFrequency codeFrequency : codeFrequencies) {
-            totalLineCount += codeFrequency.getAdditions();
-            totalLineCount += codeFrequency.getDeletions();
-        }
+    public long getTotalLineCount(GHRepositoryStatistics statistics, int retries) throws IOException, InterruptedException {
+        try {
+            long totalLineCount = 0L;
+            List<CodeFrequency> codeFrequencies = statistics.getCodeFrequency();
+            for (CodeFrequency codeFrequency : codeFrequencies) {
+                totalLineCount += codeFrequency.getAdditions();
+                totalLineCount += codeFrequency.getDeletions();
+            }
 
-        return totalLineCount;
+            return totalLineCount;
+        }catch(NullPointerException e){
+            if(retries == 0){
+                throw new RuntimeException();
+            }
+
+            Thread.sleep(1000L);
+            return getTotalLineCount(statistics, retries - 1);
+        }
     }
 
-    public Map<String, Integer> getCommitterInfoMap(GHRepositoryStatistics statistics)
-        throws IOException, InterruptedException {
-        Map<String, Integer> commitCountMap = new HashMap<>();
-        List<ContributorStats> contributorStatList = statistics.getContributorStats().toList();
-        for (ContributorStats contributorStats : contributorStatList) {
-            String author = contributorStats.getAuthor().getLogin();
-            int authorCommitCnt = contributorStats.getTotal();
-            commitCountMap.put(author, authorCommitCnt);
-        }
+    public Map<String, Integer> getCommitterInfoMap(GHRepositoryStatistics statistics, int retries) throws IOException, InterruptedException {
+        try {
+            Map<String, Integer> commitCountMap = new HashMap<>();
+            List<ContributorStats> contributorStatList = statistics.getContributorStats().toList();
+            for (ContributorStats contributorStats : contributorStatList) {
+                String author = contributorStats.getAuthor().getLogin();
+                int authorCommitCnt = contributorStats.getTotal();
+                commitCountMap.put(author, authorCommitCnt);
+            }
 
-        return commitCountMap;
+            return commitCountMap;
+        }catch(NullPointerException e){
+            if(retries == 0){
+                throw new RuntimeException();
+            }
+
+            Thread.sleep(1000L);
+            return getCommitterInfoMap(statistics, retries - 1);
+        }
     }
 
 
