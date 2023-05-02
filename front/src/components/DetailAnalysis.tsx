@@ -1,9 +1,20 @@
 import React from "react";
-import styles from "./DetailAnalysis.module.scss";
 import ExpAnalysis from "./ExpAnalysis";
 import GrowthChart from "./GrowthChart";
+import { RepoDetailResearchType } from "@/types/repoDetail";
+import Image from "next/image";
+import styles from "./DetailAnalysis.module.scss";
+import bulb from "../../public/static/icons/bulb_icon.svg";
 
-function DetailAnalysis() {
+function DetailAnalysis({
+  researchInfo,
+}: {
+  researchInfo?: RepoDetailResearchType;
+}) {
+  if (!researchInfo) {
+    return null;
+  }
+
   return (
     <div>
       <p className={styles["tab-title"]}>레포지토리 분석</p>
@@ -12,20 +23,24 @@ function DetailAnalysis() {
       </p>
       <div style={{ margin: "4rem 0 0 0" }}>
         <div className={styles.att}>
-          <span>경험치</span>
+          <span>총 경험치</span>
           <span>레포지토리 랭킹</span>
         </div>
         <div className={styles.att} style={{ color: "rgba(90, 167, 255, 1)" }}>
-          <span>20,462 EXP</span>
-          <span>14위</span>
+          <span>{researchInfo.repoExp} EXP</span>
+          <span>{researchInfo.rank}위</span>
         </div>
       </div>
       <div className={styles["chart-div"]}>
-        <ExpAnalysis />
+        <ExpAnalysis growthFactor={researchInfo.growthFactor} />
         <span>성장 요소</span>
       </div>
-      <div className={styles["chart-div"]}>
-        <GrowthChart />
+      <p className={styles["chart-des"]}>
+        <Image src={bulb} alt="bulb"></Image> 차트 영역을 누르면 누적 차트로
+        전환 가능해요.
+      </p>
+      <div className={styles["chart-div"]} style={{ margin: "1rem 0 0 0" }}>
+        <GrowthChart histories={researchInfo.histories} />
         <span>성장 일기</span>
       </div>
     </div>

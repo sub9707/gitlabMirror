@@ -37,8 +37,20 @@
     border-top-left-radius: 10px;
     border-bottom-right-radius: 10px;
   }
+}
 
-  &:hover {
-    background-color: rgb(251, 251, 252);
+.chart-des {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 6rem 0 0 0;
+  text-align: center;
+  font-size: 1.25rem;
+  color: rgb(65, 65, 65);
+
+  & img {
+    width: 33px;
+    margin: 0 0.5rem 0.5rem 0;
+    border-radius: 100%;
   }
 }
