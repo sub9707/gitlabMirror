@@ -28,7 +28,7 @@ export const axiosRequestSetPeriod = async (
     endAt,
   };
 
-  const res = await http.put(`repo/${repoId}/info/period`, { data });
+  const res = await http.put(`repo/${repoId}/info/period`, data);
 
   return res;
 };
@@ -40,7 +40,7 @@ export const axiosRequestCheckNicknameDuplicated = async (
     repomonNickname,
   };
 
-  const res = await http.post(`repo/nickname`, { data });
+  const res = await http.post(`repo/nickname`, data);
 
   return res;
 };
@@ -54,7 +54,7 @@ export const axiosRequestChangeNickname = async (
     repomonNickname,
   };
 
-  const res = await http.put(`repomon/nickname`, { data });
+  const res = await http.put(`repomon/nickname`, data);
 
   return res;
 };
