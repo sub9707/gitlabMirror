@@ -20,7 +20,7 @@ export const axiosRequestRefresh = async () => {
   console.log(typeof accessToken, typeof refreshToken);
 
   const res = await http.post(
-    "refresh",
+    "auth/refresh",
     {},
     {
       headers: {
