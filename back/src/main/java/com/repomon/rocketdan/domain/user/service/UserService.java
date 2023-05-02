@@ -2,6 +2,7 @@ package com.repomon.rocketdan.domain.user.service;
 
 
 import com.repomon.rocketdan.common.utils.GHUtils;
+import com.repomon.rocketdan.common.utils.SecurityUtils;
 import com.repomon.rocketdan.domain.repo.app.RepoDetail;
 import com.repomon.rocketdan.domain.repo.app.RepoListItem;
 import com.repomon.rocketdan.domain.repo.entity.ActiveRepoEntity;
@@ -40,15 +41,24 @@ public class UserService {
 	public void modifyRepresentRepo(Long userId, RepresentRepomonRequestDto requestDto) {
 
 		UserEntity user = userRepository.findById(userId).orElseThrow(
-			() -> new CustomException(NOT_FOUND_ENTITY)
-		);
+			() -> {
+				throw new CustomException(NOT_FOUND_ENTITY);
+			});
+
+		// 권한 검증
+		if (!SecurityUtils.getCurrentUserId().equals(user.getUserName())) {
+			throw new CustomException(NO_ACCESS);
+		}
+
 		RepoEntity repo = repoRepository.findById(requestDto.getRepoId()).orElseThrow(
-			() -> new CustomException(NOT_FOUND_REPOSITORY)
-		);
+			() -> {
+				throw new CustomException(NOT_FOUND_REPOSITORY);
+			});
 		ActiveRepoEntity activeRepo = activeRepoRepository.findByRepoAndUser(repo, user)
 			.orElseThrow(
-				() -> new CustomException(NOT_FOUND_ENTITY)
-			);
+				() -> {
+					throw new CustomException(NOT_FOUND_REPOSITORY);
+				});
 
 		user.updateRepresentRepo(activeRepo);
 		userRepository.save(user);
@@ -57,7 +67,7 @@ public class UserService {
 
 
 	public UserResponseDto getUserInfo(Long userId) {
-		UserEntity user = userRepository.findById(userId).orElseThrow(() -> new CustomException(NOT_FOUND_USER));
+		UserEntity user = userRepository.findById(userId).orElseThrow(() -> {throw new CustomException(NOT_FOUND_USER);});
 		Map<String, String> userInfo = ghUtils.getUser(user.getUserName());
 
 		UserResponseDto userResponseDto = UserResponseDto.fromEntity(user, userInfo);
