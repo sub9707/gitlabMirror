@@ -1,7 +1,9 @@
 package com.repomon.rocketdan.domain.repomon.dto.response;
 
 
+import com.repomon.rocketdan.common.utils.S3Utils;
 import com.repomon.rocketdan.domain.repo.dto.response.RepomonResponseDto;
+import com.repomon.rocketdan.domain.repo.entity.RepomonEntity;
 import com.repomon.rocketdan.domain.repomon.app.BattleLogic;
 import com.repomon.rocketdan.domain.repomon.entity.RepomonStatusEntity;
 import lombok.*;
@@ -17,6 +19,7 @@ public class RepomonStatusResponseDto {
 	private Long repoId;
 	private String repoName;
 	private String repomonNickname;
+	private String repomonUrl;
 	private Integer repomonTier;
 	private Integer rating;
 	private Integer statPoint;
@@ -55,11 +58,13 @@ public class RepomonStatusResponseDto {
 
 
 	public static RepomonStatusResponseDto fromEntity(RepomonStatusEntity repomonStatus) {
+		RepomonEntity repomon = repomonStatus.getRepomon();
 		return RepomonStatusResponseDto.builder()
 			.repoId(repomonStatus.getRepoId())
 			.repoName(repomonStatus.getRepoName())
 			.repomonNickname(repomonStatus.getRepomonNickname())
-			.repomonTier(repomonStatus.getRepomon().getRepomonTier())
+			.repomonUrl(S3Utils.modelUrl(repomon.getRepomonUrl()))
+			.repomonTier(repomon.getRepomonTier())
 			.rating(repomonStatus.getRating())
 			.statPoint(remainStat(repomonStatus.getRepoExp(),
 				repomonStatus.getAtkPoint(),
@@ -69,7 +74,7 @@ public class RepomonStatusResponseDto {
 				repomonStatus.getHitPoint()))
 			.winCnt(repomonStatus.getWinCnt())
 			.loseCnt(repomonStatus.getLoseCnt())
-			.repomon(RepomonResponseDto.fromEntity(repomonStatus.getRepomon()))
+			.repomon(RepomonResponseDto.fromEntity(repomon))
 			// 각 스탯에 찍은 포인트
 			.atkPoint(repomonStatus.getAtkPoint())
 			.dodgePoint(repomonStatus.getDodgePoint())

@@ -9,6 +9,7 @@ import com.repomon.rocketdan.domain.repomon.dto.request.RepomonStatusRequestDto;
 import com.repomon.rocketdan.domain.repomon.dto.response.BattleLogListResponseDto;
 import com.repomon.rocketdan.domain.repomon.dto.response.BattleLogResponseDto;
 import com.repomon.rocketdan.domain.repomon.dto.response.RepomonStatusResponseDto;
+import com.repomon.rocketdan.domain.repomon.dto.response.RepomonUrlResponseDto;
 import com.repomon.rocketdan.domain.repomon.service.RepomonService;
 import com.repomon.rocketdan.exception.CustomException;
 import io.swagger.annotations.ApiOperation;
@@ -114,4 +115,11 @@ public class RepomonController {
 		return ResponseEntity.ok().body(ResultDto.ofSuccess());
 	}
 
+
+	@GetMapping("/")
+	@ApiOperation(value = "레포몬 url 리스트 조회")
+	public ResponseEntity<RepomonUrlResponseDto> getRepomonUrls(){
+		RepomonUrlResponseDto responseDto = repomonService.getRepomonUrls();
+		return ResponseEntity.ok(responseDto);
+	}
 }

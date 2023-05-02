@@ -13,11 +13,13 @@ import com.repomon.rocketdan.domain.repomon.dto.request.RepomonStatusRequestDto;
 import com.repomon.rocketdan.domain.repomon.dto.response.BattleLogListResponseDto;
 import com.repomon.rocketdan.domain.repomon.dto.response.BattleLogResponseDto;
 import com.repomon.rocketdan.domain.repomon.dto.response.RepomonStatusResponseDto;
+import com.repomon.rocketdan.domain.repomon.dto.response.RepomonUrlResponseDto;
 import com.repomon.rocketdan.domain.repomon.entity.BattleLogEntity;
 import com.repomon.rocketdan.domain.repomon.entity.RepomonStatusEntity;
 import com.repomon.rocketdan.domain.repomon.repository.BattleLogRepository;
 import com.repomon.rocketdan.domain.repomon.repository.RepomonStatusRepository;
 import com.repomon.rocketdan.exception.CustomException;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -327,4 +329,16 @@ public class RepomonService {
 
 	}
 
+	/**
+	 * 알을 제외한 레포몬 url 리스트 반환
+	 * @return
+	 */
+	public RepomonUrlResponseDto getRepomonUrls() {
+		List<RepomonEntity> repomons = repomonRepository.findAll();
+		List<RepomonEntity> exceptEgg = repomons.stream()
+			.filter(repomon -> repomon.getRepomonId() < 9990L)
+			.collect(Collectors.toList());
+
+		return RepomonUrlResponseDto.fromEntities(exceptEgg);
+	}
 }
