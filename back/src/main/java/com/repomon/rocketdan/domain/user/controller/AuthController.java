@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,7 +53,7 @@ public class AuthController {
      * @return
      */
     @ApiOperation(value = "Access 토큰 재발급")
-    @PutMapping("/refresh")
+    @PostMapping("/refresh")
     public ResponseEntity reissueJWT(@RequestHeader("accessToken") String accessToken, @RequestHeader("refreshToken") String refreshToken){
 
         AuthResponseDto authResponseDto = authService.refresh(accessToken, refreshToken);
