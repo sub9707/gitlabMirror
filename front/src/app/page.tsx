@@ -12,14 +12,47 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "@react-three/drei";
 import { useAppDispatch } from "@/redux/hooks";
 import { setAuthLoginState } from "@/redux/features/authSlice";
+import * as THREE from "three";
 
 const Model = () => {
+  const [isClicked, SetIsClicked] = useState<boolean>(false);
   const gltf = useLoader(GLTFLoader, "/static/models/Penguin.glb");
+
+  let mixer: THREE.AnimationMixer | undefined;
+
+  if (gltf.animations.length) {
+    mixer = new THREE.AnimationMixer(gltf.scene);
+    mixer.timeScale = 0.4;
+    if (isClicked) {
+      const randomIndex = Math.floor(Math.random() * 39);
+      const action = mixer.clipAction(gltf.animations[randomIndex]);
+      action.play();
+      setTimeout(() => {
+        SetIsClicked(false);
+      }, 1000);
+    } else {
+      const action = mixer.clipAction(gltf.animations[8]);
+      action.clampWhenFinished = true;
+      action.play();
+    }
+  }
+  console.log(gltf.animations);
+
   useFrame((state, delta) => {
-    gltf.scene.rotation.y += delta * 1; // 회전 속도를 조절할 수 있습니다.
+    mixer?.update(delta);
+  });
+
+  useFrame((state, delta) => {
+    gltf.scene.rotation.y += delta * 0.05; // 회전 속도를 조절할 수 있습니다.
   });
   return (
-    <primitive object={gltf.scene} scale={[8, 8, 8]} position={[2, -3, 0]} />
+    <primitive
+      object={gltf.scene}
+      scale={[5, 5, 5]}
+      position={[2, -2, 0]}
+      rotation={[0, -0.8, 0]}
+      onClick={() => SetIsClicked(!isClicked)}
+    />
   );
 };
 
