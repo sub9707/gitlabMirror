@@ -71,7 +71,7 @@ public class GHUtils {
         Map<String, GHRepository> repositoriesWithNodeKey = new HashMap<>();
 
         repositories.forEach((s, ghRepository) -> {
-            if(!s.equals(name) && !ghRepository.isFork()){
+            if(!s.equals(name) && !ghRepository.isFork() && !s.equals(name + ".github.io")){
                 repositoriesWithNodeKey.put(ghRepository.getNodeId(), ghRepository);
             }
         });
@@ -113,6 +113,7 @@ public class GHUtils {
         }
         return histories.values();
     }
+
     public Collection<RepoHistoryEntity> GHPullRequestToHistory(GHRepository ghRepository, RepoEntity repoEntity, Date date)
         throws IOException {
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
@@ -145,6 +146,7 @@ public class GHUtils {
 
         return histories.values();
     }
+
     public Collection<RepoHistoryEntity> GHIssueToHistory(GHRepository ghRepository, RepoEntity repoEntity, Date date){
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
