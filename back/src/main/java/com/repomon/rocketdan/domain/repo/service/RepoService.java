@@ -23,7 +23,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GHRepository.Contributor;
 import org.kohsuke.github.GHRepositoryStatistics;
+import org.kohsuke.github.PagedIterable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -332,7 +334,6 @@ public class RepoService {
 
 		try {
             GHRepositoryStatistics statistics = ghRepository.getStatistics();
-
             long totalLineCount = ghUtils.getTotalLineCount(statistics);
             Map<String, Integer> commitCountMap = ghUtils.getCommitterInfoMap(statistics);
 
@@ -471,29 +472,30 @@ public class RepoService {
      * 컨트리뷰터 수
      */
     public RepoCardResponseDto RepoCardDetail(Long repoId) {
-	    RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-		    throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-	    });
+        try{
+            RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+                throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+            });
 
-	    String repoOwner = repoEntity.getRepoOwner();
+            String repoOwner = repoEntity.getRepoOwner();
 
-		String repoKey = repoEntity.getRepoKey();
-		Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
-		GHRepository ghRepository = repositories.get(repoKey);
-		if (ghRepository == null) {
-			throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
-		}
-        List<RepoHistoryEntity> historyEntityList = repoHistoryRepository.findAllByRepo(repoEntity);
+            String repoKey = repoEntity.getRepoKey();
+            Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
+            GHRepository ghRepository = repositories.get(repoKey);
+            if (ghRepository == null) {
+                throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
+            }
+            List<RepoHistoryEntity> historyEntityList = repoHistoryRepository.findAllByRepo(repoEntity);
 
-        GHRepositoryStatistics statistics = ghRepository.getStatistics();
+            GHRepositoryStatistics statistics = ghRepository.getStatistics();
 
-        long totalLineCount = 0;
-        try {
-            totalLineCount = ghUtils.getTotalLineCount(statistics);
+            long totalLineCount = ghUtils.getTotalLineCount(statistics);
+
+            return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository,historyEntityList, totalLineCount);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
-
-        return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository,historyEntityList, totalLineCount);
     }
 }

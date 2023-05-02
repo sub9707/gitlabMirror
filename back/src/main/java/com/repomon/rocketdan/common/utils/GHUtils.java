@@ -1,6 +1,7 @@
 package com.repomon.rocketdan.common.utils;
 
 
+import com.repomon.rocketdan.common.Retries;
 import com.repomon.rocketdan.domain.repo.app.GrowthFactor;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepoHistoryEntity;
@@ -191,11 +192,11 @@ public class GHUtils {
         }
     }
 
-    public long getTotalLineCount(GHRepositoryStatistics statistics)
-        throws IOException {
+    @Retries
+    public long getTotalLineCount(GHRepositoryStatistics statistics) throws IOException, InterruptedException {
         long totalLineCount = 0L;
         List<CodeFrequency> codeFrequencies = statistics.getCodeFrequency();
-        for(CodeFrequency codeFrequency : codeFrequencies) {
+        for (CodeFrequency codeFrequency : codeFrequencies) {
             totalLineCount += codeFrequency.getAdditions();
             totalLineCount += codeFrequency.getDeletions();
         }
@@ -203,8 +204,8 @@ public class GHUtils {
         return totalLineCount;
     }
 
-    public Map<String, Integer> getCommitterInfoMap(GHRepositoryStatistics statistics)
-        throws IOException, InterruptedException {
+    @Retries
+    public Map<String, Integer> getCommitterInfoMap(GHRepositoryStatistics statistics) throws IOException, InterruptedException {
         Map<String, Integer> commitCountMap = new HashMap<>();
         List<ContributorStats> contributorStatList = statistics.getContributorStats().toList();
         for (ContributorStats contributorStats : contributorStatList) {
@@ -225,6 +226,7 @@ public class GHUtils {
      * @throws IOException
      * @throws InterruptedException
      */
+    @Retries
     public long getLineCountWithUser(GHRepositoryStatistics statistics, String userName) throws IOException, InterruptedException {
         long lineCount = 0L;
         List<ContributorStats> contributorStatList = statistics.getContributorStats().toList();
@@ -248,12 +250,14 @@ public class GHUtils {
      * @throws IOException
      * @throws InterruptedException
      */
-    public int getCommitCountWithUser(GHRepositoryStatistics statistics, String userName) throws IOException, InterruptedException {
+    @Retries
+    public int getCommitCountWithUser(GHRepositoryStatistics statistics, String userName)
+        throws IOException, InterruptedException {
         int commitCount = 0;
         List<ContributorStats> contributorStatList = statistics.getContributorStats().toList();
         for (ContributorStats contributorStats : contributorStatList) {
             String author = contributorStats.getAuthor().getLogin();
-            if(author.equals(userName)){
+            if (author.equals(userName)) {
                 commitCount += contributorStats.getTotal();
             }
         }
