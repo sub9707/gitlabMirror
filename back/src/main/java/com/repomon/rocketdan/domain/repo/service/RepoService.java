@@ -487,11 +487,4 @@ public class RepoService {
 	    return null;
 	    //        return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository);
     }
-
-
-	public String getRepoOwnerByRepoId(Long repoId) {
-		RepoEntity repo = repoRepository.findById(repoId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_REPOSITORY));
-		return repo.getRepoOwner();
-	}
-
 }
