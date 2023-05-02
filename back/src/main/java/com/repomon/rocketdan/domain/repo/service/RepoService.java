@@ -334,8 +334,8 @@ public class RepoService {
 
 		try {
             GHRepositoryStatistics statistics = ghRepository.getStatistics();
-            long totalLineCount = ghUtils.getTotalLineCount(statistics, 10);
-            Map<String, Integer> commitCountMap = ghUtils.getCommitterInfoMap(statistics, 10);
+            long totalLineCount = ghUtils.getTotalLineCount(statistics);
+            Map<String, Integer> commitCountMap = ghUtils.getCommitterInfoMap(statistics);
 
             String mvp = null;
             int totalCommitCount = 0;
@@ -472,29 +472,30 @@ public class RepoService {
      * 컨트리뷰터 수
      */
     public RepoCardResponseDto RepoCardDetail(Long repoId) {
-	    RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-		    throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-	    });
+        try{
+            RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+                throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+            });
 
-	    String repoOwner = repoEntity.getRepoOwner();
+            String repoOwner = repoEntity.getRepoOwner();
 
-		String repoKey = repoEntity.getRepoKey();
-		Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
-		GHRepository ghRepository = repositories.get(repoKey);
-		if (ghRepository == null) {
-			throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
-		}
-        List<RepoHistoryEntity> historyEntityList = repoHistoryRepository.findAllByRepo(repoEntity);
+            String repoKey = repoEntity.getRepoKey();
+            Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
+            GHRepository ghRepository = repositories.get(repoKey);
+            if (ghRepository == null) {
+                throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
+            }
+            List<RepoHistoryEntity> historyEntityList = repoHistoryRepository.findAllByRepo(repoEntity);
 
-        GHRepositoryStatistics statistics = ghRepository.getStatistics();
+            GHRepositoryStatistics statistics = ghRepository.getStatistics();
 
-        long totalLineCount = 0;
-        try {
-            totalLineCount = ghUtils.getTotalLineCount(statistics);
+            long totalLineCount = ghUtils.getTotalLineCount(statistics);
+
+            return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository,historyEntityList, totalLineCount);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
-
-        return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository,historyEntityList, totalLineCount);
     }
 }
