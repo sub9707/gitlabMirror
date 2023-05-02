@@ -18,6 +18,7 @@ import com.repomon.rocketdan.domain.user.entity.UserEntity;
 import com.repomon.rocketdan.domain.user.repository.UserRepository;
 import com.repomon.rocketdan.domain.user.service.RankService;
 import com.repomon.rocketdan.exception.CustomException;
+import com.repomon.rocketdan.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kohsuke.github.GHCommit;
@@ -36,7 +37,6 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.repomon.rocketdan.exception.ErrorCode.*;
 
 
 @Service
@@ -70,7 +70,7 @@ public class RepoService {
 	 */
 	public RepoListResponseDto getUserRepoList(Long userId, Pageable pageable) {
 		UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> {
-			throw new CustomException(NOT_FOUND_USER);
+			throw new CustomException(ErrorCode.NOT_FOUND_USER);
 		});
 
 		String userName = userEntity.getUserName();
@@ -120,7 +120,7 @@ public class RepoService {
 	 */
 	public RepoResponseDto getUserRepoInfo(Long repoId) {
 		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-			throw new CustomException(NOT_FOUND_ENTITY);
+			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 		});
 
 		String repoOwner = repoEntity.getRepoOwner();
@@ -129,7 +129,7 @@ public class RepoService {
 		Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
 		GHRepository ghRepository = repositories.get(repoKey);
 		if (ghRepository == null) {
-			throw new CustomException(NOT_FOUND_PUBLIC_REPOSITORY);
+			throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
 		}
 
 		return RepoResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository);
@@ -147,7 +147,7 @@ public class RepoService {
 	 */
 	public RepoResearchResponseDto getRepoResearchInfo(Long repoId) {
 		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-			throw new CustomException(NOT_FOUND_ENTITY);
+			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 		});
 
 		Long rank = rankService.getRepoRank(repoEntity);
@@ -170,7 +170,7 @@ public class RepoService {
 	public RepoBattleResponseDto getRepoBattleInfo(Long repoId) {
 		RepomonStatusEntity repomonStatusEntity = repomonStatusRepository.findByRepoId(repoId)
 			.orElseThrow(() -> {
-				throw new CustomException(NOT_FOUND_ENTITY);
+				throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 			});
 
 		Long rank = rankService.getRepomonRank(repomonStatusEntity);
@@ -189,7 +189,7 @@ public class RepoService {
 	 */
 	public RepoConventionResponseDto getRepoConventionInfo(Long repoId) {
 		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-			throw new CustomException(NOT_FOUND_ENTITY);
+			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 		});
 		String repoOwner = repoEntity.getRepoOwner();
 
@@ -210,7 +210,7 @@ public class RepoService {
 	 */
 	public RepoContributeResponseDto getRepoContributeInfo(Long repoId) {
 		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-			throw new CustomException(NOT_FOUND_ENTITY);
+			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 		});
 
 		String repoOwner = repoEntity.getRepoOwner();
@@ -229,7 +229,7 @@ public class RepoService {
 	 */
 	public void modifyRepoInfo(Long repoId) {
 		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-			throw new CustomException(NOT_FOUND_ENTITY);
+			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 		});
 
 		List<ActiveRepoEntity> activeRepoEntities = activeRepoRepository.findAllByRepo(repoEntity);
@@ -243,7 +243,7 @@ public class RepoService {
 		String repoKey = repoEntity.getRepoKey();
 		GHRepository ghRepository = repositories.get(repoKey);
 		if (ghRepository == null) {
-			throw new CustomException(NOT_FOUND_PUBLIC_REPOSITORY);
+			throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
 		}
 
 		updateRepositoryInfo(repoEntity, ghRepository, userEntities);
@@ -261,11 +261,11 @@ public class RepoService {
 		String userName = SecurityUtils.getCurrentUserId();
 
 		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-			throw new CustomException(NOT_FOUND_ENTITY);
+			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 		});
 
 		if (!repoEntity.getRepoOwner().equals(userName)) {
-			throw new CustomException(NO_ACCESS);
+			throw new CustomException(ErrorCode.NO_ACCESS);
 		}
 
 		LocalDateTime startedAt = requestDto.getStartedAt();
@@ -285,11 +285,11 @@ public class RepoService {
 		String userName = SecurityUtils.getCurrentUserId();
 
 		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-			throw new CustomException(NOT_FOUND_ENTITY);
+			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 		});
 
 		if (!repoEntity.getRepoOwner().equals(userName)) {
-			throw new CustomException(NO_ACCESS);
+			throw new CustomException(ErrorCode.NO_ACCESS);
 		}
 
 		conventionRepository.deleteAllByRepo(repoEntity);
@@ -308,11 +308,11 @@ public class RepoService {
 		String userName = SecurityUtils.getCurrentUserId();
 
 		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-			throw new CustomException(NOT_FOUND_ENTITY);
+			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 		});
 
 		if (!repoEntity.getRepoOwner().equals(userName)) {
-			throw new CustomException(NO_ACCESS);
+			throw new CustomException(ErrorCode.NO_ACCESS);
 		}
 
 		if (repoEntity.getIsActive()) {
@@ -330,7 +330,7 @@ public class RepoService {
 					Long eggId = 9995L + (new Random().nextInt(5));
 					RepomonEntity repomonEntity = repomonRepository.findById(eggId)
 						.orElseThrow(() -> {
-							throw new CustomException(NOT_FOUND_ENTITY);
+							throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 						});
 
 					RepomonStatusEntity repomonStatusEntity = RepomonStatusEntity.fromGHRepository(ghRepository, repomonEntity);
@@ -350,7 +350,7 @@ public class RepoService {
 		String repoKey = repoEntity.getRepoKey();
 		GHRepository ghRepository = repositories.get(repoKey);
 		if (ghRepository == null) {
-			throw new CustomException(NOT_FOUND_PUBLIC_REPOSITORY);
+			throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
 		}
 
 		try {
@@ -392,7 +392,7 @@ public class RepoService {
 
 			GHRepository ghRepository = repositories.get(repoEntity.getRepoKey());
 			if (ghRepository == null) {
-				throw new CustomException(NOT_FOUND_PUBLIC_REPOSITORY);
+				throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
 			}
 
 			try {
@@ -480,7 +480,7 @@ public class RepoService {
 		RepomonEntity repomon = repoEntity.getRepomon();
 		if ((repomon.getRepomonTier() == 1 && repoEntity.getRepoExp() >= 5000) || (repomon.getRepomonTier() == 2 && repoEntity.getRepoExp() >= 10000)) {
 			RepomonEntity newRepomon = repomonRepository.findByRepomonTierAndRepomonName(repomon.getRepomonTier() + 1, repomon.getRepomonName()).orElseThrow(
-				() -> new CustomException(NOT_FOUND_ENTITY)
+				() -> new CustomException(ErrorCode.NOT_FOUND_ENTITY)
 			);
 			repoEntity.updateRepomon(newRepomon);
 		}
@@ -567,7 +567,7 @@ public class RepoService {
             throw new RuntimeException(e);
         }
         //유저 정보
-        UserEntity user = userRepository.findById(userId).orElseThrow(() -> {throw new CustomException(NOT_FOUND_USER);});
+        UserEntity user = userRepository.findById(userId).orElseThrow(() -> {throw new CustomException(ErrorCode.NOT_FOUND_USER);});
         Map<String, String> userInfo = ghUtils.getUser(user.getUserName());
         //기여도
         RepoContributeResponseDto contributeResponse = redisContributeRepository.findByRepoOwner(repoOwner)
