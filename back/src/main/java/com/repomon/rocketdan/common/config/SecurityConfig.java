@@ -37,24 +37,20 @@ public class SecurityConfig{
         http
             .cors().configurationSource(corsConfigurationSource())
             .and()
-            .httpBasic().disable()
-            .csrf().disable()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // JWT 사용하니 session 생성 X
+                .httpBasic().disable()
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // JWT 사용하니 session 생성 X
             .and()
-            .exceptionHandling()
-            .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-            .accessDeniedHandler(jwtAccessDeniedHandler)
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(jwtAccessDeniedHandler)
             .and()
-            .authorizeRequests()
-            .antMatchers("/login/success")
-            .authenticated()
-            .antMatchers("/repo/{repoId}/info/convention", "/repo/{repoId}/info/period", "/repo/{repoId}/info/active")
-            .authenticated()
-            .antMatchers("/repomon/{repoId}/match", "/repomon/nickname", "/repomon/start", "/repomon/stat")
-            .authenticated()
-            .antMatchers("/user/{userId}/represent")
-            .authenticated()
-            .anyRequest().permitAll() // 그 외 요청은 모두 permitAll 처리
+                .authorizeRequests()
+                .antMatchers("/login/success").authenticated()
+                .antMatchers("/repo/{repoId}/info/convention", "/repo/{repoId}/info/period", "/repo/{repoId}/info/active").authenticated()
+                .antMatchers("/repomon/{repoId}/match", "/repomon/nickname", "/repomon/start", "/repomon/stat").authenticated()
+                .antMatchers("/user/{userId}/represent").authenticated()
+                .anyRequest().permitAll() // 그 외 요청은 모두 permitAll 처리
             .and()
                 .addFilterBefore(jwtExceptionFilter, OAuth2LoginAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
@@ -66,11 +62,6 @@ public class SecurityConfig{
 
 
         return http.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Bean
