@@ -1,11 +1,11 @@
 package com.repomon.rocketdan.common.config;
 
+
 import com.repomon.rocketdan.common.filter.JwtAuthFilter;
 import com.repomon.rocketdan.common.filter.JwtExceptionFilter;
 import com.repomon.rocketdan.common.handler.JwtAccessDeniedHandler;
 import com.repomon.rocketdan.common.handler.OAuth2SuccessHandler;
 import com.repomon.rocketdan.common.service.CustomOAuth2UserService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,7 +20,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
+import java.util.List;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -36,18 +36,25 @@ public class SecurityConfig{
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .cors().configurationSource(corsConfigurationSource())
-                .and()
+            .and()
             .httpBasic().disable()
             .csrf().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // JWT 사용하니 session 생성 X
             .and()
-                .exceptionHandling()
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                .accessDeniedHandler(jwtAccessDeniedHandler)
+            .exceptionHandling()
+            .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+            .accessDeniedHandler(jwtAccessDeniedHandler)
             .and()
-                .authorizeRequests()
-                .antMatchers("/login/success","/refresh").authenticated() // 권한이 필요한 요청은 /user/** 패턴으로 지정
-                .anyRequest().permitAll() // 그 외 요청은 모두 permitAll 처리
+            .authorizeRequests()
+            .antMatchers("/login/success")
+            .authenticated()
+            .antMatchers("/repo/{repoId}/info/convention", "/repo/{repoId}/info/period", "/repo/{repoId}/info/active")
+            .authenticated()
+            .antMatchers("/repomon/{repoId}/match", "/repomon/nickname", "/repomon/start", "/repomon/stat")
+            .authenticated()
+            .antMatchers("/user/{userId}/represent")
+            .authenticated()
+            .anyRequest().permitAll() // 그 외 요청은 모두 permitAll 처리
             .and()
                 .addFilterBefore(jwtExceptionFilter, OAuth2LoginAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

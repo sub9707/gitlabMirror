@@ -1,6 +1,7 @@
 package com.repomon.rocketdan.domain.repomon.service;
 
 
+import com.repomon.rocketdan.common.utils.SecurityUtils;
 import com.repomon.rocketdan.domain.repo.entity.RepomonEntity;
 import com.repomon.rocketdan.domain.repo.repository.RepomonRepository;
 import com.repomon.rocketdan.domain.repo.service.RepoService;
@@ -35,11 +36,8 @@ import static com.repomon.rocketdan.exception.ErrorCode.*;
 public class RepomonService {
 
 	private final RepomonRepository repomonRepository;
-
 	private final BattleLogRepository battleLogRepository;
-
 	private final RepomonStatusRepository repomonStatusRepository;
-
 	private final RepoService repoService;
 
 
@@ -65,6 +63,21 @@ public class RepomonService {
 	 */
 	public void createRepomonStatus(RepomonStartStatusRequestDto repomonStartStatusRequestDto) {
 
+		RepomonStatusEntity repomon = repomonStatusRepository.findById(
+			repomonStartStatusRequestDto.getRepoId()).orElseThrow(
+			() -> new CustomException(NOT_FOUND_REPOSITORY)
+		);
+
+		// 권한 검증
+		if (!SecurityUtils.getCurrentUserId().equals(repomon.getRepoOwner())) {
+			throw new CustomException(NO_ACCESS);
+		}
+
+		RepomonEntity selectedRepomon = repomonRepository.findById(
+			repomonStartStatusRequestDto.getRepomonId()).orElseThrow(
+			() -> new CustomException(NOT_FOUND_ENTITY)
+		);
+
 		// 중복 닉네임이 있는 지 다시 확인
 		if (repoService.checkRepomonNickname(repomonStartStatusRequestDto.getRepomonNickname())) {
 			throw new CustomException(DUPLICATE_RESOURCE);
@@ -75,15 +88,6 @@ public class RepomonService {
 			throw new CustomException(DATA_BAD_REQUEST);
 		}
 
-		RepomonStatusEntity repomon = repomonStatusRepository.findById(
-			repomonStartStatusRequestDto.getRepoId()).orElseThrow(
-			() -> new CustomException(NOT_FOUND_REPOSITORY)
-		);
-
-		RepomonEntity selectedRepomon = repomonRepository.findById(
-			repomonStartStatusRequestDto.getRepomonId()).orElseThrow(
-			() -> new CustomException(NOT_FOUND_ENTITY)
-		);
 
 		repomon.updateNickname(repomonStartStatusRequestDto.getRepomonNickname());
 		repomon.setStartStatus(repomonStartStatusRequestDto.getStartAtk(),
@@ -104,9 +108,16 @@ public class RepomonService {
 	 * @return
 	 */
 	public RepomonStatusResponseDto getBattleTarget(Long repoId) {
+
 		RepomonStatusEntity repomonStatus = repomonStatusRepository.findById(repoId).orElseThrow(
 			() -> new CustomException(NOT_FOUND_REPOSITORY)
 		);
+
+		// 권한 검증
+		if (!SecurityUtils.getCurrentUserId().equals(repomonStatus.getRepoOwner())) {
+			throw new CustomException(NO_ACCESS);
+		}
+
 		String repomonOwner = repomonStatus.getRepoOwner();
 		Integer userRating = repomonStatus.getRating();
 		int index = 1;
@@ -135,11 +146,17 @@ public class RepomonService {
 	 * @param battleLogRequestDto
 	 * @return
 	 */
-	public BattleLogResponseDto createBattleResult(Long repoId,
-		BattleLogRequestDto battleLogRequestDto) {
+	public BattleLogResponseDto createBattleResult(Long repoId, BattleLogRequestDto battleLogRequestDto) {
+
 		RepomonStatusEntity myRepomon = repomonStatusRepository.findById(repoId).orElseThrow(
 			() -> new CustomException(NOT_FOUND_REPOSITORY)
 		);
+
+		// 권한 검증
+		if (!SecurityUtils.getCurrentUserId().equals(myRepomon.getRepoOwner())) {
+			throw new CustomException(NO_ACCESS);
+		}
+
 		RepomonStatusEntity yourRepomon = repomonStatusRepository.findById(
 			battleLogRequestDto.getOpponentRepoId()).orElseThrow(
 			() -> new CustomException(NOT_FOUND_REPOSITORY)
@@ -250,10 +267,16 @@ public class RepomonService {
 
 
 	public void modifyRepomonStatus(RepomonStatusRequestDto repomonStatusRequestDto) {
+
 		RepomonStatusEntity repomon = repomonStatusRepository.findById(
 			repomonStatusRequestDto.getRepoId()).orElseThrow(
 			() -> new CustomException(NOT_FOUND_REPOSITORY)
 		);
+
+		// 권한 검증
+		if (!SecurityUtils.getCurrentUserId().equals(repomon.getRepoOwner())) {
+			throw new CustomException(NO_ACCESS);
+		}
 
 		// 계산된 남은스탯이 음수가 될 경우 에러처리
 		if (RepomonStatusResponseDto.remainStat(
@@ -284,15 +307,21 @@ public class RepomonService {
 	 */
 	public void modifyRepomonNickname(RepomonNicknameRequestDto repomonNicknameRequestDto) {
 
+		RepomonStatusEntity repomon = repomonStatusRepository.findById(
+			repomonNicknameRequestDto.getRepoId()).orElseThrow(
+			() -> new CustomException(NOT_FOUND_REPOSITORY)
+		);
+
+		// 권한 검증
+		if (!SecurityUtils.getCurrentUserId().equals(repomon.getRepoOwner())) {
+			throw new CustomException(NO_ACCESS);
+		}
+
 		// 중복 닉네임이 있는 지 다시 확인
 		if (repoService.checkRepomonNickname(repomonNicknameRequestDto.getRepomonNickname())) {
 			throw new CustomException(DUPLICATE_RESOURCE);
 		}
 
-		RepomonStatusEntity repomon = repomonStatusRepository.findById(
-			repomonNicknameRequestDto.getRepoId()).orElseThrow(
-			() -> new CustomException(NOT_FOUND_REPOSITORY)
-		);
 		repomon.updateNickname(repomonNicknameRequestDto.getRepomonNickname());
 		repomonStatusRepository.save(repomon);
 
