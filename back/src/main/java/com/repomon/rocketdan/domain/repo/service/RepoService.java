@@ -23,9 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GHRepository.Contributor;
 import org.kohsuke.github.GHRepositoryStatistics;
-import org.kohsuke.github.PagedIterable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -473,35 +471,36 @@ public class RepoService {
      * 컨트리뷰터 수
      */
     public RepoCardResponseDto RepoCardDetail(Long repoId) {
-        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-        });
+	    RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+		    throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+	    });
 
-        String repoOwner = repoEntity.getRepoOwner();
+	    String repoOwner = repoEntity.getRepoOwner();
 
-        String repoKey = repoEntity.getRepoKey();
-        Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
-        GHRepository ghRepository = repositories.get(repoKey);
+	    String repoKey = repoEntity.getRepoKey();
+	    Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
+	    GHRepository ghRepository = repositories.get(repoKey);
 
-        if (ghRepository == null) {
-            throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
-        }
-        //레포 기록 불러오기
-        List<RepoHistoryEntity> historyEntityList = repoHistoryRepository.findAllByRepo(repoEntity);
+	    if (ghRepository == null) {
+		    throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
+	    }
+	    //레포 기록 불러오기
+	    List<RepoHistoryEntity> historyEntityList = repoHistoryRepository.findAllByRepo(repoEntity);
 
-        GHRepositoryStatistics statistics = ghRepository.getStatistics();
+	    GHRepositoryStatistics statistics = ghRepository.getStatistics();
 
-        //컨트리뷰터 수, Total Code 수
-        int contributers = 0;
-        long totalLineCount = 0;
+	    //컨트리뷰터 수, Total Code 수
+	    int contributers = 0;
+	    long totalLineCount = 0;
 
-        try {
-            totalLineCount = ghUtils.getTotalLineCount(statistics);
-            contributers = ghRepository.listContributors().toList().size();
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+	    try {
+		    totalLineCount = ghUtils.getTotalLineCount(statistics);
+		    contributers = ghRepository.listContributors().toList().size();
+	    } catch (IOException | InterruptedException e) {
+		    throw new RuntimeException(e);
+	    }
 
-        return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository,historyEntityList, totalLineCount, contributers);
+	    return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository, historyEntityList, totalLineCount, contributers);
     }
+
 }
