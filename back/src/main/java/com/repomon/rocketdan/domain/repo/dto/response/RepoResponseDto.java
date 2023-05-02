@@ -51,7 +51,7 @@ public class RepoResponseDto {
 				.repoName(repoEntity.getRepoName())
 				.repomonId(repomon.getRepomonId())
 				.repomonName(repoEntity.getRepomonNickname())
-				.repomonUrl(S3Utils.getS3Url(repomon.getRepomonUrl()))
+				.repomonUrl(S3Utils.modelUrl(repomon.getRepomonUrl()))
 				.repoDescription(ghRepository.getDescription())
 				.repoExp(repoEntity.getRepoExp())
 				.starCnt(ghRepository.getStargazersCount())

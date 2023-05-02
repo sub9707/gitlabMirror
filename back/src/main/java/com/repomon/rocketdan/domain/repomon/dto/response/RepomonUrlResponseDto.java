@@ -16,7 +16,7 @@ public class RepomonUrlResponseDto {
 
     public static RepomonUrlResponseDto fromEntities(List<RepomonEntity> exceptEgg) {
         List<String> urls = exceptEgg.stream()
-            .map(repomon -> S3Utils.getS3Url(repomon.getRepomonUrl()))
+            .map(repomon -> S3Utils.modelUrl(repomon.getRepomonUrl()))
             .collect(Collectors.toList());
         return new RepomonUrlResponseDto(urls);
     }

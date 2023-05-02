@@ -34,7 +34,7 @@ public class RepoListItem {
 		return RepoListItem.builder()
 			.repoId(repo.getRepoId())
 			.repomonId(repomon.getRepomonId())
-			.repomonUrl(S3Utils.getS3Url(repomon.getRepomonUrl()))
+			.repomonUrl(S3Utils.modelUrl(repomon.getRepomonUrl()))
 			.repoName(repo.getRepoName())
 			.repomonName(repo.getRepomonNickname())
 			.repoDescription(repoDetail.getDescription())
