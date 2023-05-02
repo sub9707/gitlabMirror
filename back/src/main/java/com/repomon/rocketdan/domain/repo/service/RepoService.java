@@ -470,7 +470,6 @@ public class RepoService {
      * 레포몬, 전체 경험치
      * 컨트리뷰터 수
      */
-
     public RepoCardResponseDto RepoCardDetail(Long repoId) {
 	    RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
 		    throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
