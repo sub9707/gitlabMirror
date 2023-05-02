@@ -23,7 +23,7 @@ public class RepomonEntity {
 	private String repomonUrl;
 	private Integer repomonTier;
 	private String repomonName;
-	private Integer repomonSkill;
+	private String repomonSkillUrl;
 	private String repomonSkillName;
 
 }
