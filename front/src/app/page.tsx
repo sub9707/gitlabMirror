@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import React, { useState, useEffect, useRef, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./page.module.scss";
 import grow from "../../public/static/services/service_grow.png";
 import fight from "../../public/static/services/service_fight.png";
@@ -10,6 +10,8 @@ import card from "../../public/static/services/service_card.png";
 import { Canvas, useLoader, useFrame } from "@react-three/fiber";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "@react-three/drei";
+import { useAppDispatch } from "@/redux/hooks";
+import { setAuthLoginState } from "@/redux/features/authSlice";
 
 const Model = () => {
   const gltf = useLoader(GLTFLoader, "/static/models/Penguin.glb");
@@ -27,10 +29,23 @@ const Home = () => {
   const spRef = useRef<HTMLImageElement>(null);
   const tpRef = useRef<HTMLImageElement>(null);
   const params = useSearchParams();
+  const dispatch = useAppDispatch();
+  const router = useRouter();
 
   useEffect(() => {
-    localStorage.setItem("accessToken", params.get("access-token") as string);
-    localStorage.setItem("refreshToken", params.get("refresh-token") as string);
+    if (params.get("access-token")) {
+      localStorage.setItem("accessToken", params.get("access-token") as string);
+      localStorage.setItem(
+        "refreshToken",
+        params.get("refresh-token") as string
+      );
+      localStorage.setItem("userId", params.get("userId") as string);
+      localStorage.setItem("userName", params.get("username") as string);
+      localStorage.setItem("nickName", params.get("name") as string);
+      localStorage.setItem("avatarUrl", params.get("avatarUrl") as string);
+      dispatch(setAuthLoginState());
+      router.push("/");
+    }
   }, []);
 
   useEffect(() => {
