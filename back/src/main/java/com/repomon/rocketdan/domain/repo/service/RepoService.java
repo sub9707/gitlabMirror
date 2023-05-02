@@ -468,6 +468,12 @@ public class RepoService {
         List<RepoHistoryEntity> historyEntityList = repoHistoryRepository.findAllByRepo(repoEntity);
 
         GHRepositoryStatistics statistics = ghRepository.getStatistics();
+        int contributers = 0;
+        try {
+            contributers = ghRepository.listContributors().toList().size();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         long totalLineCount = 0;
         try {
@@ -476,7 +482,7 @@ public class RepoService {
             throw new RuntimeException(e);
         }
 
-        return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository,historyEntityList, totalLineCount);
+        return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository,historyEntityList, totalLineCount, contributers);
     }
 
 }
