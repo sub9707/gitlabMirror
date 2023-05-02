@@ -3,7 +3,6 @@ package com.repomon.rocketdan.domain.repomon.service;
 
 import com.repomon.rocketdan.common.utils.SecurityUtils;
 import com.repomon.rocketdan.domain.repo.entity.RepomonEntity;
-import com.repomon.rocketdan.domain.repo.repository.RepoRepository;
 import com.repomon.rocketdan.domain.repo.repository.RepomonRepository;
 import com.repomon.rocketdan.domain.repo.service.RepoService;
 import com.repomon.rocketdan.domain.repomon.app.BattleLogic;
@@ -41,7 +40,6 @@ public class RepomonService {
 	private final BattleLogRepository battleLogRepository;
 	private final RepomonStatusRepository repomonStatusRepository;
 	private final RepoService repoService;
-	private final RepoRepository repoRepository;
 
 
 	/**
@@ -65,6 +63,12 @@ public class RepomonService {
 	 * @param repomonStartStatusRequestDto
 	 */
 	public void createRepomonStatus(RepomonStartStatusRequestDto repomonStartStatusRequestDto) {
+
+		// 권한 검증
+		String repoOwner = repoService.getRepoOwnerByRepoId(repomonStartStatusRequestDto.getRepoId());
+		if (!SecurityUtils.getCurrentUserId().equals(repoOwner)) {
+			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
+		}
 
 		// 중복 닉네임이 있는 지 다시 확인
 		if (repoService.checkRepomonNickname(repomonStartStatusRequestDto.getRepomonNickname())) {
@@ -105,6 +109,13 @@ public class RepomonService {
 	 * @return
 	 */
 	public RepomonStatusResponseDto getBattleTarget(Long repoId) {
+
+		// 권한 검증
+		String repoOwner = repoService.getRepoOwnerByRepoId(repoId);
+		if (!SecurityUtils.getCurrentUserId().equals(repoOwner)) {
+			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
+		}
+
 		RepomonStatusEntity repomonStatus = repomonStatusRepository.findById(repoId).orElseThrow(
 			() -> new CustomException(NOT_FOUND_REPOSITORY)
 		);
@@ -136,8 +147,14 @@ public class RepomonService {
 	 * @param battleLogRequestDto
 	 * @return
 	 */
-	public BattleLogResponseDto createBattleResult(Long repoId,
-		BattleLogRequestDto battleLogRequestDto) {
+	public BattleLogResponseDto createBattleResult(Long repoId, BattleLogRequestDto battleLogRequestDto) {
+
+		// 권한 검증
+		String repoOwner = repoService.getRepoOwnerByRepoId(repoId);
+		if (!SecurityUtils.getCurrentUserId().equals(repoOwner)) {
+			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
+		}
+
 		RepomonStatusEntity myRepomon = repomonStatusRepository.findById(repoId).orElseThrow(
 			() -> new CustomException(NOT_FOUND_REPOSITORY)
 		);
@@ -251,6 +268,13 @@ public class RepomonService {
 
 
 	public void modifyRepomonStatus(RepomonStatusRequestDto repomonStatusRequestDto) {
+
+		// 권한 검증
+		String repoOwner = repoService.getRepoOwnerByRepoId(repomonStatusRequestDto.getRepoId());
+		if (!SecurityUtils.getCurrentUserId().equals(repoOwner)) {
+			throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
+		}
+
 		RepomonStatusEntity repomon = repomonStatusRepository.findById(
 			repomonStatusRequestDto.getRepoId()).orElseThrow(
 			() -> new CustomException(NOT_FOUND_REPOSITORY)
