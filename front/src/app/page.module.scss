@@ -81,32 +81,40 @@
           font-weight: bold;
         }
 
-        & img:hover {
-          transform: scale(1.03);
-        }
-
         .fp {
           width: 600px;
           height: 570px;
           transition: opacity 0.5s ease-in-out, transform 0.3s ease-in-out;
+
+          &:hover {
+            transform: scale(1.03);
+          }
         }
 
         .sp {
           width: 600px;
           height: 275px;
           transition: opacity 1s ease-in-out, transform 0.3s ease-in-out;
+
+          &:hover {
+            transform: scale(1.05);
+          }
         }
 
         .tp {
           width: 600px;
           height: 275px;
           transition: opacity 1.5s ease-in-out, transform 0.3s ease-in-out;
+
+          &:hover {
+            transform: scale(1.05);
+          }
         }
 
         & p {
           font-family: "SUIT-Bold";
           display: none;
-          background-color: rgba(90, 167, 255, 0.7);
+          background-color: rgba(90, 167, 255, 0.6);
           position: absolute;
           width: 100%;
           bottom: 0;
