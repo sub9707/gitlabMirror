@@ -1,6 +1,14 @@
 import React from "react";
 
-function RepositoryCard() {
+type propType = {
+  title: string | undefined;
+  desc: string | undefined;
+  exp: number | undefined;
+  rating: number | undefined;
+  isActive: boolean | undefined;
+};
+
+function RepositoryCard(props: propType) {
   return (
     <div className="h-64 p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
       <div
@@ -32,17 +40,26 @@ function RepositoryCard() {
             height: "100%",
           }}
         >
-          캐릭터 공간
+          {props.isActive ? "캐릭터" : "달걀"}
         </div>
         <div style={{ width: "50%" }}>
-          <p style={{ fontSize: "2em", fontWeight: "600" }}>repo-name</p>
+          <p
+            style={{
+              fontSize: "2em",
+              fontWeight: "600",
+              overflow: "hidden",
+              whiteSpace: "nowrap",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {props.title}
+          </p>
           <p style={{ fontSize: "1em", fontWeight: "500", marginBlock: "3%" }}>
-            {" "}
-            repo-des
+            {props.desc === null ? "설명 없음" : props.desc}
           </p>
           <div>
-            <p>경험치 : 21850</p>
-            <p>배틀 레이팅 : 1850 </p>
+            <p>경험치 : {props.exp}</p>
+            <p>배틀 레이팅 : {props.rating} </p>
           </div>
         </div>
       </div>
