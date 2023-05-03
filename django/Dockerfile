@@ -1,14 +1,20 @@
-FROM python:latest
+FROM python:3.9
 
-RUN mkdir /usr/src/app
-WORKDIR /usr/src/app
+# Set the locale
+RUN apt-get update && \
+    apt-get install -y locales && \
+    localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+ENV LANG en_US.utf8
 
-COPY . /usr/src/app/
+# Copy the project directory into the container
+COPY . /app
+WORKDIR /app
 
-RUN pip install --upgrade pip
-RUN pip install django
-RUN pip install -r requirements.txt
-RUN pip install cairocffi
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Expose the port
 EXPOSE 8000
+
+# Start the server
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
