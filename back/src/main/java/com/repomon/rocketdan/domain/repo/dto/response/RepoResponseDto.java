@@ -34,8 +34,9 @@ public class RepoResponseDto {
 	private LocalDateTime repoEnd;
 	private List<String> languages;
 	private List<String> tags;
+	private boolean myRepo;
 
-	public static RepoResponseDto fromEntityAndGHRepository(RepoEntity repoEntity, GHRepository ghRepository) {
+	public static RepoResponseDto fromEntityAndGHRepository(RepoEntity repoEntity, GHRepository ghRepository, boolean myRepo) {
 		try {
 			Map<String, Long> languageMap = ghRepository.listLanguages();
 			List<GHTag> ghTags = ghRepository.listTags().toList();
@@ -60,6 +61,7 @@ public class RepoResponseDto {
 				.repoEnd(repoEntity.getRepoEnd())
 				.languages(languages)
 				.tags(tags)
+				.myRepo(myRepo)
 				.build();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
