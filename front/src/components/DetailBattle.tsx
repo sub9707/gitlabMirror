@@ -8,14 +8,18 @@ import avoid from "../../public/static/icons/avoid_icon.png";
 import critical from "../../public/static/icons/critical_icon.png";
 import hit from "../../public/static/icons/hit_icon.png";
 import shield from "../../public/static/icons/shield_icon.png";
-import { RepoDetailBattleType } from "@/types/repoDetail";
+import { BattleRecordType, RepoDetailBattleType } from "@/types/repoDetail";
+import winRecord from "../../public/static/battle/record_win.png";
+import loseRecord from "../../public/static/battle/record_lose.png";
 
 function DetailBattle({
   battleInfo,
   rank,
+  battleRecords,
 }: {
   battleInfo: RepoDetailBattleType;
   rank: number;
+  battleRecords: BattleRecordType[];
 }) {
   return (
     <div>
@@ -80,8 +84,31 @@ function DetailBattle({
           </div>
         </div>
         <div className={styles.right}>
-          <p style={{ marginTop: "6rem", fontSize: "1.75rem" }}>최근 전적</p>
-          <div></div>
+          <p style={{ margin: "6rem 0 3rem 0", fontSize: "1.75rem" }}>
+            최근 전적
+          </p>
+          <div className={styles["record-item-div"]}>
+            {battleRecords.slice(5).map((record, index) => (
+              <div key={index}>
+                {record.isWin && (
+                  <Image
+                    src={winRecord}
+                    alt="배틀 전적"
+                    width={580}
+                    className={styles["record-item"]}
+                  ></Image>
+                )}
+                {!record.isWin && (
+                  <Image
+                    src={loseRecord}
+                    alt="배틀 전적"
+                    width={580}
+                    className={styles["record-item"]}
+                  ></Image>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
