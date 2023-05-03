@@ -5,14 +5,10 @@ import com.repomon.rocketdan.common.Retries;
 import com.repomon.rocketdan.domain.repo.app.GrowthFactor;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepoHistoryEntity;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.kohsuke.github.*;
 import org.kohsuke.github.GHRepositoryStatistics.CodeFrequency;
-import org.kohsuke.github.GHRepositoryStatistics.CommitActivity;
 import org.kohsuke.github.GHRepositoryStatistics.ContributorStats;
 import org.kohsuke.github.GHRepositoryStatistics.ContributorStats.Week;
-import org.kohsuke.github.GHRepositoryStatistics.Participation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -20,26 +16,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import javax.annotation.PostConstruct;
-import org.kohsuke.github.GHCommit;
-import org.kohsuke.github.GHCommitComment;
-import org.kohsuke.github.GHIssue;
-import org.kohsuke.github.GHOrganization;
-import org.kohsuke.github.GHOrganization.Role;
-import org.kohsuke.github.GHPersonSet;
-import org.kohsuke.github.GHPullRequest;
-import org.kohsuke.github.GHPullRequestReviewComment;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GHUser;
-import org.kohsuke.github.GitHub;
-import org.kohsuke.github.GitHubBuilder;
-import org.kohsuke.github.PagedIterable;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import java.util.*;
 
 @Component
 public class GHUtils {
@@ -186,7 +163,7 @@ public class GHUtils {
             Map<String, String> userInfo = new HashMap<>();
             userInfo.put("username", githubUser.getLogin());
             userInfo.put("avatarUrl", githubUser.getAvatarUrl());
-            userInfo.put("nickname", githubUser.getName());
+            userInfo.put("nickname", githubUser.getName() == null ? githubUser.getLogin() : githubUser.getName());
             return userInfo;
         } catch (Exception e) {
             e.printStackTrace();
@@ -194,8 +171,9 @@ public class GHUtils {
         }
     }
 
+
     @Retries
-    public long getTotalLineCount(GHRepositoryStatistics statistics) throws IOException, InterruptedException {
+    public Long getTotalLineCount(GHRepositoryStatistics statistics) throws IOException, InterruptedException {
         long totalLineCount = 0L;
         List<CodeFrequency> codeFrequencies = statistics.getCodeFrequency();
         for (CodeFrequency codeFrequency : codeFrequencies) {
@@ -222,6 +200,7 @@ public class GHUtils {
 
     /**
      * 유저 이름의 총 라인 수
+     *
      * @param statistics
      * @param userName
      * @return
@@ -229,13 +208,13 @@ public class GHUtils {
      * @throws InterruptedException
      */
     @Retries
-    public long getLineCountWithUser(GHRepositoryStatistics statistics, String userName) throws IOException, InterruptedException {
+    public Long getLineCountWithUser(GHRepositoryStatistics statistics, String userName) throws IOException, InterruptedException {
         long lineCount = 0L;
         List<ContributorStats> contributorStatList = statistics.getContributorStats().toList();
         for (ContributorStats contributorStats : contributorStatList) {
             String author = contributorStats.getAuthor().getLogin();
-            if(author.equals(userName)){
-                for(Week week : contributorStats.getWeeks()){
+            if (author.equals(userName)) {
+                for (Week week : contributorStats.getWeeks()) {
                     lineCount += week.getNumberOfAdditions();
                     lineCount += week.getNumberOfDeletions();
                 }
@@ -244,8 +223,10 @@ public class GHUtils {
         return lineCount;
     }
 
+
     /**
      * 유저 이름의 총 커밋 수
+     *
      * @param statistics
      * @param userName
      * @return
@@ -253,17 +234,141 @@ public class GHUtils {
      * @throws InterruptedException
      */
     @Retries
-    public int getCommitCountWithUser(GHRepositoryStatistics statistics, String userName)
+    public Long getCommitCountWithUser(GHRepositoryStatistics statistics, String userName)
         throws IOException, InterruptedException {
-        int commitCount = 0;
+        Long commitCount = 0L;
         List<ContributorStats> contributorStatList = statistics.getContributorStats().toList();
         for (ContributorStats contributorStats : contributorStatList) {
             String author = contributorStats.getAuthor().getLogin();
             if (author.equals(userName)) {
-                commitCount += contributorStats.getTotal();
+                commitCount = (long) contributorStats.getTotal();
+                break;
             }
         }
 
         return commitCount;
     }
+
+
+    /**
+     * 깃허브 레포지터리 총 커밋 수
+     *
+     * @param ghRepository
+     * @return
+     * @throws IOException
+     */
+    public int getCommitCount(GHRepository ghRepository) throws IOException, InterruptedException {
+        GHRepositoryStatistics statistics = ghRepository.getStatistics();
+        List<ContributorStats> contributorStats = statistics.getContributorStats().toList();
+
+        int totalCommits = 0;
+        for (ContributorStats ContributorStat : contributorStats) {
+            List<Week> weeks = ContributorStat.getWeeks();
+            for (Week week : weeks) {
+                totalCommits += week.getNumberOfCommits();
+            }
+        }
+        return totalCommits;
+    }
+
+
+    /**
+     * 특정 유저의 모든 레포지터리에서 본인의 커밋 수 총 합
+     */
+    public Long getTotalCommitCountByUser(String userName) throws IOException, InterruptedException {
+        GHUser user = gitHub.getUser(userName);
+
+        Map<String, GHRepository> map = getRepositoriesInPublicOrganization(user);
+        map.putAll(getRepositories(user));
+
+        Long totalCommitCount = 0L;
+        for (GHRepository repo : map.values()) {
+            GHRepositoryStatistics statistics = repo.getStatistics();
+            Long commitCountWithUser = getCommitCountWithUser(statistics, userName);
+            totalCommitCount += commitCountWithUser;
+        }
+        System.out.println("totalCommitCount = " + totalCommitCount);
+        return totalCommitCount;
+    }
+
+    //    public Long getTotalIssueCountByUser(String userName) throws IOException {
+    //        GHUser user = gitHub.getUser(userName);
+    //
+    //        Map<String, GHRepository> map = getRepositoriesInPublicOrganization(user);
+    //        map.putAll(getRepositories(user));
+    //
+    //        Long totalIssueCount = 0L;
+    //        for (GHRepository repo : map.values()) {
+    //            List<GHIssue> issues = repo.getIssues(GHIssueState.CLOSED);
+    //            for (GHIssue issue : issues) {
+    //                if (issue.getAssignee() != null && issue.getAssignee().getLogin().equals(userName)) {
+    //                    totalIssueCount++;
+    //                }
+    //            }
+    //        }
+    //        System.out.println("totalIssueCount = " + totalIssueCount);
+    //        return totalIssueCount;
+    //    }
+
+
+    public Long getTotalCodeLineCountByUser(String userName) throws IOException, InterruptedException {
+        GHUser user = gitHub.getUser(userName);
+
+        Map<String, GHRepository> map = getRepositoriesInPublicOrganization(user);
+        map.putAll(getRepositories(user));
+
+        Long totalCodeLineCount = 0L;
+        for (GHRepository repo : map.values()) {
+            totalCodeLineCount += getLineCountWithUser(repo.getStatistics(), userName);
+        }
+        System.out.println("totalCodeLineCount = " + totalCodeLineCount);
+        return totalCodeLineCount;
+    }
+
+
+    public Set<String> getLanguagesByUser(String userName) throws IOException {
+        GHUser user = gitHub.getUser(userName);
+
+        Map<String, GHRepository> map = getRepositoriesInPublicOrganization(user);
+        map.putAll(getRepositories(user));
+
+        Set<String> languages = new HashSet<>();
+        for (GHRepository repo : map.values()) {
+            Map<String, Long> repoLanguages = repo.listLanguages();
+
+            languages.addAll(repoLanguages.keySet());
+        }
+        System.out.println("languages = " + languages);
+        return languages;
+    }
+
+
+    public Long getAvgContributionByUser(String userName) throws IOException, InterruptedException {
+        GHUser user = gitHub.getUser(userName);
+
+        Map<String, GHRepository> map = getRepositoriesInPublicOrganization(user);
+        map.putAll(getRepositories(user));
+
+        double avgContribution = 0;
+        for (GHRepository repo : map.values()) {
+            System.out.println("repo.getName() = " + repo.getName());
+
+            double totalCommitCount = getCommitCount(repo);
+            System.out.println("totalCommitCount = " + totalCommitCount);
+            double myCommitCount = getCommitCountWithUser(repo.getStatistics(), userName);
+            System.out.println("myCommitCount = " + myCommitCount);
+
+            if (totalCommitCount == 0.0) {
+                avgContribution += 100.0;
+            } else {
+                avgContribution += myCommitCount / totalCommitCount * 100;
+            }
+
+            System.out.println("avgContribution = " + avgContribution);
+
+        }
+        System.out.println("avgContribution = " + Math.round(avgContribution / map.size()));
+        return Math.round(avgContribution / map.size());
+    }
+
 }
