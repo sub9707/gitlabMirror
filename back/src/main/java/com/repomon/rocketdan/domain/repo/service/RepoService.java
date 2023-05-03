@@ -38,7 +38,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-
 @Service
 @Slf4j
 @Transactional
@@ -398,8 +397,8 @@ public class RepoService {
 			try {
 				List<GHCommit> ghCommits = ghRepository.listCommits().toList();
 				for (GHCommit commit : ghCommits) {
-                    if(commit.getParentSHA1s().size() > 1) continue;
-                    
+					if (commit.getParentSHA1s().size() > 1) continue;
+
 					totalCnt++;
 					String message = commit.getCommitShortInfo().getMessage();
 
@@ -419,7 +418,7 @@ public class RepoService {
 			log.info("컨벤션 분석 끝");
 		}
 
-		RepoConventionResponseDto responseDto = RepoConventionResponseDto.fronEntities(repoOwner, conventions, totalCnt, collectCnt);
+		RepoConventionResponseDto responseDto = RepoConventionResponseDto.fromEntities(repoOwner, conventions, totalCnt, collectCnt);
 		redisConventionRepository.save(responseDto);
 		return responseDto;
 	}
@@ -446,7 +445,7 @@ public class RepoService {
 			log.info("레포지토리 분석 종료 => {}", repoEntity.getRepoName());
 
 			checkRepomonEvolution(repoEntity);
-			
+
 			return totalExp;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -498,82 +497,83 @@ public class RepoService {
 	}
 
 
-    /**
-     * 레포 card detail
-     */
-    public RepoCardResponseDto RepoCardDetail(Long repoId) {
-        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-        });
+	/**
+	 * 레포 card detail
+	 */
+	public RepoCardResponseDto RepoCardDetail(Long repoId) {
+		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+		});
 
-        String repoOwner = repoEntity.getRepoOwner();
+		String repoOwner = repoEntity.getRepoOwner();
 
-        String repoKey = repoEntity.getRepoKey();
-        Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
-        GHRepository ghRepository = repositories.get(repoKey);
+		String repoKey = repoEntity.getRepoKey();
+		Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
+		GHRepository ghRepository = repositories.get(repoKey);
 
-        if (ghRepository == null) {
-            throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
-        }
-        //레포 기록 불러오기
-        List<RepoHistoryEntity> historyEntityList = repoHistoryRepository.findAllByRepo(repoEntity);
+		if (ghRepository == null) {
+			throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
+		}
+		//레포 기록 불러오기
+		List<RepoHistoryEntity> historyEntityList = repoHistoryRepository.findAllByRepo(repoEntity);
 
-        GHRepositoryStatistics statistics = ghRepository.getStatistics();
+		GHRepositoryStatistics statistics = ghRepository.getStatistics();
 
-        //컨트리뷰터 수, Total Code 수
-        int contributers = 0;
-        long totalLineCount = 0;
+		//컨트리뷰터 수, Total Code 수
+		int contributers = 0;
+		long totalLineCount = 0;
 
-        try {
-            totalLineCount = ghUtils.getTotalLineCount(statistics);
-            contributers = ghRepository.listContributors().toList().size();
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+		try {
+			totalLineCount = ghUtils.getTotalLineCount(statistics);
+			contributers = ghRepository.listContributors().toList().size();
+		} catch (IOException | InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 
-        return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository,historyEntityList, totalLineCount, contributers);
-    }
-
-    /**
-     * 레포 personal card detail
-     */
-    public RepoPersonalCardResponseDto RepoPersonalCardDetail(Long repoId, Long userId) {
-        RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
-            throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-        });
-
-        String repoOwner = repoEntity.getRepoOwner();
-
-        String repoKey = repoEntity.getRepoKey();
-        Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
-        GHRepository ghRepository = repositories.get(repoKey);
-
-        if (ghRepository == null) {
-            throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
-        }
-        //레포 기록 불러오기
-        List<RepoHistoryEntity> historyEntityList = repoHistoryRepository.findAllByRepo(repoEntity);
-
-        GHRepositoryStatistics statistics = ghRepository.getStatistics();
-
-        //컨트리뷰터 수, Total Code 수
-        int contributers = 0;
-        long totalLineCount = 0;
-
-        try {
-            totalLineCount = ghUtils.getTotalLineCount(statistics);
-            contributers = ghRepository.listContributors().toList().size();
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        //유저 정보
-        UserEntity user = userRepository.findById(userId).orElseThrow(() -> {throw new CustomException(ErrorCode.NOT_FOUND_USER);});
-        Map<String, String> userInfo = ghUtils.getUser(user.getUserName());
-        //기여도
-        RepoContributeResponseDto contributeResponse = redisContributeRepository.findByRepoOwner(repoOwner)
-                .orElseGet(() -> findContributeDtoWithGHApi(repoEntity, repoOwner));
+		return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository, historyEntityList, totalLineCount, contributers);
+	}
 
 
-        return RepoPersonalCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository, historyEntityList, contributers, userInfo, contributeResponse);
-    }
+	/**
+	 * 레포 personal card detail
+	 */
+	public RepoPersonalCardResponseDto RepoPersonalCardDetail(Long repoId, Long userId) {
+		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+		});
+
+		String repoOwner = repoEntity.getRepoOwner();
+
+		String repoKey = repoEntity.getRepoKey();
+		Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
+		GHRepository ghRepository = repositories.get(repoKey);
+
+		if (ghRepository == null) {
+			throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
+		}
+		//레포 기록 불러오기
+		List<RepoHistoryEntity> historyEntityList = repoHistoryRepository.findAllByRepo(repoEntity);
+
+		GHRepositoryStatistics statistics = ghRepository.getStatistics();
+
+		//컨트리뷰터 수, Total Code 수
+		int contributers = 0;
+		long totalLineCount = 0;
+
+		try {
+			totalLineCount = ghUtils.getTotalLineCount(statistics);
+			contributers = ghRepository.listContributors().toList().size();
+		} catch (IOException | InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+		//유저 정보
+		UserEntity user = userRepository.findById(userId).orElseThrow(() -> {throw new CustomException(ErrorCode.NOT_FOUND_USER);});
+		Map<String, String> userInfo = ghUtils.getUser(user.getUserName());
+		//기여도
+		RepoContributeResponseDto contributeResponse = redisContributeRepository.findByRepoOwner(repoOwner)
+			.orElseGet(() -> findContributeDtoWithGHApi(repoEntity, repoOwner));
+
+		return RepoPersonalCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository, historyEntityList, contributers, userInfo, contributeResponse);
+	}
+
 }
