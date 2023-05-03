@@ -1,5 +1,6 @@
 export type RepoDetailType = {
   forkCnt: number;
+  myRepo: boolean;
   languages: string[];
   repoEnd: string;
   repoExp: number;
@@ -93,15 +94,52 @@ export type RepoDetailBattleType = {
   repoMon: DetailRepomonType;
   repomonNickname: string;
   repomonTier: number;
-  repomonUrl: string;
   statPoint: number;
   winCnt: number;
 };
 
+type BattleRepoType = {
+  repoId: number;
+  repoName: string;
+  repomonNickname: string;
+  repomonUrl: string;
+  repomonTier: number;
+  rating: number;
+  statPoint: number;
+  winCnt: number;
+  loseCnt: number;
+  repomon: DetailRepomonType;
+  atk: number;
+  dodge: number;
+  def: number;
+  critical: number;
+  hit: number;
+  hp: number;
+  atkPoint: number;
+  dodgePoint: number;
+  defPoint: number;
+  criticalPoint: number;
+  hitPoint: number;
+  increaseAtk: number;
+  increaseDodge: number;
+  increaseDef: number;
+  increaseCritical: number;
+  increaseHit: number;
+};
+
 export type BattleRecordType = {
   attackPoint: number;
-  attackRepo: DetailRepomonType;
+  attackRepo: BattleRepoType;
   defensePoint: number;
-  defenseRepo: DetailRepomonType;
+  defenseRepo: BattleRepoType;
   isWin: boolean;
+};
+
+export type StatType = {
+  [key: string]: number;
+  atkPoint: number;
+  defPoint: number;
+  criticalPoint: number;
+  dodgePoint: number;
+  hitPoint: number;
 };

@@ -16,9 +16,6 @@ export const axiosRequestRefresh = async () => {
   const accessToken = localStorage.getItem("accessToken");
   const refreshToken = localStorage.getItem("refreshToken");
 
-  console.log(accessToken, refreshToken);
-  console.log(typeof accessToken, typeof refreshToken);
-
   const res = await http.post(
     "auth/refresh",
     {},
