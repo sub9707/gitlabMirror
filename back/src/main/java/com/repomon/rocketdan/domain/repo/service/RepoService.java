@@ -122,9 +122,7 @@ public class RepoService {
 			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 		});
 
-		UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> {
-			throw new CustomException(ErrorCode.NOT_FOUND_USER);
-		});
+		UserEntity userEntity = userRepository.findById(userId).orElseGet(null);
 
 		String repoOwner = repoEntity.getRepoOwner();
 		Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
@@ -135,7 +133,7 @@ public class RepoService {
 			throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
 		}
 
-		boolean myRepo = activeRepoRepository.existsByUserAndRepo(userEntity, repoEntity);
+		boolean myRepo = userEntity == null ? false : activeRepoRepository.existsByUserAndRepo(userEntity, repoEntity);
 
 		return RepoResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository, myRepo);
 	}
@@ -342,7 +340,12 @@ public class RepoService {
 					repomonStatusRepository.save(repomonStatusEntity);
 					activeRepoRepository.save(ActiveRepoEntity.of(userEntity, repomonStatusEntity));
 
-					Long exp = initRepositoryInfo(repomonStatusEntity, ghRepository, null);
+
+					Calendar calendar = Calendar.getInstance();
+					calendar.add(Calendar.YEAR, -1);
+					Date date = calendar.getTime();
+
+					Long exp = initRepositoryInfo(repomonStatusEntity, ghRepository, date);
 					userEntity.updateTotalExp(exp);
 				});
 		});
@@ -467,12 +470,14 @@ public class RepoService {
 			Date workDate = Date.from(workedAt.atStartOfDay(ZoneId.systemDefault()).toInstant());
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(workDate);
-			cal.add(Calendar.DATE, 1);
 
 			Long exp = initRepositoryInfo(repoEntity, ghRepository, Date.from(cal.toInstant()));
 			userEntities.forEach(userEntity -> userEntity.updateTotalExp(exp));
 		}, () -> {
-			Long exp = initRepositoryInfo(repoEntity, ghRepository, null);
+			Calendar calendar = Calendar.getInstance();
+			calendar.add(Calendar.YEAR, -1);
+			Date date = calendar.getTime();
+			Long exp = initRepositoryInfo(repoEntity, ghRepository, date);
 			userEntities.forEach(userEntity -> userEntity.updateTotalExp(exp));
 		});
 
