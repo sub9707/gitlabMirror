@@ -89,11 +89,15 @@ public class GHUtils {
     }
 
 
+    @Retries
     public Collection<RepoHistoryEntity> GHCommitToHistory(GHRepository ghRepository, RepoEntity repoEntity, Date date) throws IOException {
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
         GHRepositoryStatistics statistics = ghRepository.getStatistics();
-        PagedIterable<CommitActivity> commitActivities = statistics.getCommitActivity();
+
+        PagedIterable<CommitActivity> commitActivities = statistics
+            .getCommitActivity()
+            .withPageSize(100);
 
         for(CommitActivity commitActivity : commitActivities){
             long week = commitActivity.getWeek();
