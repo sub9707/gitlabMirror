@@ -1,3 +1,4 @@
+import { RepoInitType } from "@/types/repoRegist";
 import { http } from "./axios";
 
 // 유저 정보 조회
@@ -67,5 +68,17 @@ export const getTotalRepoList = async (
 
   const res = await http.get(`/repo/${userId}`, { data });
 
+  return res;
+};
+
+// 레포몬 초기 등록
+export const setRepoInit = async (data: RepoInitType) => {
+  const res = await http.post(`/repomon/start`, data);
+  return res;
+};
+
+// 레포몬 랜덤 3개 요청
+export const getRandomRepo = async () => {
+  const res = await http.get(`/repo/repomon`);
   return res;
 };
