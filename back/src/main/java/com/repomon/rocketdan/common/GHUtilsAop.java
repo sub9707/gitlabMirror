@@ -17,9 +17,6 @@ public class GHUtilsAop {
             try {
                 return proceedingJoinPoint.proceed();
             } catch (NullPointerException e) {
-                if (retries == 0) {
-                    throw new RuntimeException();
-                }
                 Thread.sleep(500L);
             }
         }
