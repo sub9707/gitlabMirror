@@ -30,6 +30,7 @@ import DatePickerModal from "@/components/DatePickerModal/DatePickerModal";
 import Modal from "react-modal";
 import RenameModal from "@/components/RenameModal/RenameModal";
 import Loading from "@/app/loading";
+import { AxiosError } from "axios";
 
 function Page({ params }: { params: { userId: string; repoId: string } }) {
   const [loginUserId, setLoginUserId] = useState<string>();
@@ -58,8 +59,8 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
       repoDetailInfo &&
       repoDetailResearchInfo &&
       repoDetailBattleInfo &&
-      battleRank // &&
-      // battleRecordInfo
+      battleRank &&
+      battleRecordInfo
     ) {
       setShowPage(true);
     }
@@ -68,7 +69,7 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
     repoDetailResearchInfo,
     repoDetailBattleInfo,
     battleRank,
-    // battleRecordInfo,
+    battleRecordInfo,
   ]);
 
   useEffect(() => {
@@ -159,9 +160,12 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
     try {
       const res = await axiosRequestBattleRecord(repoId);
       console.log("레포 디테일 배틀 전적 정보: ", res.data.data.battleLogList);
-      setBattleRank(res.data.data.battleLogList);
-    } catch (err) {
+      setBattleRecordInfo(res.data.data.battleLogList);
+    } catch (err: any) {
       console.error(err);
+      if (err.response.data.status === 404) {
+        setBattleRecordInfo([]);
+      }
     }
   };
 
@@ -313,6 +317,7 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
               <DetailBattle
                 battleInfo={repoDetailBattleInfo!}
                 rank={battleRank!}
+                battleRecords={battleRecordInfo!}
               />
             )}
           </div>
