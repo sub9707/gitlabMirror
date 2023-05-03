@@ -39,9 +39,9 @@ public class RepoController {
 
 
 	@ApiOperation(value = "개별 레포 디테일 조회")
-	@GetMapping("/{repoId}/info")
-	public ResponseEntity<RepoResponseDto> getRepoInfo(@PathVariable Long repoId) {
-		RepoResponseDto responseDto = repoService.getUserRepoInfo(repoId);
+	@GetMapping("/{repoId}/info/{userId}")
+	public ResponseEntity<RepoResponseDto> getRepoInfo(@PathVariable Long repoId, @PathVariable Long userId) {
+		RepoResponseDto responseDto = repoService.getUserRepoInfo(repoId, userId);
 		return ResponseEntity.ok(responseDto);
 	}
 
