@@ -98,8 +98,8 @@ public class BattleLogic {
 	 * @return
 	 */
 	public static Integer getAllStat(RepomonStatusEntity repomon) {
-		return (repomon.getAtkPoint() + repomon.getDefPoint() + repomon.getDodgePoint()
-			+ repomon.getCriticalPoint() + repomon.getHitPoint() + (int) ((repomon.getRepoExp()) / 100)) + 1;
+		return Math.min((repomon.getAtkPoint() + repomon.getDefPoint() + repomon.getDodgePoint()
+			+ repomon.getCriticalPoint() + repomon.getHitPoint() + (int) ((repomon.getRepoExp()) / 100)) + 1, 1);
 	}
 
 
