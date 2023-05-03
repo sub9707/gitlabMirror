@@ -383,6 +383,7 @@ public class RepoService {
 		}
 	}
 
+
 	private RepoConventionResponseDto findConventionDtoWithGHApi(RepoEntity repoEntity, String repoOwner) {
 		List<RepoConventionEntity> conventions = conventionRepository.findAllByRepo(repoEntity);
 
@@ -480,19 +481,21 @@ public class RepoService {
 	}
 
 
-
 	/**
 	 * 레포몬 관련
 	 */
 
 	public void checkRepomonEvolution(RepoEntity repoEntity) {
+		log.info("======================== 진화 여부 확인 ============================");
 		RepomonEntity repomon = repoEntity.getRepomon();
 		if ((repomon.getRepomonTier() == 1 && repoEntity.getRepoExp() >= 5000) || (repomon.getRepomonTier() == 2 && repoEntity.getRepoExp() >= 10000)) {
+			log.info("========================== 레포몬 진화 =========================");
 			RepomonEntity newRepomon = repomonRepository.findByRepomonTierAndRepomonName(repomon.getRepomonTier() + 1, repomon.getRepomonName()).orElseThrow(
 				() -> new CustomException(ErrorCode.NOT_FOUND_ENTITY)
 			);
 			repoEntity.updateRepomon(newRepomon);
 		}
+		log.info("======================== 진화 여부 확인 종료 ============================");
 	}
 
 
@@ -501,9 +504,9 @@ public class RepoService {
 	}
 
 
-	public RepomonResponseDto createSelectRepomon() {
+	public RepomonSelectResponseDto createSelectRepomon() {
 		List<RepomonEntity> repomonList = repomonRepository.findTop3ByRandom();
-		return RepomonResponseDto.createSelectRepomon(repomonList);
+		return RepomonSelectResponseDto.createSelectRepomon(repomonList);
 	}
 
 
