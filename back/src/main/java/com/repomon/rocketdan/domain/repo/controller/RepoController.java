@@ -15,8 +15,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import static com.repomon.rocketdan.exception.ErrorCode.DATA_CONVENTION_TOO_SHORT;
 import static com.repomon.rocketdan.exception.ErrorCode.DUPLICATE_RESOURCE;
 
 
@@ -100,7 +102,11 @@ public class RepoController {
 
 	@ApiOperation(value = "레포지토리 컨벤션 설정")
 	@PutMapping("/{repoId}/info/convention")
-	public ResponseEntity<ResultDto> modifyRepoConvention(@PathVariable Long repoId, @ModelAttribute RepoConventionRequestDto requestDto) {
+	public ResponseEntity<ResultDto> modifyRepoConvention(@PathVariable Long repoId, @ModelAttribute RepoConventionRequestDto requestDto, BindingResult bindingResult) {
+		if(bindingResult.hasErrors()){
+			throw new CustomException(DATA_CONVENTION_TOO_SHORT);
+		}
+
 		repoService.modifyRepoConvention(repoId, requestDto);
 		return ResponseEntity.ok(ResultDto.ofSuccess());
 	}

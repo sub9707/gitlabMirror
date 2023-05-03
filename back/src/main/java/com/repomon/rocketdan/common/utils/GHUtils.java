@@ -169,6 +169,45 @@ public class GHUtils {
         return histories.values();
     }
 
+    public Collection<RepoHistoryEntity> GHForkToHistory(GHRepository ghRepository, RepoEntity repoEntity, Date fromDate)
+        throws IOException {
+        Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
+
+        List<GHRepository> ghRepositories = ghRepository.listForks().toList();
+
+        for(GHRepository repo : ghRepositories){
+            Date createdAt = repo.getCreatedAt();
+            if(fromDate == null || createdAt.after(fromDate)){
+                LocalDate forkedAt = createdAt.toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+
+                configureRepoInfo(histories, forkedAt, repoEntity, GrowthFactor.FORK);
+            }
+        }
+
+        return histories.values();
+    }
+
+    public Collection<RepoHistoryEntity> GHStarToHistory(GHRepository ghRepository, RepoEntity repoEntity, Date fromDate)
+        throws IOException {
+        Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
+
+        List<GHStargazer> ghStargazers = ghRepository.listStargazers2().toList();
+        for(GHStargazer stargazer : ghStargazers){
+            Date starredAt = stargazer.getStarredAt();
+            if(fromDate == null || starredAt.after(fromDate)){
+                LocalDate starredDate = starredAt.toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+
+                configureRepoInfo(histories, starredDate, repoEntity, GrowthFactor.STAR);
+            }
+        }
+
+        return histories.values();
+    }
+
 
     private void configureRepoInfo(Map<LocalDate, RepoHistoryEntity> histories, LocalDate date, RepoEntity repoEntity, GrowthFactor factor) {
         if (histories.containsKey(date)) {

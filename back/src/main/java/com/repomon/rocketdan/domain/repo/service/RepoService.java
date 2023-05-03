@@ -377,7 +377,6 @@ public class RepoService {
 		}
 	}
 
-
 	private RepoConventionResponseDto findConventionDtoWithGHApi(RepoEntity repoEntity, String repoOwner) {
 		List<RepoConventionEntity> conventions = conventionRepository.findAllByRepo(repoEntity);
 
@@ -431,8 +430,8 @@ public class RepoService {
 			list.addAll(ghUtils.GHCommitToHistory(ghRepository, repoEntity, fromDate));
 			list.addAll(ghUtils.GHPullRequestToHistory(ghRepository, repoEntity, fromDate));
 			list.addAll(ghUtils.GHIssueToHistory(ghRepository, repoEntity, fromDate));
-
-			// 효율성 ? 보안성 ?
+			list.addAll(ghUtils.GHForkToHistory(ghRepository, repoEntity, fromDate));
+			list.addAll(ghUtils.GHStarToHistory(ghRepository, repoEntity, fromDate));
 
 			Long totalExp = 0L;
 			for (RepoHistoryEntity item : list) {
@@ -474,6 +473,11 @@ public class RepoService {
 
 	}
 
+
+
+	/**
+	 * 레포몬 관련
+	 */
 
 	public void checkRepomonEvolution(RepoEntity repoEntity) {
 		RepomonEntity repomon = repoEntity.getRepomon();
