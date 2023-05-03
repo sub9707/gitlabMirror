@@ -5,7 +5,8 @@ import com.repomon.rocketdan.common.Retries;
 import com.repomon.rocketdan.domain.repo.app.GrowthFactor;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepoHistoryEntity;
-import java.util.List;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import org.kohsuke.github.*;
 import org.kohsuke.github.GHRepositoryStatistics.CodeFrequency;
@@ -20,10 +21,6 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHCommitComment;
@@ -266,4 +263,71 @@ public class GHUtils {
 
         return commitCount;
     }
+
+    /**
+     * 유저 이름의 총 이슈 수
+     */
+    public Integer getMyIssueToHistory(GHRepository ghRepository, Date date, String username) throws IOException {
+
+        List<GHIssue> issues = new ArrayList<>();
+        if (date == null) {
+            issues = ghRepository.queryIssues().list().toList();
+        } else {
+            PagedIterable<GHIssue> allIssues = ghRepository.queryIssues().list();
+            for (GHIssue issue : allIssues) {
+                if (issue.getCreatedAt().after(date)) {
+                    issues.add(issue);
+                }
+            }
+        }
+
+        int issueCount = 0;
+        for(GHIssue issue : issues){
+            if (issue.getUser().getName().equals(username)){
+                issueCount += 1;
+            }
+        }
+        return issueCount;
+    }
+
+    /**
+     * 유저 이름의 총 머지, 리뷰 수
+     */
+    public List<Integer> getMyMergeToHistory(GHRepository ghRepository, Date date, String username) throws IOException {
+
+        LocalDate localDate = date == null ? null : date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+        int mymerge = 0;
+        int myreview = 0;
+
+        PagedIterable<GHPullRequest> pullRequests = ghRepository.queryPullRequests().list();
+        for(GHPullRequest pr : pullRequests){
+            LocalDate prDate = pr.getMergedAt().toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+
+            if(localDate != null && prDate.isBefore(localDate)) {
+                if (pr.getUser().getName().equals(username)){
+                    mymerge += 1;
+                }
+
+                List<GHPullRequestReviewComment> reviewComments = pr.listReviewComments()
+                        .toList();
+
+                for(GHPullRequestReviewComment reviewComment : reviewComments){
+                    if (reviewComment.getUser().getName().equals(username)){
+                        myreview += 1;
+                    }
+                }
+            }
+        }
+        List<Integer> response = new ArrayList<>();
+        response.add(mymerge);
+        response.add(myreview);
+
+        return response;
+    }
+
 }
