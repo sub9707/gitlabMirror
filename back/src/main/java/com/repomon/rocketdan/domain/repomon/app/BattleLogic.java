@@ -32,7 +32,7 @@ public class BattleLogic {
 	public static final Float hpValue = 0.05f;
 
 	// 레이팅 최대값
-	public static final Integer maxRating = 20;
+	public static final Integer maxRating = 50;
 
 	// 스킬 발동 확률
 	public static final Integer skillProbability = 5;
@@ -99,7 +99,7 @@ public class BattleLogic {
 	 */
 	public static Integer getAllStat(RepomonStatusEntity repomon) {
 		return (repomon.getAtkPoint() + repomon.getDefPoint() + repomon.getDodgePoint()
-			+ repomon.getCriticalPoint() + repomon.getHitPoint() + (int) ((repomon.getRepoExp() + 1) / 100)) + 1;
+			+ repomon.getCriticalPoint() + repomon.getHitPoint() + (int) ((repomon.getRepoExp()) / 100)) + 1;
 	}
 
 
@@ -126,12 +126,12 @@ public class BattleLogic {
 	public static Integer attackDamageCalc(RepomonStatusEntity repomon, Float def) {
 		Random random = new Random();
 		Integer allStat = getAllStat(repomon);
-
+		float defense = Math.min(def, 90);
 		Integer attack = createAtk(repomon.getStartAtk(), repomon.getAtkPoint());
 
-		Integer randomDmg = random.nextInt(allStat / 2); // 전체 스텟의 25%만큼 랜덤 데미지 추가
+		Integer randomDmg = random.nextInt(allStat / 2); // 전체 스텟의 50%만큼 랜덤 데미지 추가
 		float randomPercent = random.nextFloat() * 0.4f;
-		return (int) (((attack + randomDmg) * (0.8f + randomPercent)) * (1 - (def
+		return (int) (((attack + randomDmg) * (0.8f + randomPercent)) * (1 - (defense
 			/ 100)));
 
 	}
@@ -164,7 +164,7 @@ public class BattleLogic {
 
 		} else {
 			// 명중 여부 확인
-			float dodgePercent = defenseStatus.get("dodge") - offenseStatus.get("hit");
+			float dodgePercent = Math.min(defenseStatus.get("dodge") - offenseStatus.get("hit"), 90);
 			int isDodge = random.nextInt(100);
 			boolean dodge = (isDodge < dodgePercent);
 
