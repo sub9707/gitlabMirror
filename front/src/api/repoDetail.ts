@@ -1,7 +1,11 @@
+import { StatType } from "@/types/repoDetail";
 import { http } from "./axios";
 
-export const axiosRequestRepoDetail = async (repoId: number) => {
-  const res = await http.get(`repo/${repoId}/info`);
+export const axiosRequestRepoDetail = async (
+  repoId: number,
+  userId?: number
+) => {
+  const res = await http.get(`repo/${repoId}/info/${userId}`);
 
   return res;
 };
@@ -67,6 +71,23 @@ export const axiosRequestBattleRanking = async (repoId: number) => {
 
 export const axiosRequestBattleRecord = async (repoId: number) => {
   const res = await http.get(`repomon/${repoId}/match/result`);
+
+  return res;
+};
+
+export const axiosRequestUpStat = async (
+  repoId: number,
+  increaseInfo: StatType
+) => {
+  let data = {
+    repoId,
+  };
+
+  for (let statPoint in increaseInfo) {
+    data = { ...data, [statPoint]: increaseInfo[statPoint] };
+  }
+
+  const res = await http.put("repomon/stat", { data });
 
   return res;
 };

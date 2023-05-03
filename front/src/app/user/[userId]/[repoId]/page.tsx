@@ -30,7 +30,6 @@ import DatePickerModal from "@/components/DatePickerModal/DatePickerModal";
 import Modal from "react-modal";
 import RenameModal from "@/components/RenameModal/RenameModal";
 import Loading from "@/app/loading";
-import { AxiosError } from "axios";
 
 function Page({ params }: { params: { userId: string; repoId: string } }) {
   const [loginUserId, setLoginUserId] = useState<string>();
@@ -45,6 +44,7 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
   const [battleRecordInfo, setBattleRecordInfo] =
     useState<BattleRecordType[]>();
   const [showPage, setShowPage] = useState<boolean>(false);
+  const [statUpdated, setStatUpdated] = useState<boolean>(false);
 
   /** =============================================== useEffect =============================================== */
   useEffect(() => {
@@ -52,6 +52,26 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
     if (localUserId) {
       setLoginUserId(localUserId);
     }
+  }, []);
+
+  /** 레포 기본 정보 불러오기 + 레포몬 닉네임, 기간 업데이트 시 정보 재요청 */
+  useEffect(() => {
+    requestRepoDetail(
+      parseInt(params.repoId, 10),
+      parseInt(loginUserId as string, 10)
+    );
+  }, [loginUserId, isUpdated]);
+
+  /** 배틀 정보 불러오기 + 스탯 변경 시 재요청 */
+  useEffect(() => {
+    requestRepoDetailBattleInfo(parseInt(params.repoId, 10));
+  }, [statUpdated]);
+
+  /** 레포 정보 불러오기 */
+  useEffect(() => {
+    requestRepoDetailResearch(parseInt(params.repoId, 10));
+    requestBattleRanking(parseInt(params.repoId, 10));
+    requestBattleRecord(parseInt(params.repoId, 10));
   }, []);
 
   useEffect(() => {
@@ -78,19 +98,6 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
     }
   }, [showPage]);
 
-  /** 레포 기본 정보 불러오기 + 레포몬 닉네임, 기간 업데이트 시 정보 재요청 */
-  useEffect(() => {
-    requestRepoDetail(parseInt(params.repoId, 10));
-  }, [isUpdated]);
-
-  /** 레포 정보 불러오기 */
-  useEffect(() => {
-    requestRepoDetailResearch(parseInt(params.repoId, 10));
-    requestRepoDetailBattleInfo(parseInt(params.repoId, 10));
-    requestBattleRanking(parseInt(params.repoId, 10));
-    requestBattleRecord(parseInt(params.repoId, 10));
-  }, []);
-
   /** 탭 인덱스 정보 */
   useEffect(() => {
     if (document.referrer !== window.location.href) {
@@ -112,9 +119,9 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
 
   /** =============================================== Axios =============================================== */
   /** 레포 디테일 기본 정보 */
-  const requestRepoDetail = async (repoId: number) => {
+  const requestRepoDetail = async (repoId: number, userId: number) => {
     try {
-      const res = await axiosRequestRepoDetail(repoId);
+      const res = await axiosRequestRepoDetail(repoId, userId);
       console.log("레포 디테일 기본 정보: ", res);
       setRepoDetailInfo(res.data);
     } catch (err) {
@@ -181,7 +188,7 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
                 <div className={styles["repo-mon-info"]}>
                   <p>
                     {repoDetailInfo.repomonName}
-                    {loginUserId && loginUserId === params.userId && (
+                    {repoDetailInfo.myRepo && (
                       <RenameModal
                         repoId={params.repoId}
                         setIsUpdated={setIsUpdated}
@@ -234,14 +241,12 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
                 {repoDetailInfo.repoEnd && (
                   <span> {pretreatDate(repoDetailInfo.repoEnd)}</span>
                 )}
-                {!repoDetailInfo.repoEnd &&
-                  loginUserId &&
-                  params.userId === loginUserId && (
-                    <span className={styles.end}>
-                      프로젝트 기간을 설정해주세요.
-                    </span>
-                  )}
-                {loginUserId && params.userId === loginUserId && (
+                {!repoDetailInfo.repoEnd && repoDetailInfo.myRepo && (
+                  <span className={styles.end}>
+                    프로젝트 기간을 설정해주세요.
+                  </span>
+                )}
+                {repoDetailInfo.myRepo && (
                   <DatePickerModal
                     repoId={params.repoId}
                     setIsUpdated={setIsUpdated}
@@ -318,6 +323,9 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
                 battleInfo={repoDetailBattleInfo!}
                 rank={battleRank!}
                 battleRecords={battleRecordInfo!}
+                myRepomonNickname={repoDetailInfo.repomonName}
+                repoId={params.repoId}
+                setStatUpdated={setStatUpdated}
               />
             )}
           </div>
