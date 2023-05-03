@@ -13,7 +13,7 @@ import Loader from "@/components/threeLoader";
 import HpBar from "@/components/HpBar";
 import Image from "next/image";
 import Lottie from "react-lottie-player";
-import lottieJson from "../../../../../../public/static/lotties/battle.json";
+import lottieJson from "../../../../../public/static/lotties/battle.json";
 
 const Page = () => {
   const [loadData, setLoadData] = useState<boolean>(false);
