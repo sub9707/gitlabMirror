@@ -32,7 +32,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "**/*.scss",
-    "**/*.module.scss"
+    "**/*.module.scss",
+    "src/app/user/[userId]/[repoId]/registRepo/Model2tsx"
   ],
   "exclude": ["node_modules"]
 }
