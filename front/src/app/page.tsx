@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState, useEffect, useRef, Suspense } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./page.module.scss";
 import grow from "../../public/static/services/service_grow.png";
@@ -13,10 +13,34 @@ import { OrbitControls } from "@react-three/drei";
 import { useAppDispatch } from "@/redux/hooks";
 import { setAuthLoginState } from "@/redux/features/authSlice";
 import * as THREE from "three";
+import { GitTipType, RepoInfo } from "@/types/repomons";
+import { getModelLists } from "@/api/modelLoader";
+import "@/styles/speechBubble.scss";
+import { gitTipData } from "./dashboard/gitData";
 
-const Model = () => {
-  const [isClicked, SetIsClicked] = useState<boolean>(false);
-  const gltf = useLoader(GLTFLoader, "/static/models/Penguin.glb");
+const Model = ({ isClicked, onIsClickedChange }: any) => {
+  // const [isClicked, SetIsClicked] = useState<boolean>(false);
+  const [repomonURL, setRepomonURL] = useState<string>();
+
+  const handleClick = useCallback(() => {
+    onIsClickedChange(!isClicked);
+  }, [isClicked, onIsClickedChange]);
+
+  // Repomon 리스트 호출
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getModelLists();
+        setRepomonURL(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const gltf = useLoader(GLTFLoader, "/static/models/Chick_1.glb");
 
   let mixer: THREE.AnimationMixer | undefined;
 
@@ -27,31 +51,27 @@ const Model = () => {
       const randomIndex = Math.floor(Math.random() * 39);
       const action = mixer.clipAction(gltf.animations[randomIndex]);
       action.play();
-      setTimeout(() => {
-        SetIsClicked(false);
-      }, 1000);
     } else {
       const action = mixer.clipAction(gltf.animations[8]);
       action.clampWhenFinished = true;
       action.play();
     }
   }
-  console.log(gltf.animations);
 
   useFrame((state, delta) => {
     mixer?.update(delta);
+    // gltf.scene.rotation.y += delta * 0.05; // 회전 속도를 조절할 수 있습니다.
   });
 
-  useFrame((state, delta) => {
-    gltf.scene.rotation.y += delta * 0.05; // 회전 속도를 조절할 수 있습니다.
-  });
   return (
     <primitive
       object={gltf.scene}
       scale={[5, 5, 5]}
-      position={[2, -2, 0]}
+      position={[1, -2, 0]}
       rotation={[0, -0.8, 0]}
-      onClick={() => SetIsClicked(!isClicked)}
+      onClick={() => {
+        handleClick();
+      }}
     />
   );
 };
@@ -61,9 +81,41 @@ const Home = () => {
   const fpRef = useRef<HTMLImageElement>(null);
   const spRef = useRef<HTMLImageElement>(null);
   const tpRef = useRef<HTMLImageElement>(null);
+  const speech = useRef<HTMLDivElement>(null);
   const params = useSearchParams();
   const dispatch = useAppDispatch();
   const router = useRouter();
+
+  // git tips
+  const [isClicked, setIsClicked] = useState(false);
+
+  const handleIsClickedChange = useCallback((value: any) => {
+    setIsClicked(value);
+    getClickTipHandler();
+
+    if (speech.current) {
+      speech.current.style.opacity = "1";
+      speech.current.style.transition = "opacity 1s cubic-bezier(0,1.21,1,1)";
+      setTimeout(() => {
+        if (speech.current) {
+          speech.current.style.opacity = "0";
+        }
+      }, 5000);
+    }
+  }, []);
+
+  const [gitTipsString, setGitTipsString] = useState<{ msg: string }>();
+
+  function getRandomGitTip<T extends GitTipType>() {
+    const randomIndex = Math.floor(Math.random() * gitTipData.length);
+    return gitTipData[randomIndex] as T;
+  }
+
+  function getClickTipHandler() {
+    const gitTip = getRandomGitTip<GitTipType>();
+    setGitTipsString(gitTip);
+    console.log(gitTipsString?.msg);
+  }
 
   useEffect(() => {
     if (params.get("access-token")) {
@@ -117,6 +169,14 @@ const Home = () => {
           </p>
         </div>
         <div className={styles.right}>
+          <div
+            className="bubble shadow large bottom"
+            id={styles.speechBubble}
+            style={{ opacity: "0" }}
+            ref={speech}
+          >
+            {gitTipsString?.msg}
+          </div>
           <Canvas className={styles.rightCanvas}>
             <ambientLight intensity={0.1} />
             <ambientLight intensity={0.1} />
@@ -130,8 +190,10 @@ const Home = () => {
               position={[-5, 0, -5]}
               intensity={0.5}
             />
-            <Model />
-            <OrbitControls enableZoom={false} target={[1, 0, -1]} />
+            <Model
+              isClicked={isClicked}
+              onIsClickedChange={handleIsClickedChange}
+            />
           </Canvas>
         </div>
       </div>
