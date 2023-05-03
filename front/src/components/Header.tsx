@@ -8,6 +8,7 @@ import Image from "next/image";
 import { useAppSelector } from "@/redux/hooks";
 import { axiosRequestLogout } from "@/api/auth";
 import { useRouter } from "next/navigation";
+import gitCat from "../../public/git_cat.svg";
 
 const Header = () => {
   const githubLoginUrl =
@@ -83,7 +84,7 @@ const Header = () => {
         <Link href="/" className={styles.item}>
           랭킹
         </Link>
-        <Link href="/user/3/14" className={styles.item}>
+        <Link href="/user/3/16" className={styles.item}>
           샘플 레포 상세
         </Link>
       </div>
@@ -95,14 +96,26 @@ const Header = () => {
         )}
         {userId && userId !== -1 && (
           <div className={styles["avatar-div"]}>
-            <Image
-              alt="프로필 이미지"
-              src={avatarUrl}
-              width={55}
-              height={55}
-              className={styles.avatar}
-              onClick={onClickAvatar}
-            />
+            {avatarUrl && (
+              <Image
+                alt="프로필 이미지"
+                src={avatarUrl}
+                width={55}
+                height={55}
+                className={styles.avatar}
+                onClick={onClickAvatar}
+              />
+            )}
+            {!avatarUrl && (
+              <Image
+                alt="기본 프로필 이미지"
+                src={gitCat}
+                width={55}
+                height={55}
+                className={styles.avatar}
+                onClick={onClickAvatar}
+              />
+            )}
             {showMenu && (
               <div ref={menuRef} className={styles.menu}>
                 <button

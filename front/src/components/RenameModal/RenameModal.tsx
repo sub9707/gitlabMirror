@@ -19,7 +19,7 @@ const customStyles = {
     bottom: "auto",
     marginRight: "-50%",
     transform: "translate(-50%, -50%)",
-    width: "500px",
+    width: "355px",
     height: "190px",
   },
 };
@@ -57,6 +57,11 @@ const RenameModal = ({
   };
 
   const onClickCheckBtn = () => {
+    if (nickName.length > 10) {
+      customAlert("10자 이하로 입력해주세요.");
+      return;
+    }
+
     requestCheckNicknameDuplicated();
   };
 
@@ -74,12 +79,9 @@ const RenameModal = ({
     try {
       const res = await axiosRequestCheckNicknameDuplicated(nickName);
       console.log("레포몬 닉네임 중복 체크 응답: ", res);
-      if (res.data.resultCode === "SUCCESS") {
-        setIsDuplicated(false);
-      } else {
-        customAlert("중복된 레포몬 닉네임입니다.");
-      }
+      setIsDuplicated(false);
     } catch (err) {
+      customAlert("중복된 레포몬 닉네임입니다.");
       console.error(err);
     }
   };
