@@ -8,6 +8,7 @@ import com.repomon.rocketdan.domain.repo.entity.RepoHistoryEntity;
 import java.util.List;
 import java.util.Set;
 import org.kohsuke.github.*;
+import org.kohsuke.github.GHIssueQueryBuilder.Sort;
 import org.kohsuke.github.GHRepository.ForkSort;
 import org.kohsuke.github.GHRepositoryStatistics.CodeFrequency;
 import org.kohsuke.github.GHRepositoryStatistics.CommitActivity;
@@ -117,30 +118,36 @@ public class GHUtils {
         throws IOException {
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
-        LocalDate localDate = date.toInstant()
-            .atZone(ZoneId.systemDefault())
-            .toLocalDate();
+        PagedIterable<GHPullRequest> pullRequests = ghRepository.queryPullRequests()
+            .state(GHIssueState.CLOSED)
+            .direction(GHDirection.DESC)
+            .list().withPageSize(100);
 
-        PagedIterable<GHPullRequest> pullRequests = ghRepository.queryPullRequests().list();
         for(GHPullRequest pr : pullRequests){
-            if(pr.getClosedAt() == null) continue;
-            LocalDate prDate = pr.getClosedAt().toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
+            Date closedAt = pr.getClosedAt();
+            if(closedAt.after(date)) {
+                LocalDate prDate = pr.getClosedAt().toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
 
-            if(prDate.isAfter(localDate)) {
                 configureRepoInfo(histories, prDate, repoEntity, GrowthFactor.MERGE, 1);
 
-                List<GHPullRequestReviewComment> reviewComments = pr.listReviewComments()
-                    .toList();
+                PagedIterable<GHPullRequestReviewComment> reviewComments = pr.listReviewComments()
+                    .withPageSize(100);
 
                 for(GHPullRequestReviewComment reviewComment : reviewComments){
-                    LocalDate reviewDate = reviewComment.getCreatedAt().toInstant()
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDate();
+                    Date reviewCreatedAt = reviewComment.getCreatedAt();
+                    if(reviewCreatedAt.after(date)) {
+                        LocalDate reviewDate = reviewComment.getCreatedAt().toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
 
-                    configureRepoInfo(histories, reviewDate, repoEntity, GrowthFactor.REVIEW, 1);
+                        configureRepoInfo(histories, reviewDate, repoEntity, GrowthFactor.REVIEW,
+                            1);
+                    }
                 }
+            }else{
+                return histories.values();
             }
         }
 
@@ -151,16 +158,23 @@ public class GHUtils {
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
         PagedIterable<GHIssue> issues = ghRepository.queryIssues()
-                .since(date)
-                .list();
+            .direction(GHDirection.DESC)
+            .state(GHIssueState.CLOSED)
+            .since(date)
+            .list()
+            .withPageSize(100);
 
         for(GHIssue issue : issues){
             Date closedAt = issue.getClosedAt();
-            if(closedAt != null){
-                LocalDate issueCloseDate = closedAt.toInstant()
+            if(closedAt.after(date)){
+
+                LocalDate issueClosedAt = issue.getClosedAt().toInstant()
                     .atZone(ZoneId.systemDefault())
                     .toLocalDate();
-                configureRepoInfo(histories, issueCloseDate, repoEntity, GrowthFactor.ISSUE, 1);
+
+                configureRepoInfo(histories, issueClosedAt, repoEntity, GrowthFactor.ISSUE, 1);
+            }else{
+                return histories.values();
             }
         }
 
@@ -173,7 +187,7 @@ public class GHUtils {
 
         PagedIterable<GHRepository> ghRepositories = ghRepository
             .listForks()
-            .withPageSize(10);
+            .withPageSize(100);
 
         for (GHRepository repo : ghRepositories) {
             Date createdAt = repo.getCreatedAt();
@@ -198,8 +212,8 @@ public class GHUtils {
 
         PagedIterable<GHStargazer> ghStargazers = ghRepository
             .listStargazers2()
-            .withPageSize(10);
-
+            .withPageSize(100);
+        
         for(GHStargazer stargazer : ghStargazers){
             Date starredAt = stargazer.getStarredAt();
             if(starredAt.after(fromDate)){
@@ -208,8 +222,6 @@ public class GHUtils {
                     .toLocalDate();
 
                 configureRepoInfo(histories, starredDate, repoEntity, GrowthFactor.STAR, 1);
-            }else{
-                return histories.values();
             }
         }
 
