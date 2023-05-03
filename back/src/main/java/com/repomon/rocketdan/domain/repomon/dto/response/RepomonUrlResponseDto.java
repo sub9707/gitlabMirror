@@ -12,12 +12,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RepomonUrlResponseDto {
-    private List<String> repomonUrls;
+    private String repomonUrls;
 
     public static RepomonUrlResponseDto fromEntities(List<RepomonEntity> exceptEgg) {
-        List<String> urls = exceptEgg.stream()
-            .map(repomon -> S3Utils.modelUrl(repomon.getRepomonUrl()))
-            .collect(Collectors.toList());
-        return new RepomonUrlResponseDto(urls);
+        int size = exceptEgg.size();
+        int idx = (int)((Math.random() * 10000)%size);
+        return new RepomonUrlResponseDto(exceptEgg.get(idx).getRepomonUrl());
     }
 }
