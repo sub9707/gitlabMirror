@@ -40,7 +40,7 @@ public class RepoController {
 
 	@ApiOperation(value = "개별 레포 디테일 조회")
 	@GetMapping("/{repoId}/info/{userId}")
-	public ResponseEntity<RepoResponseDto> getRepoInfo(@PathVariable Long repoId, @PathVariable Long userId) {
+	public ResponseEntity<RepoResponseDto> getRepoInfo(@PathVariable Long repoId, @PathVariable(required = false) Long userId) {
 		RepoResponseDto responseDto = repoService.getUserRepoInfo(repoId, userId);
 		return ResponseEntity.ok(responseDto);
 	}

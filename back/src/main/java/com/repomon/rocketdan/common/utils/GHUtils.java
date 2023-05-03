@@ -6,13 +6,14 @@ import com.repomon.rocketdan.domain.repo.app.GrowthFactor;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepoHistoryEntity;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 import org.kohsuke.github.*;
+import org.kohsuke.github.GHIssueQueryBuilder.Sort;
+import org.kohsuke.github.GHRepository.ForkSort;
 import org.kohsuke.github.GHRepositoryStatistics.CodeFrequency;
 import org.kohsuke.github.GHRepositoryStatistics.CommitActivity;
 import org.kohsuke.github.GHRepositoryStatistics.ContributorStats;
 import org.kohsuke.github.GHRepositoryStatistics.ContributorStats.Week;
-import org.kohsuke.github.GHRepositoryStatistics.Participation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -24,12 +25,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.PostConstruct;
-import org.kohsuke.github.GHCommit;
-import org.kohsuke.github.GHCommitComment;
 import org.kohsuke.github.GHIssue;
 import org.kohsuke.github.GHOrganization;
-import org.kohsuke.github.GHOrganization.Role;
 import org.kohsuke.github.GHPersonSet;
 import org.kohsuke.github.GHPullRequest;
 import org.kohsuke.github.GHPullRequestReviewComment;
@@ -38,8 +35,6 @@ import org.kohsuke.github.GHUser;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
 import org.kohsuke.github.PagedIterable;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 @Component
 public class GHUtils {
@@ -97,23 +92,25 @@ public class GHUtils {
     public Collection<RepoHistoryEntity> GHCommitToHistory(GHRepository ghRepository, RepoEntity repoEntity, Date date) throws IOException {
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
-        PagedIterable<GHCommit> ghCommits = date == null ?
-            ghRepository.queryCommits()
-                .pageSize(10000)
-                .list() :
-            ghRepository.queryCommits()
-                .since(date)
-                .pageSize(10000)
-                .list();
+        GHRepositoryStatistics statistics = ghRepository.getStatistics();
+        PagedIterable<CommitActivity> commitActivities = statistics.getCommitActivity();
 
-        for(GHCommit commit : ghCommits){
-            if(commit.getParentSHA1s().size() > 1) continue;
-            LocalDate commitDate = commit.getCommitDate().toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
+        for(CommitActivity commitActivity : commitActivities){
+            long week = commitActivity.getWeek();
+            List<Integer> days = commitActivity.getDays();
+            for(int i = 0; i < 7; i++){
+                Integer commitCount = days.get(i);
+                Date createdAt = new Date((week + i) * 1000L);
+                if(createdAt.after(date)){
+                    LocalDate commitDate = createdAt.toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate();
 
-            configureRepoInfo(histories, commitDate, repoEntity, GrowthFactor.COMMIT);
+                    configureRepoInfo(histories, commitDate, repoEntity, GrowthFactor.COMMIT, commitCount);
+                }
+            }
         }
+
         return histories.values();
     }
 
@@ -121,30 +118,36 @@ public class GHUtils {
         throws IOException {
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
-        LocalDate localDate = date == null ? null : date.toInstant()
-            .atZone(ZoneId.systemDefault())
-            .toLocalDate();
+        PagedIterable<GHPullRequest> pullRequests = ghRepository.queryPullRequests()
+            .state(GHIssueState.CLOSED)
+            .direction(GHDirection.DESC)
+            .list().withPageSize(100);
 
-        PagedIterable<GHPullRequest> pullRequests = ghRepository.queryPullRequests().list();
         for(GHPullRequest pr : pullRequests){
-            if(pr.getClosedAt() == null) continue;
-            LocalDate prDate = pr.getClosedAt().toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
+            Date closedAt = pr.getClosedAt();
+            if(closedAt.after(date)) {
+                LocalDate prDate = pr.getClosedAt().toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
 
-            if(localDate == null || prDate.isAfter(localDate)) {
-                configureRepoInfo(histories, prDate, repoEntity, GrowthFactor.MERGE);
+                configureRepoInfo(histories, prDate, repoEntity, GrowthFactor.MERGE, 1);
 
-                List<GHPullRequestReviewComment> reviewComments = pr.listReviewComments()
-                    .toList();
+                PagedIterable<GHPullRequestReviewComment> reviewComments = pr.listReviewComments()
+                    .withPageSize(100);
 
                 for(GHPullRequestReviewComment reviewComment : reviewComments){
-                    LocalDate reviewDate = reviewComment.getCreatedAt().toInstant()
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDate();
+                    Date reviewCreatedAt = reviewComment.getCreatedAt();
+                    if(reviewCreatedAt.after(date)) {
+                        LocalDate reviewDate = reviewComment.getCreatedAt().toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
 
-                    configureRepoInfo(histories, reviewDate, repoEntity, GrowthFactor.REVIEW);
+                        configureRepoInfo(histories, reviewDate, repoEntity, GrowthFactor.REVIEW,
+                            1);
+                    }
                 }
+            }else{
+                return histories.values();
             }
         }
 
@@ -154,19 +157,24 @@ public class GHUtils {
     public Collection<RepoHistoryEntity> GHIssueToHistory(GHRepository ghRepository, RepoEntity repoEntity, Date date){
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
-        PagedIterable<GHIssue> issues = date == null ?
-            ghRepository.queryIssues().list() :
-            ghRepository.queryIssues()
-                .since(date)
-                .list();
+        PagedIterable<GHIssue> issues = ghRepository.queryIssues()
+            .direction(GHDirection.DESC)
+            .state(GHIssueState.CLOSED)
+            .since(date)
+            .list()
+            .withPageSize(100);
 
         for(GHIssue issue : issues){
             Date closedAt = issue.getClosedAt();
-            if(closedAt != null){
-                LocalDate issueCloseDate = closedAt.toInstant()
+            if(closedAt.after(date)){
+
+                LocalDate issueClosedAt = issue.getClosedAt().toInstant()
                     .atZone(ZoneId.systemDefault())
                     .toLocalDate();
-                configureRepoInfo(histories, issueCloseDate, repoEntity, GrowthFactor.ISSUE);
+
+                configureRepoInfo(histories, issueClosedAt, repoEntity, GrowthFactor.ISSUE, 1);
+            }else{
+                return histories.values();
             }
         }
 
@@ -177,18 +185,23 @@ public class GHUtils {
         throws IOException {
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
-        List<GHRepository> ghRepositories = ghRepository.listForks().toList();
+        PagedIterable<GHRepository> ghRepositories = ghRepository
+            .listForks()
+            .withPageSize(100);
 
-        for(GHRepository repo : ghRepositories){
+        for (GHRepository repo : ghRepositories) {
             Date createdAt = repo.getCreatedAt();
-            if(fromDate == null || createdAt.after(fromDate)){
+            if (createdAt.after(fromDate)) {
                 LocalDate forkedAt = createdAt.toInstant()
                     .atZone(ZoneId.systemDefault())
                     .toLocalDate();
 
-                configureRepoInfo(histories, forkedAt, repoEntity, GrowthFactor.FORK);
+                configureRepoInfo(histories, forkedAt, repoEntity, GrowthFactor.FORK, 1);
+            }else{
+                return histories.values();
             }
         }
+
 
         return histories.values();
     }
@@ -197,15 +210,18 @@ public class GHUtils {
         throws IOException {
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
-        List<GHStargazer> ghStargazers = ghRepository.listStargazers2().toList();
+        PagedIterable<GHStargazer> ghStargazers = ghRepository
+            .listStargazers2()
+            .withPageSize(100);
+        
         for(GHStargazer stargazer : ghStargazers){
             Date starredAt = stargazer.getStarredAt();
-            if(fromDate == null || starredAt.after(fromDate)){
+            if(starredAt.after(fromDate)){
                 LocalDate starredDate = starredAt.toInstant()
                     .atZone(ZoneId.systemDefault())
                     .toLocalDate();
 
-                configureRepoInfo(histories, starredDate, repoEntity, GrowthFactor.STAR);
+                configureRepoInfo(histories, starredDate, repoEntity, GrowthFactor.STAR, 1);
             }
         }
 
@@ -213,12 +229,12 @@ public class GHUtils {
     }
 
 
-    private void configureRepoInfo(Map<LocalDate, RepoHistoryEntity> histories, LocalDate date, RepoEntity repoEntity, GrowthFactor factor) {
+    private void configureRepoInfo(Map<LocalDate, RepoHistoryEntity> histories, LocalDate date, RepoEntity repoEntity, GrowthFactor factor, int cnt) {
         if (histories.containsKey(date)) {
             RepoHistoryEntity repoHistoryEntity = histories.get(date);
             repoHistoryEntity.updateExp(factor.getExp());
         } else {
-            histories.put(date, RepoHistoryEntity.ofGHInfo(date, repoEntity, factor));
+            histories.put(date, RepoHistoryEntity.ofGHInfo(date, repoEntity, factor, cnt));
         }
     }
 
