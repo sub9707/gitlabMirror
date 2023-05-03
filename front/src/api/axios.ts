@@ -42,8 +42,12 @@ http.interceptors.response.use(
           headers.get("refreshToken") as string
         );
         return await http.request(err.config);
-      } catch (err) {
-        console.error(err);
+      } catch (err: any) {
+        if (err.response && err.response.status === 403) {
+          localStorage.clear();
+          window.location.href =
+            "https://repomon.kr/api/v1/oauth2/authorization/github";
+        }
       }
       return Promise.reject(err);
     }
