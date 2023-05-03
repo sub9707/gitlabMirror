@@ -98,9 +98,12 @@ public class GHUtils {
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
         PagedIterable<GHCommit> ghCommits = date == null ?
-            ghRepository.queryCommits().list() :
+            ghRepository.queryCommits()
+                .pageSize(10000)
+                .list() :
             ghRepository.queryCommits()
                 .since(date)
+                .pageSize(10000)
                 .list();
 
         for(GHCommit commit : ghCommits){

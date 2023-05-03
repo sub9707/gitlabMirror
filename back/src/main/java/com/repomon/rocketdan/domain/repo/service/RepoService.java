@@ -117,21 +117,27 @@ public class RepoService {
 	 * @param repoId
 	 * @return
 	 */
-	public RepoResponseDto getUserRepoInfo(Long repoId) {
+	public RepoResponseDto getUserRepoInfo(Long repoId, Long userId) {
 		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
 			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 		});
 
+		UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> {
+			throw new CustomException(ErrorCode.NOT_FOUND_USER);
+		});
+
 		String repoOwner = repoEntity.getRepoOwner();
+		Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
 
 		String repoKey = repoEntity.getRepoKey();
-		Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
 		GHRepository ghRepository = repositories.get(repoKey);
 		if (ghRepository == null) {
 			throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
 		}
 
-		return RepoResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository);
+		boolean myRepo = activeRepoRepository.existsByUserAndRepo(userEntity, repoEntity);
+
+		return RepoResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository, myRepo);
 	}
 
 
