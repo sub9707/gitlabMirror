@@ -124,7 +124,8 @@ public class GHUtils {
 
         PagedIterable<GHPullRequest> pullRequests = ghRepository.queryPullRequests().list();
         for(GHPullRequest pr : pullRequests){
-            LocalDate prDate = pr.getMergedAt().toInstant()
+            if(pr.getClosedAt() == null) continue;
+            LocalDate prDate = pr.getClosedAt().toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
 
