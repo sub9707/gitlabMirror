@@ -8,20 +8,21 @@
   flex-direction: column;
   & .selectBox {
     width: 100%;
-    height: 50vh;
+    height: 95vh;
     background-color: #00000071;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     & .monChar {
-      width: 25em;
-      height: 25em;
+      width: 30vw;
+      height: 30vw;
       // background-color: transparent;
-      background-color: rgba(255, 252, 241, 0.521);
       border-radius: 50%;
       margin-inline: 1em;
-      transition: all 0.5s ease-in-out;
+      transition: all 0.2 s ease-in-out;
       &:hover {
+        background-color: rgba(255, 252, 241, 0.521);
       }
     }
   }
