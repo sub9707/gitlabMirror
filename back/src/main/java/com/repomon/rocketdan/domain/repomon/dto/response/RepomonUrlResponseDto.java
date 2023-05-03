@@ -17,6 +17,6 @@ public class RepomonUrlResponseDto {
     public static RepomonUrlResponseDto fromEntities(List<RepomonEntity> exceptEgg) {
         int size = exceptEgg.size();
         int idx = (int)((Math.random() * 10000)%size);
-        return new RepomonUrlResponseDto(exceptEgg.get(idx).getRepomonUrl());
+        return new RepomonUrlResponseDto(S3Utils.modelUrl(exceptEgg.get(idx).getRepomonUrl()));
     }
 }
