@@ -20,7 +20,9 @@ import { gitTipData } from "./dashboard/gitData";
 
 const Model = ({ isClicked, onIsClickedChange }: any) => {
   // const [isClicked, SetIsClicked] = useState<boolean>(false);
-  const [repomonURL, setRepomonURL] = useState<string>();
+  const [repomonURL, setRepomonURL] = useState<string>(
+    "/static/models/Chick_1.glb"
+  );
 
   const handleClick = useCallback(() => {
     onIsClickedChange(!isClicked);
@@ -31,7 +33,8 @@ const Model = ({ isClicked, onIsClickedChange }: any) => {
     const fetchData = async () => {
       try {
         const response = await getModelLists();
-        setRepomonURL(response.data);
+        setRepomonURL(response.data.repomonUrls);
+        console.log(typeof response.data.repomonUrls);
       } catch (error) {
         console.error(error);
       }
@@ -40,7 +43,8 @@ const Model = ({ isClicked, onIsClickedChange }: any) => {
     fetchData();
   }, []);
 
-  const gltf = useLoader(GLTFLoader, "/static/models/Chick_1.glb");
+  console.log(repomonURL);
+  const gltf = useLoader(GLTFLoader, repomonURL);
 
   let mixer: THREE.AnimationMixer | undefined;
 
@@ -66,7 +70,7 @@ const Model = ({ isClicked, onIsClickedChange }: any) => {
   return (
     <primitive
       object={gltf.scene}
-      scale={[5, 5, 5]}
+      scale={[3, 3, 3]}
       position={[1, -2, 0]}
       rotation={[0, -0.8, 0]}
       onClick={() => {
@@ -172,7 +176,7 @@ const Home = () => {
           <div
             className="bubble shadow large bottom"
             id={styles.speechBubble}
-            style={{ opacity: "0" }}
+            style={{ opacity: "0", zIndex: "999" }}
             ref={speech}
           >
             {gitTipsString?.msg}
