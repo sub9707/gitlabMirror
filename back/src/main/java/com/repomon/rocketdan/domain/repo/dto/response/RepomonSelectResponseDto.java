@@ -1,6 +1,7 @@
 package com.repomon.rocketdan.domain.repo.dto.response;
 
 
+import com.repomon.rocketdan.common.utils.S3Utils;
 import com.repomon.rocketdan.domain.repo.entity.RepomonEntity;
 import lombok.*;
 
@@ -44,7 +45,7 @@ public class RepomonSelectResponseDto {
 			return SelectRepomon.builder()
 				.repomonId(repomon.getRepomonId())
 				.repomonName(repomon.getRepomonName())
-				.repomonUrl(repomon.getRepomonUrl())
+				.repomonUrl(S3Utils.modelUrl(repomon.getRepomonUrl()))
 				.build();
 		}
 
