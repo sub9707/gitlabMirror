@@ -124,6 +124,13 @@
   }
 }
 
+#speechBubble {
+  position: absolute;
+  right: 10%;
+  top: 20%;
+  font-size: 1.2em;
+}
+
 @keyframes fade-in {
   0% {
     opacity: 0;
