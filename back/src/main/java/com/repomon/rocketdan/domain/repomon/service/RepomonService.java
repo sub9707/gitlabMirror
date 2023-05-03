@@ -19,7 +19,6 @@ import com.repomon.rocketdan.domain.repomon.entity.RepomonStatusEntity;
 import com.repomon.rocketdan.domain.repomon.repository.BattleLogRepository;
 import com.repomon.rocketdan.domain.repomon.repository.RepomonStatusRepository;
 import com.repomon.rocketdan.exception.CustomException;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.repomon.rocketdan.exception.ErrorCode.*;
 
@@ -90,7 +90,6 @@ public class RepomonService {
 			throw new CustomException(DATA_BAD_REQUEST);
 		}
 
-
 		repomon.updateNickname(repomonStartStatusRequestDto.getRepomonNickname());
 		repomon.setStartStatus(repomonStartStatusRequestDto.getStartAtk(),
 			repomonStartStatusRequestDto.getStartDodge(),
@@ -115,10 +114,10 @@ public class RepomonService {
 			() -> new CustomException(NOT_FOUND_REPOSITORY)
 		);
 
-		// 권한 검증
-		if (!SecurityUtils.getCurrentUserId().equals(repomonStatus.getRepoOwner())) {
-			throw new CustomException(NO_ACCESS);
-		}
+		//		// 권한 검증
+		//		if (!SecurityUtils.getCurrentUserId().equals(repomonStatus.getRepoOwner())) {
+		//			throw new CustomException(NO_ACCESS);
+		//		}
 
 		String repomonOwner = repomonStatus.getRepoOwner();
 		Integer userRating = repomonStatus.getRating();
@@ -154,10 +153,10 @@ public class RepomonService {
 			() -> new CustomException(NOT_FOUND_REPOSITORY)
 		);
 
-		// 권한 검증
-		if (!SecurityUtils.getCurrentUserId().equals(myRepomon.getRepoOwner())) {
-			throw new CustomException(NO_ACCESS);
-		}
+		//		// 권한 검증
+		//		if (!SecurityUtils.getCurrentUserId().equals(myRepomon.getRepoOwner())) {
+		//			throw new CustomException(NO_ACCESS);
+		//		}
 
 		RepomonStatusEntity yourRepomon = repomonStatusRepository.findById(
 			battleLogRequestDto.getOpponentRepoId()).orElseThrow(
@@ -177,7 +176,7 @@ public class RepomonService {
 		Integer yourSkillDmg = BattleLogic.skillDamageCalc(yourRepomon);
 		int turn = 1;
 
-		//		 종료 조건 : 내가 죽거나 상대가 죽거나 20턴이 경과했을 때
+		//		 종료 조건 : 내가 죽거나 상대가 죽거나 10턴이 경과했을 때
 		while (myHp > 0 && yourHp > 0 && turn <= 10) {
 			if (startPlayer) {
 				// 내 공격차례일 때
@@ -329,8 +328,10 @@ public class RepomonService {
 
 	}
 
+
 	/**
 	 * 알을 제외한 레포몬 url 리스트 반환
+	 *
 	 * @return
 	 */
 	public RepomonUrlResponseDto getRepomonUrls() {
@@ -341,4 +342,5 @@ public class RepomonService {
 
 		return RepomonUrlResponseDto.fromEntities(exceptEgg);
 	}
+
 }
