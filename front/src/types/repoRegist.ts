@@ -16,3 +16,27 @@ export interface Todo {
   title: string;
   description: string;
 }
+
+// 레포 최초 등록 타입
+export type RepoInitType = {
+  repoId: number;
+  repomonId: number;
+  repomonNickname: string;
+  startAtk: number;
+  startCritical: number;
+  startDef: number;
+  startDodge: number;
+  startHit: number;
+};
+
+// 랜덤 레포몬 요청 타입
+
+export type RandomRepoType = {
+  selectRepomonList: RandomRepo[];
+};
+
+export type RandomRepo = {
+  repomonId: number;
+  repomonUrl: string;
+  repomonName: string;
+};

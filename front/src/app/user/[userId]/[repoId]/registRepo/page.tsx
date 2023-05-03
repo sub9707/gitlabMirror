@@ -3,11 +3,16 @@ import { useState, useEffect, useRef } from "react";
 import { NextPage } from "next";
 import styles from "./page.module.scss";
 import Image from "next/image";
-import { PageProps, Todo } from "@/types/repoRegist";
+import { PageProps, RandomRepoType, Todo } from "@/types/repoRegist";
 import "animate.css";
 import GitTable from "@/components/GitTable";
 import Button_OK from "@/components/Button_OK";
 import Button_NO from "@/components/Button_NO";
+import { getRandomRepo } from "@/api/userRepo";
+import { Canvas } from "@react-three/fiber";
+import { Model1 } from "./Model1";
+import { Model2 } from "./Model2";
+import { Model3 } from "./Model3";
 
 const Page: NextPage<PageProps> = ({ params }) => {
   const [numArr, setNumArr] = useState([0, 0, 0, 0, 0]);
@@ -66,7 +71,7 @@ const Page: NextPage<PageProps> = ({ params }) => {
   useEffect(() => {
     // numArr의 값이 바뀔 때마다 호출
     const [attack, avoidance, endurance, critical, hit] = numArr;
-    // 최대치를 달성하면 해당 숫자의 색깔을 주황색으로 변경
+    // 최대치를 달성하면 해당 숫자의 색깔을 붉은색으로 변경
     if (
       !attackRef.current ||
       !avoidanceRef.current ||
@@ -101,12 +106,104 @@ const Page: NextPage<PageProps> = ({ params }) => {
     setStatStyle(hit, hitRef);
   }, [numArr]);
 
+  // 랜덤 3개의 레포몬 요청
+  const [randomRepos, setRandomRepos] = useState<RandomRepoType>();
+
+  const [toggleState1, setToggleState1] = useState(false);
+  const [toggleState2, setToggleState2] = useState(false);
+  const [toggleState3, setToggleState3] = useState(false);
+  const monRef1 = useRef<HTMLDivElement>(null);
+  const monRef2 = useRef<HTMLDivElement>(null);
+  const monRef3 = useRef<HTMLDivElement>(null);
+
+  function handleClick(ref: HTMLDivElement) {
+    if (ref) {
+    }
+  }
+
+  useEffect(() => {
+    const data = getRandomRepo()
+      .then((response) => {
+        const res = response.data.data;
+        console.log(res);
+        setRandomRepos(res);
+        console.log("랜덤 3개", randomRepos);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
   return (
     <div className={styles.pageContainer}>
       <div className={styles.selectBox}>
-        <div className={styles.monChar}></div>
-        <div className={styles.monChar}></div>
-        <div className={styles.monChar}></div>
+        <div>
+          <p style={{ marginBottom: "2em", fontSize: "3em" }}>
+            레포지터리를 대표할 레포몬을 선택하세요!
+          </p>
+        </div>
+        <div style={{ display: "flex" }}>
+          <div className={styles.monChar} ref={monRef1}>
+            <Canvas>
+              {" "}
+              <ambientLight intensity={0.1} />
+              <ambientLight intensity={0.1} />
+              <directionalLight
+                color="white"
+                position={[0, 0, 5]}
+                intensity={0.5}
+              />
+              <directionalLight
+                color="white"
+                position={[-5, 0, -5]}
+                intensity={0.5}
+              />
+              <Model1
+                repomonUrl={randomRepos?.selectRepomonList[0].repomonUrl || ""}
+              />
+            </Canvas>
+          </div>
+          <div className={styles.monChar} ref={monRef2}>
+            <Canvas>
+              {" "}
+              <ambientLight intensity={0.1} />
+              <ambientLight intensity={0.1} />
+              <directionalLight
+                color="white"
+                position={[0, 0, 5]}
+                intensity={0.5}
+              />
+              <directionalLight
+                color="white"
+                position={[-5, 0, -5]}
+                intensity={0.5}
+              />
+              <Model2
+                repomonUrl={randomRepos?.selectRepomonList[1].repomonUrl || ""}
+              />
+            </Canvas>
+          </div>
+          <div className={styles.monChar} ref={monRef3}>
+            <Canvas>
+              {" "}
+              <ambientLight intensity={0.1} />
+              <ambientLight intensity={0.1} />
+              <directionalLight
+                color="white"
+                position={[0, 0, 5]}
+                intensity={0.5}
+              />
+              <directionalLight
+                color="white"
+                position={[-5, 0, -5]}
+                intensity={0.5}
+              />
+              <Model3
+                repomonUrl={randomRepos?.selectRepomonList[2].repomonUrl || ""}
+              />
+            </Canvas>
+          </div>
+        </div>
       </div>
       <div className={styles.settingBox}>
         <div className={styles.conventionBox}>

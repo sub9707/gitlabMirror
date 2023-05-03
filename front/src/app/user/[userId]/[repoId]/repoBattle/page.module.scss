@@ -7,6 +7,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: relative;
   & .headerTitle {
     font-size: 2em;
     margin-block: 1em;
@@ -18,10 +19,13 @@
     flex-direction: column;
     align-items: center;
     margin-bottom: 3em;
+    opacity: 0;
     & .gameBox {
       width: 80%;
       height: 35em;
       border: 10px double black;
+      z-index: 1;
+      transition: all 1s ease-in-out;
     }
     & .gameLogBox {
       width: 80%;
