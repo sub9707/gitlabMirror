@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface RepomonRepository extends JpaRepository<RepomonEntity, Long> {
 
-	@Query(nativeQuery = true, value = "SELECT * FROM repomon WHERE repomon_ ORDER BY RAND() limit 3")
+	@Query(nativeQuery = true, value = "SELECT * FROM repomon WHERE repomon.repomon_tier = 1 ORDER BY RAND() limit 3")
 	List<RepomonEntity> findTop3ByRandom();
 
 	Optional<RepomonEntity> findByRepomonTierAndRepomonName(Integer tier, String name);

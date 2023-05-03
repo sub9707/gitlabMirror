@@ -103,7 +103,7 @@ public class RepoController {
 	@ApiOperation(value = "레포지토리 컨벤션 설정")
 	@PutMapping("/{repoId}/info/convention")
 	public ResponseEntity<ResultDto> modifyRepoConvention(@PathVariable Long repoId, @ModelAttribute RepoConventionRequestDto requestDto, BindingResult bindingResult) {
-		if(bindingResult.hasErrors()){
+		if (bindingResult.hasErrors()) {
 			throw new CustomException(DATA_CONVENTION_TOO_SHORT);
 		}
 
@@ -126,6 +126,7 @@ public class RepoController {
 		return ResponseEntity.ok().build();
 	}
 
+
 	@ApiOperation(value = "대표 레포 카드 정보")
 	@GetMapping("/{repoId}/card/detail")
 	public ResponseEntity<RepoCardResponseDto> getRepoCardDetail(Long repoId) {
@@ -136,7 +137,7 @@ public class RepoController {
 
 	@ApiOperation(value = "개인 레포 카드 정보")
 	@GetMapping("/{repoId}/card/personal")
-	public ResponseEntity<RepoPersonalCardResponseDto> getPersonalRepoCard(Long repoId,Long userId) {
+	public ResponseEntity<RepoPersonalCardResponseDto> getPersonalRepoCard(Long repoId, Long userId) {
 		RepoPersonalCardResponseDto responseDto = repoService.RepoPersonalCardDetail(repoId, userId);
 		return ResponseEntity.ok(responseDto);
 	}
@@ -161,10 +162,11 @@ public class RepoController {
 
 	@ApiOperation(value = "레포몬 선택지 반환")
 	@GetMapping("/repomon")
-	public ResponseEntity<ResultDto<RepomonResponseDto>> createSelectRepomon() {
+	public ResponseEntity<ResultDto<RepomonSelectResponseDto>> createSelectRepomon() {
 
-		RepomonResponseDto repomonResponseDto = repoService.createSelectRepomon();
+		RepomonSelectResponseDto repomonSelectResponseDto = repoService.createSelectRepomon();
 
-		return ResponseEntity.ok().body(ResultDto.of(repomonResponseDto));
+		return ResponseEntity.ok().body(ResultDto.of(repomonSelectResponseDto));
 	}
+
 }
