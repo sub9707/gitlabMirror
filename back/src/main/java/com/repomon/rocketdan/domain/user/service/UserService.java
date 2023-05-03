@@ -25,7 +25,6 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static com.repomon.rocketdan.exception.ErrorCode.*;
 
@@ -115,29 +114,14 @@ public class UserService {
 	 * @return
 	 */
 	public UserCardResponseDto getUserCard(Long userId) {
-
 		UserEntity user = userRepository.findById(userId).orElseThrow(() -> {throw new CustomException(NOT_FOUND_USER);});
-		Map<String, String> userInfo = ghUtils.getUser(user.getUserName());
 
 		try {
-			// 유저 전체 커밋 수
-			Long totalCommitCount = ghUtils.getTotalCommitCountByUser(user.getUserName());
-			// 유저 전체 이슈 수
-			// Long totalIssueCount = ghUtils.getTotalIssueCountByUser(user.getUserName());
-			// 유저 전체 코드 라인 수
-			Long totalCodeLineCount = ghUtils.getTotalCodeLineCountByUser(user.getUserName());
-			// 유저 사용 언어 목록
-			Set<String> languages = ghUtils.getLanguagesByUser(user.getUserName());
-			// 유저 평균 기여도
-			Long avgContribution = ghUtils.getAvgContributionByUser(user.getUserName());
+			return UserCardResponseDto.fromEntity(ghUtils.getUserCardInfo(user.getUserName()));
+
 		} catch (IOException | InterruptedException e) {
-			//			throw new RuntimeException();
 			throw new CustomException(ErrorCode.DATA_BAD_REQUEST);
 		}
-
-		// 유저 전체 머지 수
-		// 평균 기여도 ?
-		return UserCardResponseDto.fromEntity();
 	}
 
 }
