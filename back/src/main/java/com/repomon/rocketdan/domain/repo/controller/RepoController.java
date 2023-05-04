@@ -86,6 +86,14 @@ public class RepoController {
 	}
 
 
+
+	@ApiOperation(value = "모든 레포지토리 갱신")
+	@PutMapping ("/{userId}/repos")
+	public ResponseEntity<ResultDto> modifyAllRepo(@PathVariable Long userId) {
+		repoService.modifyAllRepo(userId);
+		return ResponseEntity.ok(ResultDto.ofSuccess());
+	}
+
 	@ApiOperation(value = "개별 레포 정보 갱신")
 	@PutMapping("/{repoId}/info")
 	public ResponseEntity<ResultDto> modifyRepoInfo(@PathVariable Long repoId) {
