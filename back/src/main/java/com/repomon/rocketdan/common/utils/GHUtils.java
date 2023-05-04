@@ -9,6 +9,7 @@ import com.repomon.rocketdan.domain.repo.entity.RepoHistoryEntity;
 import java.util.List;
 import org.kohsuke.github.*;
 import org.kohsuke.github.GHRepositoryStatistics.CodeFrequency;
+import org.kohsuke.github.GHRepositoryStatistics.CommitActivity;
 import org.kohsuke.github.GHRepositoryStatistics.ContributorStats;
 import org.kohsuke.github.GHRepositoryStatistics.ContributorStats.Week;
 import org.springframework.beans.factory.annotation.Value;
