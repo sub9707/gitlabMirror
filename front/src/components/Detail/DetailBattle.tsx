@@ -57,18 +57,30 @@ const DetailBattle = ({
   const [statChanged, setStatChanged] = useState<boolean>(false);
   const router = useRouter();
   const [tier, setTier] = useState<string>("");
+  const [tierImg, setTierImg] = useState<string>("");
+  const [tierColor, setTierColor] = useState<string>("");
 
   useEffect(() => {
     if (battleInfo.rating >= 1300) {
-      setTier(diamond);
+      setTier("Diamond");
+      setTierImg(diamond);
+      setTierColor("#CBD9FE");
     } else if (battleInfo.rating >= 1150) {
-      setTier(platinum);
+      setTier("Platinum");
+      setTierImg(platinum);
+      setTierColor("#25BBA2");
     } else if (battleInfo.rating >= 1050) {
-      setTier(gold);
+      setTier("Gold");
+      setTierImg(gold);
+      setTierColor("#D7BC6A");
     } else if (battleInfo.rating >= 950) {
-      setTier(silver);
+      setTier("Silver");
+      setTierImg(silver);
+      setTierColor("#B1B1B1");
     } else {
-      setTier(bronze);
+      setTier("Bronze");
+      setTierImg(bronze);
+      setTierColor("#BD6E40");
     }
   }, []);
 
@@ -125,13 +137,21 @@ const DetailBattle = ({
           </div>
           <div className={styles.att} style={{ color: "red" }}>
             <span>{battleInfo.rating}</span>
-            <Image
-              src={tier}
-              alt="티어"
-              width={40}
-              height={40}
-              className={styles.image}
-            ></Image>
+            <span
+              style={{
+                fontSize: "14px",
+                color: tierColor,
+              }}
+            >
+              <Image
+                src={tierImg}
+                alt="티어"
+                width={40}
+                height={40}
+                className={styles.image}
+              ></Image>
+              {tier}
+            </span>
             <span>{rank}위</span>
             <span>{battleInfo.winCnt}</span>
             <span>{battleInfo.loseCnt}</span>
@@ -271,7 +291,11 @@ const DetailBattle = ({
             최근 전적
           </p>
           <div>
-            {!battleRecords && <p>배틀 기록이 없습니다.</p>}
+            {battleRecords.length === 0 && (
+              <p style={{ color: "grey", fontSize: "1.5rem" }}>
+                배틀 기록이 없습니다.
+              </p>
+            )}
             {battleRecords &&
               battleRecords.slice(0, 5).map((record, index) => (
                 <div

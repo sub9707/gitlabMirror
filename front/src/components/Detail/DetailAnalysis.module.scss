@@ -11,10 +11,17 @@
 }
 
 .att {
+  margin: 0 0 0 -5%;
   display: grid;
   grid-template-columns: 1fr 1fr;
   width: 400px;
   font-size: 1.75rem;
+
+  & span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 .chart-div {
