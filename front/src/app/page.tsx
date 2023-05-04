@@ -137,31 +137,31 @@ const Home = () => {
     }
   }, []);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     setScrollY(window.scrollY);
+  //   };
 
-    window.addEventListener("scroll", handleScroll);
+  //   window.addEventListener("scroll", handleScroll);
 
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener("scroll", handleScroll);
+  //   };
+  // }, []);
 
-  useEffect(() => {
-    if (fpRef.current && spRef.current && tpRef.current) {
-      if (scrollY < 550) {
-        fpRef.current.style.opacity = "0";
-        spRef.current.style.opacity = "0";
-        tpRef.current.style.opacity = "0";
-      } else {
-        fpRef.current.style.opacity = "1";
-        spRef.current.style.opacity = "1";
-        tpRef.current.style.opacity = "1";
-      }
-    }
-  }, [scrollY]);
+  // useEffect(() => {
+  //   if (fpRef.current && spRef.current && tpRef.current) {
+  //     if (scrollY < 550) {
+  //       fpRef.current.style.opacity = "0";
+  //       spRef.current.style.opacity = "0";
+  //       tpRef.current.style.opacity = "0";
+  //     } else {
+  //       fpRef.current.style.opacity = "1";
+  //       spRef.current.style.opacity = "1";
+  //       tpRef.current.style.opacity = "1";
+  //     }
+  //   }
+  // }, [scrollY]);
 
   return (
     <div className={styles.container}>

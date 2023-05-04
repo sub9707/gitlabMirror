@@ -35,6 +35,12 @@ $sub: rgba(152, 157, 250, 1);
   }
 }
 
+@mixin desktop125 {
+  @media (min-width: 1160px) and (max-width: 1600px) {
+    @content;
+  }
+}
+
 @mixin tablet {
   @media (min-width: 768px) and (max-width: 1160px) {
     @content;
