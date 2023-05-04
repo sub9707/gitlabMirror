@@ -6,6 +6,10 @@ import com.repomon.rocketdan.domain.repo.app.GrowthFactor;
 import com.repomon.rocketdan.domain.repo.app.UserCardDetail;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepoHistoryEntity;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.kohsuke.github.*;
 import org.kohsuke.github.GHRepositoryStatistics.CodeFrequency;
 import org.kohsuke.github.GHRepositoryStatistics.ContributorStats;
@@ -73,11 +77,14 @@ public class GHUtils {
     }
 
 
+    @Retries
     public Collection<RepoHistoryEntity> GHCommitToHistory(GHRepository ghRepository, RepoEntity repoEntity, Date date) throws IOException {
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
         GHRepositoryStatistics statistics = ghRepository.getStatistics();
-        PagedIterable<GHRepositoryStatistics.CommitActivity> commitActivities = statistics.getCommitActivity();
+        PagedIterable<CommitActivity> commitActivities = statistics
+            .getCommitActivity()
+            .withPageSize(100);
 
         for (GHRepositoryStatistics.CommitActivity commitActivity : commitActivities) {
             long week = commitActivity.getWeek();

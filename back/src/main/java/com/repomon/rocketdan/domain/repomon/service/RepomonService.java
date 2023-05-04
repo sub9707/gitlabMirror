@@ -337,7 +337,7 @@ public class RepomonService {
 	public RepomonUrlResponseDto getRepomonUrls() {
 		List<RepomonEntity> repomons = repomonRepository.findAll();
 		List<RepomonEntity> exceptEgg = repomons.stream()
-			.filter(repomon -> repomon.getRepomonId() < 9990L)
+			.filter(repomon -> repomon.getRepomonId() < 9990L && repomon.getRepomonTier() == 1)
 			.collect(Collectors.toList());
 
 		return RepomonUrlResponseDto.fromEntities(exceptEgg);
