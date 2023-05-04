@@ -84,9 +84,6 @@ const Header = () => {
         <Link href="/" className={styles.item}>
           랭킹
         </Link>
-        <Link href="/repo/14" className={styles.item}>
-          샘플 레포 상세
-        </Link>
       </div>
       <div className={styles.right}>
         {userId === -1 && (
@@ -96,26 +93,14 @@ const Header = () => {
         )}
         {userId && userId !== -1 && (
           <div className={styles["avatar-div"]}>
-            {avatarUrl && (
-              <Image
-                alt="프로필 이미지"
-                src={avatarUrl}
-                width={55}
-                height={55}
-                className={styles.avatar}
-                onClick={onClickAvatar}
-              />
-            )}
-            {!avatarUrl && (
-              <Image
-                alt="기본 프로필 이미지"
-                src={gitCat}
-                width={55}
-                height={55}
-                className={styles.avatar}
-                onClick={onClickAvatar}
-              />
-            )}
+            <Image
+              alt="프로필 이미지"
+              src={avatarUrl ? avatarUrl : gitCat}
+              width={55}
+              height={55}
+              className={styles.avatar}
+              onClick={onClickAvatar}
+            />
             {showMenu && (
               <div ref={menuRef} className={styles.menu}>
                 <button
