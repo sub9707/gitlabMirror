@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 import static com.repomon.rocketdan.exception.ErrorCode.DATA_CONVENTION_TOO_SHORT;
 import static com.repomon.rocketdan.exception.ErrorCode.DUPLICATE_RESOURCE;
 
@@ -126,8 +128,7 @@ public class RepoController {
 		return ResponseEntity.ok().build();
 	}
 
-
-	@ApiOperation(value = "대표 레포 카드 정보")
+	@ApiOperation(value = "레포 카드 정보")
 	@GetMapping("/{repoId}/card/detail")
 	public ResponseEntity<RepoCardResponseDto> getRepoCardDetail(Long repoId) {
 		RepoCardResponseDto responseDto = repoService.RepoCardDetail(repoId);
@@ -137,7 +138,8 @@ public class RepoController {
 
 	@ApiOperation(value = "개인 레포 카드 정보")
 	@GetMapping("/{repoId}/card/personal")
-	public ResponseEntity<RepoPersonalCardResponseDto> getPersonalRepoCard(Long repoId, Long userId) {
+
+	public ResponseEntity<RepoPersonalCardResponseDto> getPersonalRepoCard(Long repoId, Long userId) throws IOException, InterruptedException {
 		RepoPersonalCardResponseDto responseDto = repoService.RepoPersonalCardDetail(repoId, userId);
 		return ResponseEntity.ok(responseDto);
 	}
