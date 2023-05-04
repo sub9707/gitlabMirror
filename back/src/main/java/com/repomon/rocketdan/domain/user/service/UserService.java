@@ -103,6 +103,9 @@ public class UserService {
 			RepoListItem repoListItem = RepoListItem.convertFromDetail(repoDetail);
 			userResponseDto.setRepresentRepo(repoListItem);
 		});
+
+		// 유저 순위 조회
+		userResponseDto.setUserRank(userRepository.findRankByUserId(userId));
 		return userResponseDto;
 	}
 
