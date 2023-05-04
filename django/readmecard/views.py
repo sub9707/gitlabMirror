@@ -170,7 +170,6 @@ class RepoDefaultSettings(object):
             self.security_percent = self.percent(self.json['security'])
             self.totalcommit = self.json['totalcommit']
             self.totalcode = self.json['totalcode']
-            print(self.commits, self.merges, self.issues, self.reviews, self.efficiency, self.security)
             self.chart = svg_chart([self.commits, self.merges, self.issues, self.reviews, self.efficiency, self.security])
     
         except JSONDecodeError as e:
@@ -213,12 +212,18 @@ class RepoDefaultSettings(object):
         else:
             return data
 
+    def text_len(self, data):
+        if data != None:
+            if len(data) > 25:
+                data = data[:24] + '...'
+                return data
+        else:
+            return ''
 
 def repo_card(request):
     per = IMG['Per']
     star = IMG['Star']
     fork = IMG['Fork']
-    img = IMG['Img']
     url_set = UrlSettings(request, 'repo')
     print(url_set)
     handle_set = RepoDefaultSettings(request, url_set)
@@ -302,6 +307,7 @@ def repo_card(request):
                 animation: delayFadeIn 1s ease-in-out forwards;
             }}
             .repo-detail {{
+                font-weight: 80;
                 font-size: 0.8em;
                 animation: fadeIn 1.5s ease-in-out forwards;
             }}
@@ -318,6 +324,27 @@ def repo_card(request):
                 font-size: 0.6em;
                 font-weight: 700;
                 text-anchor: middle;
+            }}
+            .elli1 {{
+                fill: #FFF9C1;
+                cx: 95px;
+                cy: 130px;
+                rx: 50px;
+                ry: 15px;
+            }}
+            .elli2 {{
+                fill: #C1E9FF;
+                cx: 95px;
+                cy: 155px;
+                rx: 58px;
+                ry: 20px;
+            }}
+            .elli3 {{
+                fill: #FF93B3;
+                cx: 95px;
+                cy: 125px;
+                rx: 60px;
+                ry: 30px;
             }}
         ]]>
     </style>
@@ -336,45 +363,41 @@ def repo_card(request):
         </linearGradient>
     </defs>
     <rect width="600" height="200" rx="10" ry="10" class="background"/>
+    <ellipse class="{ellipsetype}"/>
+    <rect  x="25" y="25" width="140px" height="112px" style="stroke: red; stroke-width: 2px; fill: none;" />
     
-    <image href="{img}" x="16" y="12" height="160px" width="160px" class="repomon-img"/>
+    <image href="{img}" x="25" y="25" width="140px" height="112px" class="repomon-img"/>
     <line x1="40" y1="170" x2="150" y2="170" stroke-width="20" stroke="floralwhite" stroke-linecap="round"/>
     <text x="100" y="175" dz="-20" class="repo-exp">Exp | {repoExp}</text>
 
     <text x="190" y="40" class="boj-handle">{repoName}</text>
-    <image href="{per}" x="300" y="30" height="13px" width="10px"/><text x="313" y="41" font-size="0.7em">{contributers}</text>
-    <text x="335" y="41" font-size="0.7em">{repoStart} ~ {repoEnd}</text>
+    <image href="{per}" x="190" y="46" height="13px" width="10px"/><text x="203" y="57" font-size="0.7em">{contributers}</text>
+    <text x="225" y="57" font-size="0.7em">{repoStart} ~ {repoEnd}</text>
+    <text x="190" y="74" width="250px" height="100px" class="repo-detail">{repoDescription}</text>
 
     <image href="{star}" x="515" y="11" width="11px"/><text x="530" y="20" font-size="0.6em">{starCnt}</text>
     <image href="{fork}" x="550" y="11" width="8px"/><text x="563" y="20" font-size="0.6em">{forkCnt}</text>
-        <text x="190" y="60" class="repo-detail">{repoDescription}</text>
 
     <g class="item" style="animation-delay: 200ms">
-        <text x="190" y="120" class="subtitle">Total Commit</text><text x="270" y="120" class="rate value">{totalcommit} 회</text>
+        <text x="190" y="130" class="subtitle">Total Commit</text><text x="270" y="130" class="rate value">{totalcommit} 회</text>
     </g>
     <g class="item" style="animation-delay: 400ms">
-        <text x="190" y="140" class="subtitle">Total code</text><text x="270" y="140" class="solved value">{totalcode} 줄</text>
+        <text x="190" y="150" class="subtitle">Total code</text><text x="270" y="150" class="solved value">{totalcode} 줄</text>
     </g>
     <g class="item" style="animation-delay: 600ms">
-        <text x="190" y="160" class="subtitle">Security</text><text x="260" y="160" class="class value"></text>
-        <line x1="270" y1="157" x2="{security_percent}" y2="157" stroke-width="10" stroke="floralwhite" stroke-linecap="round"/>
-        <line x1="270" y1="157" x2="360" y2="157" stroke-width="10" stroke-opacity="40%" stroke="floralwhite" stroke-linecap="round"/>
-        <text x="320" y="161" dz="-30" class="repo-percent">{security} %</text>
-    </g>
-    <g class="item" style="animation-delay: 600ms">
-        <text x="190" y="180" class="subtitle">Efficiency</text><text x="260" y="160" class="class value"></text>
-        <line x1="270" y1="177" x2="{efficiency_percent}" y2="177" stroke-width="10" stroke="floralwhite" stroke-linecap="round"/>
-        <line x1="270" y1="177" x2="360" y2="177" stroke-width="10" stroke-opacity="40%" stroke="floralwhite" stroke-linecap="round"/>
-        <text x="320" y="181" dz="-20" class="repo-percent">{efficiency} %</text>
+        <text x="190" y="170" class="subtitle">Convention Rate</text><text x="260" y="170" class="class value"></text>
+        <line x1="290" y1="167" x2="{security_percent}" y2="167" stroke-width="10" stroke="floralwhite" stroke-linecap="round"/>
+        <line x1="290" y1="167" x2="360" y2="167" stroke-width="10" stroke-opacity="40%" stroke="floralwhite" stroke-linecap="round"/>
+        <text x="320" y="171" dz="-30" class="repo-percent">{security} %</text>
     </g>
 
-    <g transform="translate(190, 70)">
+    <g transform="translate(190, 100)">
         <image height="12px" xlink:href="https://img.shields.io/badge/HTML5-E34F26.svg?&amp;style=for-the-badge&amp;logo=HTML5&amp;logoColor=white"/>
     </g>
-    <g transform="translate(230, 70)">
+    <g transform="translate(230, 100)">
         <image height="12px" xlink:href="https://img.shields.io/badge/JavaScriipt-F7DF1E.svg?&amp;style=for-the-badge&amp;logo=JavaScript&amp;logoColor=black"/>
     </g>
-    <g transform="translate(290, 70)">
+    <g transform="translate(290, 100)">
         <image height="12px" xlink:href="https://img.shields.io/badge/CSS3-1572B6.svg?&amp;style=for-the-badge&amp;logo=CSS3&amp;logoColor=white"/>
     </g>
 
@@ -407,7 +430,10 @@ def repo_card(request):
                per=per,
                star=star,
                fork=fork,
-               img=img,
+                # img=IMG['img'+str(handle_set.repomonId)],
+                # ellipsetype=ELLIPSE_TYPE[handle_set.repomon_tier],
+               ellipsetype=ELLIPSE_TYPE[1],
+               img=IMG['img28'],
                chart=handle_set.chart
                )
 
