@@ -365,7 +365,6 @@ public class RepoService {
 			Map<String, Integer> commitCountMap = ghUtils.getCommitterInfoMap(statistics);
 
 			String mvp = null;
-
 			int totalCommitCount = ghUtils.getTotalCommitCount(statistics);
 			for (String user : commitCountMap.keySet()) {
 				if (mvp == null || commitCountMap.get(user) > commitCountMap.get(mvp)) {
@@ -434,7 +433,9 @@ public class RepoService {
 		log.info("레포지토리 분석 시작 => {}", repoEntity.getRepoName());
 		try {
 			List<RepoHistoryEntity> list = new ArrayList<>();
-			list.addAll(ghUtils.GHCommitToHistory(ghRepository, repoEntity, fromDate));
+
+			GHRepositoryStatistics statistics = ghRepository.getStatistics();
+			list.addAll(ghUtils.GHCommitToHistory(statistics, repoEntity, fromDate));
 			list.addAll(ghUtils.GHPullRequestToHistory(ghRepository, repoEntity, fromDate));
 			list.addAll(ghUtils.GHIssueToHistory(ghRepository, repoEntity, fromDate));
 			list.addAll(ghUtils.GHForkToHistory(ghRepository, repoEntity, fromDate));
@@ -465,10 +466,12 @@ public class RepoService {
 		repoHistoryRepository.findFirstByRepoOrderByWorkedAtDesc(repoEntity).ifPresentOrElse(historyEntity -> {
 			LocalDate workedAt = historyEntity.getWorkedAt();
 			Date workDate = Date.from(workedAt.atStartOfDay(ZoneId.systemDefault()).toInstant());
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(workDate);
 
-			Long exp = initRepositoryInfo(repoEntity, ghRepository, Date.from(cal.toInstant()));
+			Calendar instance = Calendar.getInstance();
+			instance.setTime(workDate);
+			instance.add(Calendar.DATE, 1);
+
+			Long exp = initRepositoryInfo(repoEntity, ghRepository, Date.from(instance.toInstant()));
 			userEntities.forEach(userEntity -> userEntity.updateTotalExp(exp));
 		}, () -> {
 			Calendar calendar = Calendar.getInstance();
