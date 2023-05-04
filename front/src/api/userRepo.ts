@@ -82,3 +82,15 @@ export const getRandomRepo = async () => {
   const res = await http.get(`/repo/repomon`);
   return res;
 };
+
+// 레포지터리 Active 변경
+export const setActiveRepo = async (repoId: number) => {
+  const res = await http.put(`/repo/${repoId}/info/active`);
+  return res;
+};
+
+// User Ranking 조회
+export const getUserRanking = async (userId: number) => {
+  const fetchData = {};
+  const res = await http.get(`/rank/user`);
+};

@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import DropDown from "@/components/DropDown";
 import { getTotalRepoList, getUserDetail } from "@/api/userRepo";
 import { RepoListType, UserInfoType } from "@/types/repoInfo";
+import { useAppSelector } from "@/redux/hooks";
 
 const Page = ({ params }: { params: { userId: string } }) => {
   const router = useRouter();
@@ -17,6 +18,7 @@ const Page = ({ params }: { params: { userId: string } }) => {
   // 레포지터리 유저 정보 GET
   const [userInfo, setUserInfo] = useState<UserInfoType>();
   const [repoInfo, setRepoInfo] = useState<RepoListType>();
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
   function getUserInfo(userId: string) {
     return getUserDetail(Number(userId));
@@ -25,8 +27,8 @@ const Page = ({ params }: { params: { userId: string } }) => {
     const data = getUserInfo(params.userId)
       .then((response) => {
         const res = response.data;
-        console.log(res);
         setUserInfo(res);
+        console.log(res);
       })
       .catch((error) => {
         console.error(error);
@@ -39,8 +41,10 @@ const Page = ({ params }: { params: { userId: string } }) => {
       try {
         const response = await getTotalRepoList(Number(params.userId), 1, 6);
         const data = response.data;
-        console.log(data);
         setRepoInfo(data);
+        setTimeout(() => {
+          setIsLoaded(true);
+        }, 2000);
       } catch (error) {
         console.error(error);
       }
@@ -48,6 +52,9 @@ const Page = ({ params }: { params: { userId: string } }) => {
 
     fetchData();
   }, []);
+
+  // 동일 유저 체크
+  const [isSameUser, setIsSameUser] = useState<boolean>();
 
   return (
     <>
@@ -127,6 +134,11 @@ const Page = ({ params }: { params: { userId: string } }) => {
                         exp={repoInfo.repoListItems.at(i)?.repoExp}
                         rating={repoInfo.repoListItems.at(i)?.repoRating}
                         isActive={repoInfo.repoListItems.at(i)?.isActive}
+                        userId={params.userId}
+                        repoId={repoInfo.repoListItems.at(i)?.repoId}
+                        isSameUser={isSameUser}
+                        setIsSameUser={setIsSameUser}
+                        isLoaded={isLoaded}
                       />
                     ) : null
                   )}

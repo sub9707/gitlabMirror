@@ -12,7 +12,12 @@ import gitCat from "../../public/git_cat.svg";
 import { getBaseURL } from "@/api/axios";
 
 const Header = () => {
+<<<<<<< HEAD
+  const githubLoginUrl =
+    "http://localhost:8080/api/v1/oauth2/authorization/github";
+=======
   const githubLoginUrl = getBaseURL() + "/oauth2/authorization/github";
+>>>>>>> 1691c90e34717232db97941ab99c0c376fd33e4e
   const login = useAppSelector((state) => state.authReducer.login);
   const [userId, setUserId] = useState<number>();
   const [avatarUrl, setAvatarUrl] = useState<string>("");
