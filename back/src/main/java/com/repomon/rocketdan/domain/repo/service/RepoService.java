@@ -328,7 +328,7 @@ public class RepoService {
 		repositories.forEach((repoKey, ghRepository) -> {
 			repoRepository.findByRepoKey(repoKey).ifPresentOrElse(repoEntity -> repoEntity.update(ghRepository),
 				() -> {
-					Long eggId = 9999L;//9995L + (new Random().nextInt(5));
+					Long eggId = 9995L + (new Random().nextInt(5));
 					RepomonEntity repomonEntity = repomonRepository.findById(eggId)
 						.orElseThrow(() -> {
 							throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
