@@ -83,8 +83,6 @@ public class RepoService {
 		if (responseDto.getRepoListItems().size() < pageable.getPageSize()) {
 			Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(userName);
 
-			saveAndUpdateRepo(repositories, userEntity);
-
 			Page<ActiveRepoEntity> activeRepoPage = activeRepoRepository.findByUser(userEntity,
 				pageable);
 			List<RepoDetail> repoDetails = activeRepoPage.stream()
@@ -222,6 +220,19 @@ public class RepoService {
 		return responseDto;
 	}
 
+
+	/**
+	 * 모든 레포 정보 갱신
+	 */
+	public void modifyAllRepo(Long userId){
+		UserEntity userEntity = userRepository.findById(userId).orElseThrow(() -> {
+			throw new CustomException(ErrorCode.NOT_FOUND_USER);
+		});
+
+		String userName = userEntity.getUserName();
+		Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(userName);
+		saveAndUpdateRepo(repositories, userEntity);
+	}
 
 	/**
 	 * 레포 정보 갱신
