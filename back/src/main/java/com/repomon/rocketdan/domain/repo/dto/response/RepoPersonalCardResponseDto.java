@@ -55,6 +55,7 @@ public class RepoPersonalCardResponseDto {
      */
     private String repoName;
     private Long repomonId;
+    private int repomonTier;
     private String repoDescription;
     private Long repoExp;
     private int starCnt;
@@ -72,12 +73,13 @@ public class RepoPersonalCardResponseDto {
     private int totalcommit;
     private Long totalcode;
 
-    private Long mycommits;
-    private Long myissues;
-    private Long mymerges;
-    private Long myreviews;
+
+    private int myissues;
+    private int mymerges;
+    private int myreviews;
     private int mysecurity;
     private int myefficiency;
+
     private int mytotalcommit;
     private Long mytotalcode;
 
@@ -86,7 +88,7 @@ public class RepoPersonalCardResponseDto {
     private String avatarUrl;
 
 
-    public static RepoPersonalCardResponseDto fromEntityAndGHRepository(RepoEntity repoEntity, GHRepository ghRepository, List<RepoHistoryEntity> historyEntityList, Integer contributers, Map<String, String> userInfo, RepoContributeResponseDto contributeResponse) {
+    public static RepoPersonalCardResponseDto fromEntityAndGHRepository(RepoEntity repoEntity, GHRepository ghRepository, List<RepoHistoryEntity> historyEntityList, Integer contributers, Map<String, String> userInfo, RepoContributeResponseDto contributeResponse,Integer myissue, Long mytotalcode, List<Integer> mymerges) {
         try {
             Map<String, Long> languageMap = ghRepository.listLanguages();
 
@@ -124,6 +126,7 @@ public class RepoPersonalCardResponseDto {
             return RepoPersonalCardResponseDto.builder()
                     .repoName(repoEntity.getRepoName())
                     .repomonId(repoEntity.getRepomon().getRepomonId())
+                    .repomonTier(repoEntity.getRepomon().getRepomonTier())
                     .repoDescription(ghRepository.getDescription())
                     .repoExp(repoEntity.getRepoExp())
                     .starCnt(ghRepository.getStargazersCount())
@@ -141,14 +144,14 @@ public class RepoPersonalCardResponseDto {
                     .totalcommit(contributeResponse.getTotalCommitCount())
                     .totalcode(contributeResponse.getTotalLineCount())
 
-                    .mycommits(commitsExp)
-                    .myissues(issuesExp)
-                    .mymerges(mergesExp)
-                    .myreviews(reviewsExp)
+                    .myissues(myissue)
+                    .mymerges(mymerges.get(0))
+                    .myreviews(mymerges.get(1))
                     .myefficiency(80)
                     .mysecurity(70)
+
                     .mytotalcommit(contributeResponse.getCommitters().get(userInfo.get("username")))
-                    .mytotalcode(contributeResponse.getTotalLineCount())
+                    .mytotalcode(mytotalcode)
 
                     .mycontribution(mycontribution)
                     .userName(userInfo.get("nickname"))

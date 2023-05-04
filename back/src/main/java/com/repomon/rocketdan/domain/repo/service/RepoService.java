@@ -548,11 +548,10 @@ public class RepoService {
 		return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository, historyEntityList, totalLineCount, contributers);
 	}
 
-
 	/**
 	 * 레포 personal card detail
 	 */
-	public RepoPersonalCardResponseDto RepoPersonalCardDetail(Long repoId, Long userId) {
+	public RepoPersonalCardResponseDto RepoPersonalCardDetail(Long repoId, Long userId) throws IOException, InterruptedException {
 		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
 			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 		});
@@ -571,24 +570,43 @@ public class RepoService {
 
 		GHRepositoryStatistics statistics = ghRepository.getStatistics();
 
-		//컨트리뷰터 수, Total Code 수
-		int contributers = 0;
-		long totalLineCount = 0;
+        //컨트리뷰터 수, Total Code 수
+        int contributers = 0;
+        try {
+            contributers = ghRepository.listContributors().toList().size();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        //유저 정보
+        UserEntity user = userRepository.findById(userId).orElseThrow(() -> {throw new CustomException(ErrorCode.NOT_FOUND_USER);});
+        Map<String, String> userInfo = ghUtils.getUser(user.getUserName());
 
-		try {
-			totalLineCount = ghUtils.getTotalLineCount(statistics);
-			contributers = ghRepository.listContributors().toList().size();
-		} catch (IOException | InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-		//유저 정보
-		UserEntity user = userRepository.findById(userId).orElseThrow(() -> {throw new CustomException(ErrorCode.NOT_FOUND_USER);});
-		Map<String, String> userInfo = ghUtils.getUser(user.getUserName());
 		//기여도
 		RepoContributeResponseDto contributeResponse = redisContributeRepository.findByRepoId(repoId)
-			.orElseGet(() -> findContributeDtoWithGHApi(repoEntity));
+				.orElseGet(() -> findContributeDtoWithGHApi(repoEntity));
 
-		return RepoPersonalCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository, historyEntityList, contributers, userInfo, contributeResponse);
+		//내 이슈, 머지, 리뷰 가져오기 >> 깃유틸에 넣기 째(getMyIssueToHistory)는 프라이빗, 예는 퍼블릭
+		Integer myissue = 0;
+		List<Integer> mymerges = new ArrayList<>();
+		Optional<RepoHistoryEntity> repoHistoryOptional = repoHistoryRepository.findFirstByRepoOrderByWorkedAtDesc(repoEntity);
+		if (repoHistoryOptional.isPresent()) {
+			LocalDate workedAt = repoHistoryOptional.get().getWorkedAt();
+			Date workDate = Date.from(workedAt.atStartOfDay(ZoneId.systemDefault()).toInstant());
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(workDate);
+			cal.add(Calendar.DATE, 1);
+			myissue = ghUtils.getMyIssueToHistory(ghRepository, Date.from(cal.toInstant()), user.getUserName());
+			mymerges = ghUtils.getMyMergeToHistory(ghRepository, Date.from(cal.toInstant()), user.getUserName());
+		} else {
+			myissue = ghUtils.getMyIssueToHistory(ghRepository, null, user.getUserName());
+			mymerges = ghUtils.getMyMergeToHistory(ghRepository, null, user.getUserName());
+		}
+
+		//내 코드 수
+		Long mytotalcode = ghUtils.getLineCountWithUser(statistics, user.getUserName());
+
+
+
+		return RepoPersonalCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository, historyEntityList, contributers, userInfo, contributeResponse, myissue ,mytotalcode, mymerges);
 	}
-
 }
