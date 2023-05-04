@@ -17,7 +17,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
 	Page<UserEntity> findByUserNameContaining(String search, Pageable pageable);
 
-	@Query(nativeQuery = true, value = "")
+	@Query(nativeQuery = true, value = "SELECT ranked.ranking FROM ("
+		+ "SELECT user_id, RANK() OVER (ORDER BY total_exp desc) as 'ranking' FROM user "
+		+ ") ranked "
+		+ "WHERE ranked.user_id = :userId")
 	Integer findRankByUserId(@Param("userId") Long userId);
 
 }
