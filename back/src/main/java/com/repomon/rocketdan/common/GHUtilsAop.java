@@ -1,5 +1,7 @@
 package com.repomon.rocketdan.common;
 
+import java.io.IOException;
+import java.io.InterruptedIOException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -15,7 +17,7 @@ public class GHUtilsAop {
         while(retries-- > 0) {
             try {
                 return proceedingJoinPoint.proceed();
-            } catch (NullPointerException e) {
+            } catch (NullPointerException | IOException | InterruptedException e) {
                 Thread.sleep(500L);
             }
         }
