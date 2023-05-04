@@ -97,12 +97,16 @@ public class GHUtils {
 
 
         GHRepositoryStatistics statistics = ghRepository.getStatistics();
-        PagedIterable<CommitActivity> commitActivities = statistics
+        List<CommitActivity> commitActivities = statistics
             .getCommitActivity()
-            .withPageSize(100);
+            .withPageSize(100)
+            .toList();
 
-        for (GHRepositoryStatistics.CommitActivity commitActivity : commitActivities) {
+        for(CommitActivity commitActivity : commitActivities){
             long week = commitActivity.getWeek();
+            Date weekAt = new Date((week + 6) * 1000L);
+            if(weekAt.before(date)) continue;
+
             List<Integer> days = commitActivity.getDays();
             for (int i = 0; i < 7; i++) {
                 Integer commitCount = days.get(i);
@@ -124,10 +128,12 @@ public class GHUtils {
         throws IOException {
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
-        PagedIterable<GHPullRequest> pullRequests = ghRepository.queryPullRequests()
+        List<GHPullRequest> pullRequests = ghRepository.queryPullRequests()
             .state(GHIssueState.CLOSED)
             .direction(GHDirection.DESC)
-            .list().withPageSize(100);
+            .list()
+            .withPageSize(100)
+            .toList();
 
         for (GHPullRequest pr : pullRequests) {
             Date closedAt = pr.getClosedAt();
@@ -161,15 +167,17 @@ public class GHUtils {
     }
 
 
-    public Collection<RepoHistoryEntity> GHIssueToHistory(GHRepository ghRepository, RepoEntity repoEntity, Date date) {
+    public Collection<RepoHistoryEntity> GHIssueToHistory(GHRepository ghRepository, RepoEntity repoEntity, Date date)
+        throws IOException {
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
-        PagedIterable<GHIssue> issues = ghRepository.queryIssues()
+        List<GHIssue> issues = ghRepository.queryIssues()
             .direction(GHDirection.DESC)
             .state(GHIssueState.CLOSED)
             .since(date)
             .list()
-            .withPageSize(100);
+            .withPageSize(100)
+            .toList();
 
         for (GHIssue issue : issues) {
             Date closedAt = issue.getClosedAt();
@@ -193,9 +201,10 @@ public class GHUtils {
         throws IOException {
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
-        PagedIterable<GHRepository> ghRepositories = ghRepository
+        List<GHRepository> ghRepositories = ghRepository
             .listForks()
-            .withPageSize(100);
+            .withPageSize(100)
+            .toList();
 
         for (GHRepository repo : ghRepositories) {
             Date createdAt = repo.getCreatedAt();
@@ -218,9 +227,10 @@ public class GHUtils {
         throws IOException {
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
-        PagedIterable<GHStargazer> ghStargazers = ghRepository
+        List<GHStargazer> ghStargazers = ghRepository
             .listStargazers2()
-            .withPageSize(100);
+            .withPageSize(100)
+            .toList();
 
         for (GHStargazer stargazer : ghStargazers) {
             Date starredAt = stargazer.getStarredAt();
@@ -276,9 +286,10 @@ public class GHUtils {
 
     @Retries
     public int getTotalCommitCount(GHRepositoryStatistics statistics) throws IOException {
-        PagedIterable<CommitActivity> commitActivities = statistics
+        List<CommitActivity> commitActivities = statistics
             .getCommitActivity()
-            .withPageSize(100);
+            .withPageSize(100)
+            .toList();
 
         int totalCommitCount = 0;
         for(CommitActivity commitActivity : commitActivities){
@@ -290,9 +301,10 @@ public class GHUtils {
     @Retries
     public Map<String, Integer> getCommitterInfoMap(GHRepositoryStatistics statistics) throws IOException, InterruptedException {
         Map<String, Integer> commitCountMap = new HashMap<>();
-        PagedIterable<ContributorStats> contributorStatList = statistics
+        List<ContributorStats> contributorStatList = statistics
             .getContributorStats()
-            .withPageSize(100);
+            .withPageSize(100)
+            .toList();
 
         for (ContributorStats contributorStats : contributorStatList) {
             String author = contributorStats.getAuthor().getLogin();
@@ -316,8 +328,11 @@ public class GHUtils {
     @Retries
     public Long getLineCountWithUser(GHRepositoryStatistics statistics, String userName) throws IOException, InterruptedException {
         long lineCount = 0L;
-        PagedIterable<ContributorStats> contributorStatList = statistics.getContributorStats()
-            .withPageSize(100);
+        List<ContributorStats> contributorStatList = statistics
+            .getContributorStats()
+            .withPageSize(100)
+            .toList();
+
         for (ContributorStats contributorStats : contributorStatList) {
             String author = contributorStats.getAuthor().getLogin();
             if (author.equals(userName)) {
@@ -344,8 +359,9 @@ public class GHUtils {
     public Long getCommitCountWithUser(GHRepositoryStatistics statistics, String userName)
         throws IOException, InterruptedException {
         Long commitCount = 0L;
-        PagedIterable<ContributorStats> contributorStatList = statistics.getContributorStats()
-            .withPageSize(100);
+        List<ContributorStats> contributorStatList = statistics.getContributorStats()
+            .withPageSize(100)
+            .toList();
         for (ContributorStats contributorStats : contributorStatList) {
             String author = contributorStats.getAuthor().getLogin();
             if (author.equals(userName)) {
@@ -360,13 +376,20 @@ public class GHUtils {
     /**
      * 유저 이름의 총 이슈 수
      */
+    @Retries
     public Integer getMyIssueToHistory(GHRepository ghRepository, Date date, String username) throws IOException {
 
         List<GHIssue> issues = new ArrayList<>();
         if (date == null) {
-            issues = ghRepository.queryIssues().list().toList();
+            issues = ghRepository.queryIssues().list()
+            .withPageSize(100)
+            .toList();
+
         } else {
-            PagedIterable<GHIssue> allIssues = ghRepository.queryIssues().list();
+            List<GHIssue> allIssues = ghRepository.queryIssues()
+                .list()
+                .withPageSize(100)
+                .toList();
             for (GHIssue issue : allIssues) {
                 if (issue.getCreatedAt().after(date)) {
                     issues.add(issue);
@@ -386,6 +409,7 @@ public class GHUtils {
     /**
      * 유저 이름의 총 머지, 리뷰 수
      */
+    @Retries
     public List<Integer> getMyMergeToHistory(GHRepository ghRepository, Date date, String username) throws IOException {
 
         LocalDate localDate = date == null ? null : date.toInstant()
@@ -395,7 +419,11 @@ public class GHUtils {
         int mymerge = 0;
         int myreview = 0;
 
-        PagedIterable<GHPullRequest> pullRequests = ghRepository.queryPullRequests().list();
+        List<GHPullRequest> pullRequests = ghRepository.queryPullRequests()
+            .list()
+            .withPageSize(100)
+            .toList();
+
         for(GHPullRequest pr : pullRequests){
             LocalDate prDate = pr.getMergedAt().toInstant()
                     .atZone(ZoneId.systemDefault())
@@ -407,7 +435,8 @@ public class GHUtils {
                 }
 
                 List<GHPullRequestReviewComment> reviewComments = pr.listReviewComments()
-                        .toList();
+                    .withPageSize(100)
+                    .toList();
 
                 for(GHPullRequestReviewComment reviewComment : reviewComments){
                     if (reviewComment.getUser().getName().equals(username)){
@@ -432,10 +461,14 @@ public class GHUtils {
      * @return
      * @throws IOException
      */
+    @Retries
     public int getTotalCommitCount(GHRepository ghRepository) throws IOException, InterruptedException {
         // 슴태 코드
         GHRepositoryStatistics statistics = ghRepository.getStatistics();
-        PagedIterable<ContributorStats> contributorStats = statistics.getContributorStats();
+        List<ContributorStats> contributorStats = statistics.getContributorStats()
+            .withPageSize(100)
+            .toList();
+
         int totalCommits = 0;
         for (ContributorStats contributorStat : contributorStats) {
             totalCommits += contributorStat.getTotal();
