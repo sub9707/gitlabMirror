@@ -27,6 +27,7 @@ const DetailBattle = ({
   myRepomonNickname,
   repoId,
   setStatUpdated,
+  myRepo,
 }: {
   battleInfo: RepoDetailBattleType;
   rank: number;
@@ -34,6 +35,7 @@ const DetailBattle = ({
   myRepomonNickname: string;
   repoId: string;
   setStatUpdated: React.Dispatch<React.SetStateAction<boolean>>;
+  myRepo: boolean;
 }) => {
   const [restStatPoint, setRestStatPoint] = useState<number>(
     battleInfo.statPoint
@@ -97,21 +99,25 @@ const DetailBattle = ({
             <span>{battleInfo.loseCnt}</span>
           </div>
         </div>
-        <button>
-          배틀 매칭
-          <span>
-            <ChevronDoubleRightIcon />
-          </span>
-        </button>
+        {myRepo && (
+          <button>
+            배틀 매칭
+            <span>
+              <ChevronDoubleRightIcon />
+            </span>
+          </button>
+        )}
       </div>
       <div className={styles.bottom}>
         <div className={styles.left}>
           <p className={styles["left-title"]}>
             능력치
-            <span>
-              스탯 포인트:
-              <span style={{ color: "blue" }}> {restStatPoint}</span>
-            </span>
+            {myRepo && (
+              <span>
+                스탯 포인트:
+                <span style={{ color: "blue" }}> {restStatPoint}</span>
+              </span>
+            )}
           </p>
           <div className={styles["stat-line"]}>
             <p style={{ marginTop: "2rem" }}>
@@ -120,7 +126,7 @@ const DetailBattle = ({
                 alt="heart"
                 className={styles.icon}
               ></Image>
-              생명력: <span style={{ color: "#E54F4F" }}>{battleInfo.hp}</span>
+              생명력: <span>{battleInfo.hp}</span>
             </p>
             <p>
               <Image
@@ -128,11 +134,13 @@ const DetailBattle = ({
                 alt="attack"
                 className={styles.icon}
               ></Image>
-              공격력: <span>{battleInfo.atk}</span>{" "}
-              <span style={{ color: "#FFB800" }}>
-                (+ {pointStats.atkPoint * battleInfo.increaseAtk})
-              </span>
-              {restStatPoint > 0 && (
+              공격력: <span>{battleInfo.atk}</span>
+              {pointStats.atkPoint > 0 && myRepo && (
+                <span style={{ color: "#FFB800" }}>
+                  (+ {pointStats.atkPoint * battleInfo.increaseAtk})
+                </span>
+              )}
+              {restStatPoint > 0 && myRepo && (
                 <button id="atkPoint" onClick={onClickStatPlus}>
                   +
                 </button>
@@ -145,11 +153,13 @@ const DetailBattle = ({
                 className={styles.icon}
               ></Image>
               방어율: <span>{battleInfo.def}</span>
-              <span style={{ color: "#76E250" }}>
-                (+ {pointStats.defPoint * battleInfo.increaseDef})
-              </span>
+              {pointStats.defPoint > 0 && myRepo && (
+                <span style={{ color: "#76E250" }}>
+                  (+ {pointStats.defPoint * battleInfo.increaseDef})
+                </span>
+              )}
               %
-              {restStatPoint > 0 && (
+              {restStatPoint > 0 && myRepo && (
                 <button id="defPoint" onClick={onClickStatPlus}>
                   +
                 </button>
@@ -162,11 +172,13 @@ const DetailBattle = ({
                 className={styles.icon}
               ></Image>
               치명타율: <span>{battleInfo.critical}</span>
-              <span style={{ color: "#C846F5" }}>
-                (+ {pointStats.criticalPoint * battleInfo.increaseCritical})
-              </span>
+              {pointStats.criticalPoint > 0 && myRepo && (
+                <span style={{ color: "#C846F5" }}>
+                  (+ {pointStats.criticalPoint * battleInfo.increaseCritical})
+                </span>
+              )}
               %
-              {restStatPoint > 0 && (
+              {restStatPoint > 0 && myRepo && (
                 <button id="criticalPoint" onClick={onClickStatPlus}>
                   +
                 </button>
@@ -179,11 +191,13 @@ const DetailBattle = ({
                 className={styles.icon}
               ></Image>
               회피율: <span>{battleInfo.dodge}</span>
-              <span style={{ color: "#83BCFF" }}>
-                (+ {pointStats.dodgePoint * battleInfo.increaseDodge})
-              </span>
+              {pointStats.dodgePoint > 0 && myRepo && (
+                <span style={{ color: "#83BCFF" }}>
+                  (+ {pointStats.dodgePoint * battleInfo.increaseDodge})
+                </span>
+              )}
               %
-              {restStatPoint > 0 && (
+              {restStatPoint > 0 && myRepo && (
                 <button id="dodgePoint" onClick={onClickStatPlus}>
                   +
                 </button>
@@ -192,11 +206,13 @@ const DetailBattle = ({
             <p>
               <Image src={hitIcon} alt="hit" className={styles.icon}></Image>
               명중율: <span>{battleInfo.hit}</span>
-              <span style={{ color: "#6FD9E8" }}>
-                (+ {pointStats.hitPoint * battleInfo.increaseHit})
-              </span>
+              {pointStats.hitPoint > 0 && myRepo && (
+                <span style={{ color: "#6FD9E8" }}>
+                  (+ {pointStats.hitPoint * battleInfo.increaseHit})
+                </span>
+              )}
               %
-              {restStatPoint > 0 && (
+              {restStatPoint > 0 && myRepo && (
                 <button id="hitPoint" onClick={onClickStatPlus}>
                   +
                 </button>
@@ -213,14 +229,25 @@ const DetailBattle = ({
           </div>
         </div>
         <div className={styles.right}>
-          <p style={{ margin: "6rem 0 2rem 0", fontSize: "1.75rem" }}>
+          <p style={{ margin: "6rem 0 1.5rem 0", fontSize: "1.75rem" }}>
             최근 전적
           </p>
           <div>
             {!battleRecords && <p>배틀 기록이 없습니다.</p>}
             {battleRecords &&
               battleRecords.slice(0, 5).map((record, index) => (
-                <div key={index} className={styles["record-item"]}>
+                <div
+                  key={index}
+                  className={
+                    myRepomonNickname === record.attackRepo.repomonNickname &&
+                    record.isWin
+                      ? `${styles["record-item"]} ${styles["win-record-item"]}`
+                      : myRepomonNickname ===
+                          record.defenseRepo.repomonNickname && !record.isWin
+                      ? `${styles["record-item"]} ${styles["win-record-item"]}`
+                      : `${styles["record-item"]} ${styles["lose-record-item"]}`
+                  }
+                >
                   <div id="left">
                     <Image src={tmp1} alt="tmp1"></Image>
                     <div
@@ -228,14 +255,11 @@ const DetailBattle = ({
                     >
                       <p>공격 레포몬</p>
                       <p
-                        className={styles["repomon-nickname"]}
-                        style={
+                        className={
                           myRepomonNickname ===
                           record.attackRepo.repomonNickname
-                            ? {
-                                color: "rgb(54, 150, 96)",
-                              }
-                            : undefined
+                            ? `${styles["repomon-nickname"]} ${styles.mine}`
+                            : `${styles["repomon-nickname"]} ${styles["not-mine"]}`
                         }
                       >
                         {record.attackRepo.repomonNickname}
