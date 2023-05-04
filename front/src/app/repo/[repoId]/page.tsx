@@ -2,16 +2,16 @@
 
 import React, { useState, useEffect } from "react";
 import { StarIcon, ShareIcon } from "@heroicons/react/24/outline";
-import DetailRepomon from "@/components/DetailRepomon";
-import ProgressBar from "@/components/ProgressBar";
+import DetailRepomon from "@/components/Detail/DetailRepomon";
+import ProgressBar from "@/components/Detail/ProgressBar";
 import styles from "./page.module.scss";
 import {
   MagnifyingGlassIcon,
   ClipboardDocumentListIcon,
   ChartPieIcon,
 } from "@heroicons/react/24/outline";
-import DetailAnalysis from "@/components/DetailAnalysis";
-import DetailBattle from "@/components/DetailBattle";
+import DetailAnalysis from "@/components/Detail/DetailAnalysis";
+import DetailBattle from "@/components/Detail/DetailBattle";
 import {
   BattleRecordType,
   RepoDetailBattleType,
@@ -26,10 +26,11 @@ import {
 } from "@/api/repoDetail";
 import { axiosRequestRepoDetailResearch } from "@/api/repoDetail";
 import { pretreatDate } from "@/app/utils/PretreatDate";
-import DatePickerModal from "@/components/DatePickerModal/DatePickerModal";
+import DatePickerModal from "@/components/Detail/DatePickerModal";
 import Modal from "react-modal";
-import RenameModal from "@/components/RenameModal/RenameModal";
+import RenameModal from "@/components/Detail/RenameModal";
 import Loading from "@/app/loading";
+import DetailConvention from "@/components/Detail/DetailConvention";
 
 function Page({ params }: { params: { userId: string; repoId: string } }) {
   const [loginUserId, setLoginUserId] = useState<string>();
@@ -334,6 +335,7 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
                 myRepo={repoDetailInfo.myRepo}
               />
             )}
+            {tabIndex === 3 && <DetailConvention />}
           </div>
         </div>
       )}
