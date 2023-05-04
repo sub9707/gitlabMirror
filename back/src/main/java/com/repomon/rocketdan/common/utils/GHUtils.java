@@ -5,8 +5,10 @@ import com.repomon.rocketdan.common.Retries;
 import com.repomon.rocketdan.domain.repo.app.GrowthFactor;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepoHistoryEntity;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.kohsuke.github.*;
 import org.kohsuke.github.GHIssueQueryBuilder.Sort;
 import org.kohsuke.github.GHRepository.ForkSort;
@@ -94,7 +96,6 @@ public class GHUtils {
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
         GHRepositoryStatistics statistics = ghRepository.getStatistics();
-
         PagedIterable<CommitActivity> commitActivities = statistics
             .getCommitActivity()
             .withPageSize(100);
