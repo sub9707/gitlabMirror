@@ -6,6 +6,7 @@ import com.repomon.rocketdan.common.service.JwtTokenProvider;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -20,7 +21,11 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+
 	private final JwtTokenProvider authTokenProvider;
+	@Value("${front_url}")
+	private String frontUrl;
+
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -37,7 +42,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		AuthResponseDto authResponseDto = authTokenProvider.createToken(userId);
 
 		name = URLEncoder.encode(name, StandardCharsets.UTF_8);
-		setDefaultTargetUrl("http://localhost:3000?access-token=" + authResponseDto.getAccessToken() + "&refresh-token=" + authResponseDto.getRefreshToken() + "&username=" + username + "&name=" + name + "&avatarUrl=" + avatarUrl + "&userId=" + userId);
+		setDefaultTargetUrl(
+			frontUrl + "?access-token=" + authResponseDto.getAccessToken() + "&refresh-token=" + authResponseDto.getRefreshToken() + "&username=" + username + "&name=" + name + "&avatarUrl="
+				+ avatarUrl + "&userId=" + userId);
 		super.onAuthenticationSuccess(request, response, authentication);
 
 	}
