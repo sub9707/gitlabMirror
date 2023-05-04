@@ -9,10 +9,10 @@ import { useAppSelector } from "@/redux/hooks";
 import { axiosRequestLogout } from "@/api/auth";
 import { useRouter } from "next/navigation";
 import gitCat from "../../public/git_cat.svg";
+import { getBaseURL } from "@/api/axios";
 
 const Header = () => {
-  const githubLoginUrl =
-    "https://repomon.kr/api/v1/oauth2/authorization/github";
+  const githubLoginUrl = getBaseURL() + "/oauth2/authorization/github";
   const login = useAppSelector((state) => state.authReducer.login);
   const [userId, setUserId] = useState<number>();
   const [avatarUrl, setAvatarUrl] = useState<string>("");
