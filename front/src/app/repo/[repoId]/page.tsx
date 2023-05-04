@@ -120,8 +120,13 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
   /** =============================================== Axios =============================================== */
   /** 레포 디테일 기본 정보 */
   const requestRepoDetail = async (repoId: number, userId: number) => {
+    let res;
     try {
-      const res = await axiosRequestRepoDetail(repoId, userId);
+      if (userId) {
+        res = await axiosRequestRepoDetail(repoId, userId);
+      } else {
+        res = await axiosRequestRepoDetail(repoId);
+      }
       console.log("레포 디테일 기본 정보: ", res);
       setRepoDetailInfo(res.data);
     } catch (err) {
@@ -326,6 +331,7 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
                 myRepomonNickname={repoDetailInfo.repomonName}
                 repoId={params.repoId}
                 setStatUpdated={setStatUpdated}
+                myRepo={repoDetailInfo.myRepo}
               />
             )}
           </div>

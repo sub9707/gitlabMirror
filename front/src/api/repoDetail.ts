@@ -5,9 +5,13 @@ export const axiosRequestRepoDetail = async (
   repoId: number,
   userId?: number
 ) => {
-  const res = await http.get(`repo/${repoId}/info/${userId}`);
-
-  return res;
+  if (userId) {
+    const res = await http.get(`repo/${repoId}/info/${userId}`);
+    return res;
+  } else {
+    const res = await http.get(`repo/${repoId}/info`);
+    return res;
+  }
 };
 
 export const axiosRequestRepoDetailResearch = async (repoId: number) => {
