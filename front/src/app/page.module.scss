@@ -25,10 +25,18 @@
       .title {
         margin: 30% 0 0 0;
         font-size: 6rem;
+
+        @include desktop125 {
+          font-size: 5rem;
+        }
       }
 
       .comment {
         font-size: 2rem;
+
+        @include desktop125 {
+          font-size: 1.5rem;
+        }
       }
     }
 

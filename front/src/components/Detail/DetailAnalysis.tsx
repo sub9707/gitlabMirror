@@ -4,7 +4,7 @@ import GrowthChart from "./GrowthChart";
 import { RepoDetailResearchType } from "@/types/repoDetail";
 import Image from "next/image";
 import styles from "./DetailAnalysis.module.scss";
-import bulb from "../../public/static/icons/bulb_icon.svg";
+import bulb from "public/static/icons/bulb_icon.svg";
 
 function DetailAnalysis({
   researchInfo,

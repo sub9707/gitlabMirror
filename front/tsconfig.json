@@ -21,7 +21,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "public": ["./public"]
     },
     "typeRoots": ["./node_modules/@types", "types"],
     "types": ["three"]
