@@ -40,6 +40,7 @@ public class RepoConventionResponseDto {
 	}
 
 
+	@Getter
 	@AllArgsConstructor
 	private static class ConventionInfo {
 
