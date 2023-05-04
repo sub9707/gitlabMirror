@@ -8,7 +8,6 @@ import { dateFormat } from "@/app/utils/DateFormat";
 import { ko } from "date-fns/locale";
 import { DateRange, DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-import "./DayPicker.scss";
 import { axiosRequestSetPeriod } from "@/api/repoDetail";
 import { customAlert } from "@/app/utils/CustomAlert";
 

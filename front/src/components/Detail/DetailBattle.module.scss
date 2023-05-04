@@ -17,7 +17,7 @@
 
   .att {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     width: 800px;
     font-size: 1.75rem;
   }
@@ -144,12 +144,12 @@
 
   .record-item {
     width: 800px;
-    height: 85px;
+    height: 80px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin: 1rem 0 0 0;
-    padding: 0 1rem;
+    padding: 0 2rem;
     border-radius: 5px;
     box-shadow: 0 2px 7px rgb(220, 220, 220);
     font-size: 18px;
@@ -171,7 +171,7 @@
         }
 
         .mine {
-          color: rgb(54, 150, 96);
+          color: rgb(60, 191, 116);
         }
 
         .not-mine {
@@ -189,26 +189,27 @@
       .defense {
         margin: 0 0.5rem 0 0;
       }
+    }
 
-      .result-div {
-        & p {
-          font-weight: bold;
-          text-align: center;
-        }
+    .result-div {
+      flex-direction: column;
+      & p {
+        font-weight: bold;
+        text-align: center;
+      }
 
-        .win {
-          color: rgb(64, 166, 255);
-        }
+      .win {
+        color: rgb(64, 166, 255);
+      }
 
-        .lose {
-          color: rgb(255, 94, 94);
-        }
+      .lose {
+        color: rgb(255, 94, 94);
       }
     }
 
     .sword {
-      width: 40px;
-      height: 40px;
+      width: 50px;
+      height: 50px;
     }
   }
 

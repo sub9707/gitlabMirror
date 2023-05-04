@@ -200,6 +200,10 @@
           color: white;
           transition: background-color 0.2s ease-in-out;
 
+          @include desktop125 {
+            height: 140px;
+          }
+
           & svg {
             margin: 0 0 0.5rem 0;
             width: 60px;

@@ -1,24 +1,30 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { ChevronDoubleRightIcon } from "@heroicons/react/24/outline";
 import styles from "./DetailBattle.module.scss";
-import heartIcon from "../../public/static/icons/heart_icon.png";
-import attackIcon from "../../public/static/icons/attack_icon.png";
-import avoidIcon from "../../public/static/icons/avoid_icon.png";
-import criticalIcon from "../../public/static/icons/critical_icon.png";
-import hitIcon from "../../public/static/icons/hit_icon.png";
-import shieldIcon from "../../public/static/icons/shield_icon.png";
+import heartIcon from "public/static/icons/heart_icon.png";
+import attackIcon from "public/static/icons/attack_icon.png";
+import avoidIcon from "public/static/icons/avoid_icon.png";
+import criticalIcon from "public/static/icons/critical_icon.png";
+import hitIcon from "public/static/icons/hit_icon.png";
+import shieldIcon from "public/static/icons/shield_icon.png";
 import {
   BattleRecordType,
   RepoDetailBattleType,
   StatType,
 } from "@/types/repoDetail";
-import sword from "../../public/static/icons/sword_icon.png";
-import tmp1 from "../../public/tmp_record_repomon_1.png";
-import tmp2 from "../../public/tmp_record_repomon_2.png";
 import { axiosRequestUpStat } from "@/api/repoDetail";
+import { useRouter } from "next/navigation";
+import sword from "public/static/icons/sword_icon.png";
+import tmp1 from "public/tmp_record_repomon_1.png";
+import tmp2 from "public/tmp_record_repomon_2.png";
+import bronze from "public/static/tier/bronze.svg";
+import silver from "public/static/tier/silver.svg";
+import gold from "public/static/tier/gold.svg";
+import platinum from "public/static/tier/platinum.svg";
+import diamond from "public/static/tier/diamond.svg";
 
 const DetailBattle = ({
   battleInfo,
@@ -49,6 +55,22 @@ const DetailBattle = ({
   };
   const [pointStats, setPointStats] = useState<StatType>(defaultPointStats);
   const [statChanged, setStatChanged] = useState<boolean>(false);
+  const router = useRouter();
+  const [tier, setTier] = useState<string>("");
+
+  useEffect(() => {
+    if (battleInfo.rating >= 1300) {
+      setTier(diamond);
+    } else if (battleInfo.rating >= 1150) {
+      setTier(platinum);
+    } else if (battleInfo.rating >= 1050) {
+      setTier(gold);
+    } else if (battleInfo.rating >= 950) {
+      setTier(silver);
+    } else {
+      setTier(bronze);
+    }
+  }, []);
 
   const onClickStatPlus = (e: React.MouseEvent<HTMLButtonElement>) => {
     setStatChanged(true);
@@ -78,6 +100,14 @@ const DetailBattle = ({
     }
   };
 
+  const onClickRepominNickname = (mine: boolean, repoId: number) => {
+    if (mine) {
+      return;
+    }
+
+    router.push(`/repo/${repoId}`);
+  };
+
   return (
     <div>
       <p className={styles["tab-title"]}>레포몬 배틀 정보</p>
@@ -88,12 +118,20 @@ const DetailBattle = ({
         <div>
           <div className={styles.att}>
             <span>레이팅</span>
+            <span>티어</span>
             <span>배틀 랭킹</span>
             <span>승</span>
             <span>패</span>
           </div>
           <div className={styles.att} style={{ color: "red" }}>
             <span>{battleInfo.rating}</span>
+            <Image
+              src={tier}
+              alt="티어"
+              width={40}
+              height={40}
+              className={styles.image}
+            ></Image>
             <span>{rank}위</span>
             <span>{battleInfo.winCnt}</span>
             <span>{battleInfo.loseCnt}</span>
@@ -248,6 +286,33 @@ const DetailBattle = ({
                       : `${styles["record-item"]} ${styles["lose-record-item"]}`
                   }
                 >
+                  <div
+                    className={styles["result-div"]}
+                    style={{ margin: "0 2rem 0 0" }}
+                  >
+                    {record.attackRepo.repomonNickname ===
+                      myRepomonNickname && (
+                      <>
+                        <p className={record.isWin ? styles.win : styles.lose}>
+                          {record.isWin ? "승리" : "패배"}
+                        </p>
+                        <p className={record.isWin ? styles.win : styles.lose}>
+                          {record.attackPoint}
+                        </p>
+                      </>
+                    )}
+                    {record.defenseRepo.repomonNickname ===
+                      myRepomonNickname && (
+                      <>
+                        <p className={!record.isWin ? styles.win : styles.lose}>
+                          {!record.isWin ? "승리" : "패배"}
+                        </p>
+                        <p className={!record.isWin ? styles.win : styles.lose}>
+                          {record.defensePoint}
+                        </p>
+                      </>
+                    )}
+                  </div>
                   <div id="left">
                     <Image src={tmp1} alt="tmp1"></Image>
                     <div
@@ -261,19 +326,15 @@ const DetailBattle = ({
                             ? `${styles["repomon-nickname"]} ${styles.mine}`
                             : `${styles["repomon-nickname"]} ${styles["not-mine"]}`
                         }
+                        onClick={() =>
+                          onClickRepominNickname(
+                            myRepomonNickname ===
+                              record.attackRepo.repomonNickname,
+                            record.attackRepo.repoId
+                          )
+                        }
                       >
                         {record.attackRepo.repomonNickname}
-                      </p>
-                    </div>
-                    <div
-                      className={styles["result-div"]}
-                      style={{ margin: "0 0 0 0.5rem" }}
-                    >
-                      <p className={record.isWin ? styles.win : styles.lose}>
-                        {record.isWin ? "승리" : "패배"}
-                      </p>
-                      <p className={record.isWin ? styles.win : styles.lose}>
-                        {record.attackPoint}
                       </p>
                     </div>
                   </div>
@@ -284,29 +345,22 @@ const DetailBattle = ({
                   ></Image>
                   <div id="right">
                     <div
-                      className={styles["result-div"]}
-                      style={{ margin: "0 0.5rem 0 0" }}
-                    >
-                      <p className={!record.isWin ? styles.win : styles.lose}>
-                        {!record.isWin ? "승리" : "패배"}
-                      </p>
-                      <p className={!record.isWin ? styles.win : styles.lose}>
-                        {record.defensePoint}
-                      </p>
-                    </div>
-                    <div
                       className={`${styles["record-refo-info"]} ${styles.defense}`}
                     >
                       <p>방어 레포몬</p>
                       <p
-                        className={styles["repomon-nickname"]}
-                        style={
+                        className={
                           myRepomonNickname ===
                           record.defenseRepo.repomonNickname
-                            ? {
-                                color: "rgb(54, 150, 96)",
-                              }
-                            : undefined
+                            ? `${styles["repomon-nickname"]} ${styles.mine}`
+                            : `${styles["repomon-nickname"]} ${styles["not-mine"]}`
+                        }
+                        onClick={() =>
+                          onClickRepominNickname(
+                            myRepomonNickname ===
+                              record.defenseRepo.repomonNickname,
+                            record.defenseRepo.repoId
+                          )
                         }
                       >
                         <p>{record.defenseRepo.repomonNickname}</p>
