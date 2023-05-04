@@ -196,11 +196,9 @@ public class RepoService {
 		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
 			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 		});
-		String repoOwner = repoEntity.getRepoOwner();
 
-		RepoConventionResponseDto responseDto = redisConventionRepository.findByRepoOwner(
-				repoOwner)
-			.orElseGet(() -> findConventionDtoWithGHApi(repoEntity, repoOwner));
+		RepoConventionResponseDto responseDto = redisConventionRepository.findByRepoId(repoId)
+			.orElseGet(() -> findConventionDtoWithGHApi(repoEntity));
 
 		return responseDto;
 	}
@@ -218,10 +216,8 @@ public class RepoService {
 			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 		});
 
-		String repoOwner = repoEntity.getRepoOwner();
-
-		RepoContributeResponseDto responseDto = redisContributeRepository.findByRepoOwner(repoOwner)
-			.orElseGet(() -> findContributeDtoWithGHApi(repoEntity, repoOwner));
+		RepoContributeResponseDto responseDto = redisContributeRepository.findByRepoId(repoId)
+			.orElseGet(() -> findContributeDtoWithGHApi(repoEntity));
 
 		return responseDto;
 	}
@@ -354,8 +350,8 @@ public class RepoService {
 	}
 
 
-	private RepoContributeResponseDto findContributeDtoWithGHApi(RepoEntity repoEntity, String repoOwner) {
-		Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
+	private RepoContributeResponseDto findContributeDtoWithGHApi(RepoEntity repoEntity) {
+		Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoEntity.getRepoOwner());
 
 		String repoKey = repoEntity.getRepoKey();
 		GHRepository ghRepository = repositories.get(repoKey);
@@ -369,15 +365,15 @@ public class RepoService {
 			Map<String, Integer> commitCountMap = ghUtils.getCommitterInfoMap(statistics);
 
 			String mvp = null;
-			int totalCommitCount = 0;
+
+			int totalCommitCount = ghUtils.getTotalCommitCount(statistics);
 			for (String user : commitCountMap.keySet()) {
 				if (mvp == null || commitCountMap.get(user) > commitCountMap.get(mvp)) {
 					mvp = user;
 				}
-				totalCommitCount += commitCountMap.get(user);
 			}
 
-			RepoContributeResponseDto responseDto = RepoContributeResponseDto.of(totalCommitCount, totalLineCount, commitCountMap, mvp, repoOwner);
+			RepoContributeResponseDto responseDto = RepoContributeResponseDto.of(totalCommitCount, totalLineCount, commitCountMap, mvp, repoEntity);
 
 			redisContributeRepository.save(responseDto);
 			return responseDto;
@@ -389,7 +385,7 @@ public class RepoService {
 	}
 
 
-	private RepoConventionResponseDto findConventionDtoWithGHApi(RepoEntity repoEntity, String repoOwner) {
+	private RepoConventionResponseDto findConventionDtoWithGHApi(RepoEntity repoEntity) {
 		List<RepoConventionEntity> conventions = conventionRepository.findAllByRepo(repoEntity);
 
 		int totalCnt = 0;
@@ -397,8 +393,7 @@ public class RepoService {
 		if (!conventions.isEmpty()) {
 			log.info("컨벤션 분석 시작");
 
-			Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(
-				repoOwner);
+			Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoEntity.getRepoOwner());
 
 			GHRepository ghRepository = repositories.get(repoEntity.getRepoKey());
 			if (ghRepository == null) {
@@ -429,7 +424,7 @@ public class RepoService {
 			log.info("컨벤션 분석 끝");
 		}
 
-		RepoConventionResponseDto responseDto = RepoConventionResponseDto.fromEntities(repoOwner, conventions, totalCnt, collectCnt);
+		RepoConventionResponseDto responseDto = RepoConventionResponseDto.fromEntities(repoEntity, conventions, totalCnt, collectCnt);
 		redisConventionRepository.save(responseDto);
 		return responseDto;
 	}
@@ -458,7 +453,7 @@ public class RepoService {
 			checkRepomonEvolution(repoEntity);
 
 			return totalExp;
-		} catch (IOException e) {
+		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -590,8 +585,8 @@ public class RepoService {
 		UserEntity user = userRepository.findById(userId).orElseThrow(() -> {throw new CustomException(ErrorCode.NOT_FOUND_USER);});
 		Map<String, String> userInfo = ghUtils.getUser(user.getUserName());
 		//기여도
-		RepoContributeResponseDto contributeResponse = redisContributeRepository.findByRepoOwner(repoOwner)
-			.orElseGet(() -> findContributeDtoWithGHApi(repoEntity, repoOwner));
+		RepoContributeResponseDto contributeResponse = redisContributeRepository.findByRepoId(repoId)
+			.orElseGet(() -> findContributeDtoWithGHApi(repoEntity));
 
 		return RepoPersonalCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository, historyEntityList, contributers, userInfo, contributeResponse);
 	}
