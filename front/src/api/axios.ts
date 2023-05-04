@@ -2,7 +2,7 @@ import axios, { AxiosHeaders, AxiosInstance } from "axios";
 import { axiosRequestRefresh } from "./auth";
 
 export const http: AxiosInstance = axios.create({
-  baseURL: "https://repomon.kr/api/v1",
+  baseURL: "http://localhost:8080/api/v1",
   // withCredentials: true,
 });
 

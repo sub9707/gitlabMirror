@@ -12,7 +12,7 @@ import gitCat from "../../public/git_cat.svg";
 
 const Header = () => {
   const githubLoginUrl =
-    "https://repomon.kr/api/v1/oauth2/authorization/github";
+    "http://localhost:8080/api/v1/oauth2/authorization/github";
   const login = useAppSelector((state) => state.authReducer.login);
   const [userId, setUserId] = useState<number>();
   const [avatarUrl, setAvatarUrl] = useState<string>("");
