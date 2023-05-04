@@ -23,6 +23,6 @@ public class PersonalLanguageEntity {
     private String languageCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "personal_repo_card_id")
-    private PersonalRepoCardEntity personalRepoCard;
+    @JoinColumn(name = "repo_id")
+    private RepoEntity repoEntity;
 }

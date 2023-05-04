@@ -68,6 +68,7 @@ task copyPrivate(type: Copy) {
     copy {
         from '../final-sub'
         include '*.yml'
+        include '*.sql'
         include '*.properties'
         into 'src/main/resources'
     }
@@ -77,6 +78,7 @@ task copyPrivateTest(type: Copy) {
     copy {
         from '../final-sub'
         include '*.yml'
+        include '*.sql'
         include '*.properties'
         into 'src/test/resources'
     }
