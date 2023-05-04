@@ -122,7 +122,9 @@ public class RepoService {
 			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 		});
 
-		UserEntity userEntity = userRepository.findById(userId).orElseGet(null);
+		UserEntity userEntity = userId != null ? userRepository.findById(userId).orElseThrow(()->{
+			throw new CustomException(ErrorCode.NOT_FOUND_USER);
+		}) : null;
 
 		String repoOwner = repoEntity.getRepoOwner();
 		Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(repoOwner);
