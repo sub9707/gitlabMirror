@@ -16,10 +16,17 @@
   justify-content: space-between;
 
   .att {
+    margin: 0 0 0 -5%;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     width: 800px;
     font-size: 1.75rem;
+
+    & span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 
   & button {
