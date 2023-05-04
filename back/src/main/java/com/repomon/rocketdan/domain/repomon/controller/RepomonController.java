@@ -117,7 +117,7 @@ public class RepomonController {
 
 
 	@GetMapping("/")
-	@ApiOperation(value = "레포몬 url 리스트 조회")
+	@ApiOperation(value = "랜덤 레포몬 url 조회")
 	public ResponseEntity<RepomonUrlResponseDto> getRepomonUrls(){
 		RepomonUrlResponseDto responseDto = repomonService.getRepomonUrls();
 		return ResponseEntity.ok(responseDto);

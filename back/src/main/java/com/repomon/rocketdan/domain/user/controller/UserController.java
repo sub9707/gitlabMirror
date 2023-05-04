@@ -3,12 +3,15 @@ package com.repomon.rocketdan.domain.user.controller;
 
 import com.repomon.rocketdan.common.dto.ResultDto;
 import com.repomon.rocketdan.domain.user.dto.RepresentRepomonRequestDto;
+import com.repomon.rocketdan.domain.user.dto.UserCardResponseDto;
 import com.repomon.rocketdan.domain.user.dto.UserResponseDto;
 import com.repomon.rocketdan.domain.user.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 
 @RestController
@@ -35,6 +38,14 @@ public class UserController {
 		RepresentRepomonRequestDto requestDto) {
 		userService.modifyRepresentRepo(userId, requestDto);
 		return ResponseEntity.ok().body(ResultDto.ofSuccess());
+	}
+
+
+	@ApiOperation(value = "대표 레포몬을 설정합니다.")
+	@GetMapping("/{userId}/card")
+	public ResponseEntity<UserCardResponseDto> getUserCard(@PathVariable("userId") Long userId) throws IOException, InterruptedException {
+		UserCardResponseDto responseDto = userService.getUserCard(userId);
+		return ResponseEntity.ok(responseDto);
 	}
 
 }

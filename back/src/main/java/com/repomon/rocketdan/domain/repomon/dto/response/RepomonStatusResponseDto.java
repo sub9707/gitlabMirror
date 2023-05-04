@@ -1,7 +1,6 @@
 package com.repomon.rocketdan.domain.repomon.dto.response;
 
 
-import com.repomon.rocketdan.common.utils.S3Utils;
 import com.repomon.rocketdan.domain.repo.dto.response.RepomonResponseDto;
 import com.repomon.rocketdan.domain.repo.entity.RepomonEntity;
 import com.repomon.rocketdan.domain.repomon.app.BattleLogic;
@@ -19,8 +18,6 @@ public class RepomonStatusResponseDto {
 	private Long repoId;
 	private String repoName;
 	private String repomonNickname;
-	private String repomonUrl;
-	private Integer repomonTier;
 	private Integer rating;
 	private Integer statPoint;
 	private Integer winCnt;
@@ -29,7 +26,7 @@ public class RepomonStatusResponseDto {
 
 	// 내부 공식으로 계산한 수치
 	// 최초에 주사위 굴린 수치도 여기에 반영됨
-	private Integer atk;
+	private Float atk;
 	private Float dodge;
 	private Float def;
 	private Float critical;
@@ -45,7 +42,7 @@ public class RepomonStatusResponseDto {
 	private Integer hitPoint;
 
 	// 증가치
-	private Integer increaseAtk;
+	private Float increaseAtk;
 	private Float increaseDodge;
 	private Float increaseDef;
 	private Float increaseCritical;
@@ -63,8 +60,6 @@ public class RepomonStatusResponseDto {
 			.repoId(repomonStatus.getRepoId())
 			.repoName(repomonStatus.getRepoName())
 			.repomonNickname(repomonStatus.getRepomonNickname())
-			.repomonUrl(S3Utils.modelUrl(repomon.getRepomonUrl()))
-			.repomonTier(repomon.getRepomonTier())
 			.rating(repomonStatus.getRating())
 			.statPoint(remainStat(repomonStatus.getRepoExp(),
 				repomonStatus.getAtkPoint(),
