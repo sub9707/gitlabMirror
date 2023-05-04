@@ -76,14 +76,32 @@ public class GHUtils {
 
 
     @Retries
-    public Collection<RepoHistoryEntity> GHCommitToHistory(GHRepository ghRepository, RepoEntity repoEntity, Date date) throws IOException {
+    public Collection<RepoHistoryEntity> GHCommitToHistory(GHRepository ghRepository, RepoEntity repoEntity, Date date)
+        throws IOException, InterruptedException {
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
+
 
         GHRepositoryStatistics statistics = ghRepository.getStatistics();
         PagedIterable<CommitActivity> commitActivities = statistics
             .getCommitActivity()
             .withPageSize(100);
 
+//        PagedIterable<ContributorStats> contributorStats = statistics.getContributorStats().withPageSize(100);
+//
+//        for(ContributorStats contributorStat : contributorStats){
+//            List<Week> weeks = contributorStat.getWeeks();
+//            for(Week week : weeks){
+//                long weekTimestamp = week.getWeekTimestamp();
+//                Date createdAt = new Date(weekTimestamp * 1000L);
+//                if (createdAt.after(date)) {
+//                    LocalDate commitDate = createdAt.toInstant()
+//                        .atZone(ZoneId.systemDefault())
+//                        .toLocalDate();
+//
+//                    configureRepoInfo(histories, commitDate, repoEntity, GrowthFactor.COMMIT, week.getNumberOfCommits());
+//                }
+//            }
+//        }
         for (GHRepositoryStatistics.CommitActivity commitActivity : commitActivities) {
             long week = commitActivity.getWeek();
             List<Integer> days = commitActivity.getDays();
@@ -258,9 +276,25 @@ public class GHUtils {
     }
 
     @Retries
+    public int getTotalCommitCount(GHRepositoryStatistics statistics) throws IOException {
+        PagedIterable<CommitActivity> commitActivities = statistics
+            .getCommitActivity()
+            .withPageSize(100);
+
+        int totalCommitCount = 0;
+        for(CommitActivity commitActivity : commitActivities){
+            totalCommitCount += commitActivity.getTotal();
+        }
+
+        return totalCommitCount;
+    }
+    @Retries
     public Map<String, Integer> getCommitterInfoMap(GHRepositoryStatistics statistics) throws IOException, InterruptedException {
         Map<String, Integer> commitCountMap = new HashMap<>();
-        List<ContributorStats> contributorStatList = statistics.getContributorStats().toList();
+        PagedIterable<ContributorStats> contributorStatList = statistics
+            .getContributorStats()
+            .withPageSize(100);
+
         for (ContributorStats contributorStats : contributorStatList) {
             String author = contributorStats.getAuthor().getLogin();
             int authorCommitCnt = contributorStats.getTotal();
@@ -283,7 +317,8 @@ public class GHUtils {
     @Retries
     public Long getLineCountWithUser(GHRepositoryStatistics statistics, String userName) throws IOException, InterruptedException {
         long lineCount = 0L;
-        List<ContributorStats> contributorStatList = statistics.getContributorStats().toList();
+        PagedIterable<ContributorStats> contributorStatList = statistics.getContributorStats()
+            .withPageSize(100);
         for (ContributorStats contributorStats : contributorStatList) {
             String author = contributorStats.getAuthor().getLogin();
             if (author.equals(userName)) {
@@ -310,7 +345,8 @@ public class GHUtils {
     public Long getCommitCountWithUser(GHRepositoryStatistics statistics, String userName)
         throws IOException, InterruptedException {
         Long commitCount = 0L;
-        List<ContributorStats> contributorStatList = statistics.getContributorStats().toList();
+        PagedIterable<ContributorStats> contributorStatList = statistics.getContributorStats()
+            .withPageSize(100);
         for (ContributorStats contributorStats : contributorStatList) {
             String author = contributorStats.getAuthor().getLogin();
             if (author.equals(userName)) {
@@ -330,25 +366,15 @@ public class GHUtils {
      * @return
      * @throws IOException
      */
-    public int getCommitCount(GHRepository ghRepository) throws IOException, InterruptedException {
+    public int getTotalCommitCount(GHRepository ghRepository) throws IOException, InterruptedException {
         // 슴태 코드
         GHRepositoryStatistics statistics = ghRepository.getStatistics();
         PagedIterable<ContributorStats> contributorStats = statistics.getContributorStats();
         int totalCommits = 0;
-        for (ContributorStats ContributorStat : contributorStats) {
-            List<Week> weeks = ContributorStat.getWeeks();
-            for (Week week : weeks) {
-                totalCommits += week.getNumberOfCommits();
-            }
+        for (ContributorStats contributorStat : contributorStats) {
+            totalCommits += contributorStat.getTotal();
         }
-        // 띵수 코드
-        //        PagedIterable<GHRepositoryStatistics.CommitActivity> commitActivities = ghRepository.getStatistics()
-        //            .getCommitActivity().withPageSize(100);
-        //
-        //        int totalCommits = 0;
-        //        for (GHRepositoryStatistics.CommitActivity activity : commitActivities) {
-        //            totalCommits += activity.getTotal();
-        //        }
+
         return totalCommits;
     }
 
@@ -441,7 +467,7 @@ public class GHUtils {
     public Long getAvgContributionByUser(Map<String, GHRepository> repos, String userName) throws IOException, InterruptedException {
         double avgContribution = 0;
         for (GHRepository repo : repos.values()) {
-            double totalCommitCount = getCommitCount(repo);
+            double totalCommitCount = getTotalCommitCount(repo);
             double myCommitCount = getCommitCountWithUser(repo.getStatistics(), userName);
             if (totalCommitCount == 0.0) {
                 avgContribution += 100.0;
