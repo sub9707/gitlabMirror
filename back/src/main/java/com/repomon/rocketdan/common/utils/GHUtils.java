@@ -101,29 +101,13 @@ public class GHUtils {
             .getCommitActivity()
             .withPageSize(100);
 
-//        PagedIterable<ContributorStats> contributorStats = statistics.getContributorStats().withPageSize(100);
-//
-//        for(ContributorStats contributorStat : contributorStats){
-//            List<Week> weeks = contributorStat.getWeeks();
-//            for(Week week : weeks){
-//                long weekTimestamp = week.getWeekTimestamp();
-//                Date createdAt = new Date(weekTimestamp * 1000L);
-//                if (createdAt.after(date)) {
-//                    LocalDate commitDate = createdAt.toInstant()
-//                        .atZone(ZoneId.systemDefault())
-//                        .toLocalDate();
-//
-//                    configureRepoInfo(histories, commitDate, repoEntity, GrowthFactor.COMMIT, week.getNumberOfCommits());
-//                }
-//            }
-//        }
         for (GHRepositoryStatistics.CommitActivity commitActivity : commitActivities) {
             long week = commitActivity.getWeek();
             List<Integer> days = commitActivity.getDays();
             for (int i = 0; i < 7; i++) {
                 Integer commitCount = days.get(i);
                 Date createdAt = new Date((week + i) * 1000L);
-                if (createdAt.after(date)) {
+                if (createdAt.after(date) && commitCount > 0) {
                     LocalDate commitDate = createdAt.toInstant()
                         .atZone(ZoneId.systemDefault())
                         .toLocalDate();
