@@ -172,8 +172,8 @@ public class RepomonService {
 		boolean startPlayer = random.nextBoolean();
 		Float myHp = myStatus.get("hp");
 		Float yourHp = yourStatus.get("hp");
-		Integer mySkillDmg = BattleLogic.skillDamageCalc(myRepomon);
-		Integer yourSkillDmg = BattleLogic.skillDamageCalc(yourRepomon);
+		Float mySkillDmg = BattleLogic.skillDamageCalc(myRepomon);
+		Float yourSkillDmg = BattleLogic.skillDamageCalc(yourRepomon);
 		int turn = 1;
 
 		//		 종료 조건 : 내가 죽거나 상대가 죽거나 10턴이 경과했을 때
@@ -182,13 +182,13 @@ public class RepomonService {
 				// 내 공격차례일 때
 				HashMap<String, Object> battleResult = BattleLogic.battle(turn, myRepomon,
 					yourRepomon, mySkillDmg);
-				yourHp -= (int) battleResult.get("damage");
+				yourHp -= Float.valueOf(battleResult.get("damage").toString());
 				battleLogList.add(battleResult);
 
 			} else {
 				HashMap<String, Object> battleResult = BattleLogic.battle(turn, yourRepomon,
 					myRepomon, yourSkillDmg);
-				myHp -= (int) battleResult.get("damage");
+				myHp -= Float.valueOf(battleResult.get("damage").toString());
 				battleLogList.add(battleResult);
 			}
 			turn++;
