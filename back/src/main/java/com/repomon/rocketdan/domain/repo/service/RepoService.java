@@ -598,8 +598,12 @@ public class RepoService {
 			myissue = ghUtils.getMyIssueToHistory(ghRepository, Date.from(cal.toInstant()), user.getUserName());
 			mymerges = ghUtils.getMyMergeToHistory(ghRepository, Date.from(cal.toInstant()), user.getUserName());
 		} else {
-			myissue = ghUtils.getMyIssueToHistory(ghRepository, null, user.getUserName());
-			mymerges = ghUtils.getMyMergeToHistory(ghRepository, null, user.getUserName());
+			Calendar calendar = Calendar.getInstance();
+			calendar.add(Calendar.YEAR, -1);
+			Date date = calendar.getTime();
+
+			myissue = ghUtils.getMyIssueToHistory(ghRepository, date, user.getUserName());
+			mymerges = ghUtils.getMyMergeToHistory(ghRepository, date, user.getUserName());
 		}
 
 		//내 코드 수
