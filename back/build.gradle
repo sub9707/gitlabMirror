@@ -78,7 +78,6 @@ task copyPrivateTest(type: Copy) {
     copy {
         from '../final-sub'
         include '*.yml'
-        include '*.sql'
         include '*.properties'
         into 'src/test/resources'
     }

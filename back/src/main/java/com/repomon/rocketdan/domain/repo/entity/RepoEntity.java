@@ -4,6 +4,7 @@ package com.repomon.rocketdan.domain.repo.entity;
 import com.repomon.rocketdan.common.entity.CommonEntity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -44,7 +45,8 @@ public class RepoEntity extends CommonEntity {
 	@JoinColumn(name = "repomon_id")
 	private RepomonEntity repomon;
 
-	@OneToMany(mappedBy = "repo")
+	@Builder.Default
+	@OneToMany(mappedBy = "repo", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<RepoConventionEntity> repoConventionList = new ArrayList<>();
 
 
