@@ -176,7 +176,7 @@ public class RepomonService {
 		Integer yourSkillDmg = BattleLogic.skillDamageCalc(yourRepomon);
 		int turn = 1;
 
-		//		 종료 조건 : 내가 죽거나 상대가 죽거나 20턴이 경과했을 때
+		//		 종료 조건 : 내가 죽거나 상대가 죽거나 10턴이 경과했을 때
 		while (myHp > 0 && yourHp > 0 && turn <= 10) {
 			if (startPlayer) {
 				// 내 공격차례일 때
