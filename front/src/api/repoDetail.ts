@@ -95,3 +95,9 @@ export const axiosRequestUpStat = async (
 
   return res;
 };
+
+export const axiosRequestRepoDetailConvention = async (repoId: number) => {
+  const res = await http.get(`repo/${repoId}/info/convention`);
+
+  return res;
+};

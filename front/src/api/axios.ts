@@ -1,8 +1,14 @@
 import axios, { AxiosHeaders, AxiosInstance } from "axios";
 import { axiosRequestRefresh } from "./auth";
 
+export const getBaseURL = () => {
+  return process.env.NODE_ENV === "development"
+    ? "http://localhost:8080/api/v1"
+    : "https://repomon.kr/api/v1";
+};
+
 export const http: AxiosInstance = axios.create({
-  baseURL: "http://localhost:8080/api/v1",
+  baseURL: getBaseURL(),
   // withCredentials: true,
 });
 

@@ -14,6 +14,7 @@ import DetailAnalysis from "@/components/Detail/DetailAnalysis";
 import DetailBattle from "@/components/Detail/DetailBattle";
 import {
   BattleRecordType,
+  ConventionInfoType,
   RepoDetailBattleType,
   RepoDetailResearchType,
   RepoDetailType,
@@ -23,6 +24,7 @@ import {
   axiosRequestBattleRecord,
   axiosRequestRepoDetail,
   axiosRequestRepoDetailBattleInfo,
+  axiosRequestRepoDetailConvention,
 } from "@/api/repoDetail";
 import { axiosRequestRepoDetailResearch } from "@/api/repoDetail";
 import { pretreatDate } from "@/app/utils/PretreatDate";
@@ -46,6 +48,8 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
     useState<BattleRecordType[]>();
   const [showPage, setShowPage] = useState<boolean>(false);
   const [statUpdated, setStatUpdated] = useState<boolean>(false);
+  const [repoDetailConventionInfo, setRepoDetailConventionInfo] =
+    useState<ConventionInfoType>();
 
   /** =============================================== useEffect =============================================== */
   useEffect(() => {
@@ -73,6 +77,7 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
     requestRepoDetailResearch(parseInt(params.repoId, 10));
     requestBattleRanking(parseInt(params.repoId, 10));
     requestBattleRecord(parseInt(params.repoId, 10));
+    requestRepoDetailConvention(parseInt(params.repoId, 10));
   }, []);
 
   useEffect(() => {
@@ -81,7 +86,8 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
       repoDetailResearchInfo &&
       repoDetailBattleInfo &&
       battleRank &&
-      battleRecordInfo
+      battleRecordInfo &&
+      repoDetailConventionInfo
     ) {
       setShowPage(true);
     }
@@ -91,6 +97,7 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
     repoDetailBattleInfo,
     battleRank,
     battleRecordInfo,
+    repoDetailConventionInfo,
   ]);
 
   useEffect(() => {
@@ -179,6 +186,17 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
       if (err.response.data.status === 404) {
         setBattleRecordInfo([]);
       }
+    }
+  };
+
+  /** 레포 디테일 컨벤션 정보 */
+  const requestRepoDetailConvention = async (repoId: number) => {
+    try {
+      const res = await axiosRequestRepoDetailConvention(repoId);
+      console.log("레포 디테일 컨벤션 정보: ", res);
+      setRepoDetailConventionInfo(res.data);
+    } catch (err) {
+      console.error(err);
     }
   };
 

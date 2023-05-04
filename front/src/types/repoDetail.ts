@@ -143,3 +143,13 @@ export type StatType = {
   dodgePoint: number;
   hitPoint: number;
 };
+
+export type ConventionInfoType = {
+  collectCnt: number;
+  conventions: {
+    description: string;
+    prefix: string;
+  }[];
+  repoOwner: string;
+  totalCnt: number;
+};
