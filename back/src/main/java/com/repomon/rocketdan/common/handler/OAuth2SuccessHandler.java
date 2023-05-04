@@ -3,6 +3,8 @@ package com.repomon.rocketdan.common.handler;
 
 import com.repomon.rocketdan.common.dto.AuthResponseDto;
 import com.repomon.rocketdan.common.service.JwtTokenProvider;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -39,6 +41,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 		String avatarUrl = oAuth2User.getAttribute("avatarUrl");
 		AuthResponseDto authResponseDto = authTokenProvider.createToken(userId);
 
+		name = URLEncoder.encode(name, StandardCharsets.UTF_8);
 		setDefaultTargetUrl(
 			frontUrl + "?access-token=" + authResponseDto.getAccessToken() + "&refresh-token=" + authResponseDto.getRefreshToken() + "&username=" + username + "&name=" + name + "&avatarUrl="
 				+ avatarUrl + "&userId=" + userId);
