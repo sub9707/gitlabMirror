@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { NextPage } from "next";
 import styles from "./page.module.scss";
 import Image from "next/image";
@@ -108,18 +108,13 @@ const Page: NextPage<PageProps> = ({ params }) => {
 
   // 랜덤 3개의 레포몬 요청
   const [randomRepos, setRandomRepos] = useState<RandomRepoType>();
+  const [isHoverOne, setIsHoverOne] = useState<boolean>(false);
+  const [isHoverTwo, setIsHoverTwo] = useState<boolean>(false);
+  const [isHoverThree, setIsHoverThree] = useState<boolean>(false);
 
-  const [toggleState1, setToggleState1] = useState(false);
-  const [toggleState2, setToggleState2] = useState(false);
-  const [toggleState3, setToggleState3] = useState(false);
   const monRef1 = useRef<HTMLDivElement>(null);
   const monRef2 = useRef<HTMLDivElement>(null);
   const monRef3 = useRef<HTMLDivElement>(null);
-
-  function handleClick(ref: HTMLDivElement) {
-    if (ref) {
-    }
-  }
 
   useEffect(() => {
     const data = getRandomRepo()
@@ -144,17 +139,20 @@ const Page: NextPage<PageProps> = ({ params }) => {
         </div>
         <div style={{ display: "flex" }}>
           <div className={styles.monChar} ref={monRef1}>
-            <Canvas>
+            <Canvas
+              onMouseOver={() => setIsHoverOne(true)}
+              onMouseLeave={() => setIsHoverOne(false)}
+            >
               {" "}
               <ambientLight intensity={0.1} />
               <ambientLight intensity={0.1} />
               <directionalLight
-                color="white"
+                color={isHoverOne ? "white" : "black"}
                 position={[0, 0, 5]}
                 intensity={0.5}
               />
               <directionalLight
-                color="white"
+                color={isHoverOne ? "white" : "black"}
                 position={[-5, 0, -5]}
                 intensity={0.5}
               />
@@ -164,17 +162,20 @@ const Page: NextPage<PageProps> = ({ params }) => {
             </Canvas>
           </div>
           <div className={styles.monChar} ref={monRef2}>
-            <Canvas>
+            <Canvas
+              onMouseOver={() => setIsHoverTwo(true)}
+              onMouseLeave={() => setIsHoverTwo(false)}
+            >
               {" "}
               <ambientLight intensity={0.1} />
               <ambientLight intensity={0.1} />
               <directionalLight
-                color="white"
+                color={isHoverTwo ? "white" : "black"}
                 position={[0, 0, 5]}
                 intensity={0.5}
               />
               <directionalLight
-                color="white"
+                color={isHoverTwo ? "white" : "black"}
                 position={[-5, 0, -5]}
                 intensity={0.5}
               />
@@ -184,17 +185,20 @@ const Page: NextPage<PageProps> = ({ params }) => {
             </Canvas>
           </div>
           <div className={styles.monChar} ref={monRef3}>
-            <Canvas>
+            <Canvas
+              onMouseOver={() => setIsHoverThree(true)}
+              onMouseLeave={() => setIsHoverThree(false)}
+            >
               {" "}
               <ambientLight intensity={0.1} />
               <ambientLight intensity={0.1} />
               <directionalLight
-                color="white"
+                color={isHoverThree ? "white" : "black"}
                 position={[0, 0, 5]}
                 intensity={0.5}
               />
               <directionalLight
-                color="white"
+                color={isHoverThree ? "white" : "black"}
                 position={[-5, 0, -5]}
                 intensity={0.5}
               />

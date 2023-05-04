@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 type propType = {
@@ -6,6 +7,8 @@ type propType = {
   exp: number | undefined;
   rating: number | undefined;
   isActive: boolean | undefined;
+  userId: string | undefined;
+  repoId: number | undefined;
 };
 
 function RepositoryCard(props: propType) {
@@ -43,17 +46,19 @@ function RepositoryCard(props: propType) {
           {props.isActive ? "캐릭터" : "달걀"}
         </div>
         <div style={{ width: "50%" }}>
-          <p
-            style={{
-              fontSize: "2em",
-              fontWeight: "600",
-              overflow: "hidden",
-              whiteSpace: "nowrap",
-              textOverflow: "ellipsis",
-            }}
-          >
-            {props.title}
-          </p>
+          <Link href={`/repo/${props.repoId}`}>
+            <p
+              style={{
+                fontSize: "2em",
+                fontWeight: "600",
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {props.title}
+            </p>
+          </Link>
           <p style={{ fontSize: "1em", fontWeight: "500", marginBlock: "3%" }}>
             {props.desc === null ? "설명 없음" : props.desc}
           </p>

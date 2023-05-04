@@ -127,6 +127,8 @@ const Page = ({ params }: { params: { userId: string } }) => {
                         exp={repoInfo.repoListItems.at(i)?.repoExp}
                         rating={repoInfo.repoListItems.at(i)?.repoRating}
                         isActive={repoInfo.repoListItems.at(i)?.isActive}
+                        userId={params.userId}
+                        repoId={repoInfo.repoListItems.at(i)?.repoId}
                       />
                     ) : null
                   )}
