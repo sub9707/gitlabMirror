@@ -55,6 +55,7 @@ public class RepoPersonalCardResponseDto {
      */
     private String repoName;
     private Long repomonId;
+    private int repomonTier;
     private String repoDescription;
     private Long repoExp;
     private int starCnt;
@@ -125,6 +126,7 @@ public class RepoPersonalCardResponseDto {
             return RepoPersonalCardResponseDto.builder()
                     .repoName(repoEntity.getRepoName())
                     .repomonId(repoEntity.getRepomon().getRepomonId())
+                    .repomonTier(repoEntity.getRepomon().getRepomonTier())
                     .repoDescription(ghRepository.getDescription())
                     .repoExp(repoEntity.getRepoExp())
                     .starCnt(ghRepository.getStargazersCount())
