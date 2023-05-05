@@ -53,7 +53,7 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
 
   /** =============================================== useEffect =============================================== */
   useEffect(() => {
-    const localUserId = localStorage.getItem("userId");
+    const localUserId = sessionStorage.getItem("userId");
     if (localUserId) {
       setLoginUserId(localUserId);
     }
