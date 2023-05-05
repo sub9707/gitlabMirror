@@ -6,7 +6,7 @@ import DetailRepomon from "@/components/Detail/DetailRepomon";
 import ProgressBar from "@/components/Detail/ProgressBar";
 import styles from "./page.module.scss";
 import {
-  MagnifyingGlassIcon,
+  PresentationChartLineIcon,
   ClipboardDocumentListIcon,
   ChartPieIcon,
 } from "@heroicons/react/24/outline";
@@ -226,7 +226,7 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
                         fontWeight: "bold",
                         fontStyle: "italic",
                         marginRight: "1rem",
-                        color: "blue",
+                        color: "rgb(124, 131, 255)",
                       }}
                     >
                       LV
@@ -296,8 +296,8 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
                   onClick={onClickTabBtn}
                   className={tabIndex === 1 ? styles.selected : ""}
                 >
-                  <MagnifyingGlassIcon id="1" onClick={onClickTabBtn} />
-                  분석
+                  <PresentationChartLineIcon id="1" onClick={onClickTabBtn} />
+                  성장
                 </button>
                 <button
                   id="2"
