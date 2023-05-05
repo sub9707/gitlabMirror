@@ -43,8 +43,8 @@ function RepositoryCard(props: propType) {
   }
 
   useEffect(() => {
-    if (localStorage.getItem("accessToken")) {
-      setUserOriginId(parseInt(localStorage.getItem("userId") as string, 10));
+    if (sessionStorage.getItem("accessToken")) {
+      setUserOriginId(parseInt(sessionStorage.getItem("userId") as string, 10));
     } else {
       setUserOriginId(-1);
     }
