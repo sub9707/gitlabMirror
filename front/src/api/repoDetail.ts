@@ -101,3 +101,9 @@ export const axiosRequestRepoDetailConvention = async (repoId: number) => {
 
   return res;
 };
+
+export const axiosRequestRepoDetailContribution = async (repoId: number) => {
+  const res = await http.get(`repo/${repoId}/info/contribute`);
+
+  return res;
+};
