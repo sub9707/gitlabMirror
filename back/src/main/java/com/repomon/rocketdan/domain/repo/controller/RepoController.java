@@ -15,8 +15,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
+import static com.repomon.rocketdan.exception.ErrorCode.DATA_CONVENTION_TOO_SHORT;
 import static com.repomon.rocketdan.exception.ErrorCode.DUPLICATE_RESOURCE;
 
 
@@ -37,9 +41,9 @@ public class RepoController {
 
 
 	@ApiOperation(value = "개별 레포 디테일 조회")
-	@GetMapping("/{repoId}/info")
-	public ResponseEntity<RepoResponseDto> getRepoInfo(@PathVariable Long repoId) {
-		RepoResponseDto responseDto = repoService.getUserRepoInfo(repoId);
+	@GetMapping({"/{repoId}/info/{userId}", "/{repoId}/info"})
+	public ResponseEntity<RepoResponseDto> getRepoInfo(@PathVariable Long repoId, @PathVariable(required = false) Long userId) {
+		RepoResponseDto responseDto = repoService.getUserRepoInfo(repoId, userId);
 		return ResponseEntity.ok(responseDto);
 	}
 
@@ -82,6 +86,14 @@ public class RepoController {
 	}
 
 
+
+	@ApiOperation(value = "모든 레포지토리 갱신")
+	@PutMapping ("/{userId}/repos")
+	public ResponseEntity<ResultDto> modifyAllRepo(@PathVariable Long userId) {
+		repoService.modifyAllRepo(userId);
+		return ResponseEntity.ok(ResultDto.ofSuccess());
+	}
+
 	@ApiOperation(value = "개별 레포 정보 갱신")
 	@PutMapping("/{repoId}/info")
 	public ResponseEntity<ResultDto> modifyRepoInfo(@PathVariable Long repoId) {
@@ -100,7 +112,11 @@ public class RepoController {
 
 	@ApiOperation(value = "레포지토리 컨벤션 설정")
 	@PutMapping("/{repoId}/info/convention")
-	public ResponseEntity<ResultDto> modifyRepoConvention(@PathVariable Long repoId, @ModelAttribute RepoConventionRequestDto requestDto) {
+	public ResponseEntity<ResultDto> modifyRepoConvention(@PathVariable Long repoId, @ModelAttribute RepoConventionRequestDto requestDto, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			throw new CustomException(DATA_CONVENTION_TOO_SHORT);
+		}
+
 		repoService.modifyRepoConvention(repoId, requestDto);
 		return ResponseEntity.ok(ResultDto.ofSuccess());
 	}
@@ -120,7 +136,7 @@ public class RepoController {
 		return ResponseEntity.ok().build();
 	}
 
-	@ApiOperation(value = "대표 레포 카드 정보")
+	@ApiOperation(value = "레포 카드 정보")
 	@GetMapping("/{repoId}/card/detail")
 	public ResponseEntity<RepoCardResponseDto> getRepoCardDetail(Long repoId) {
 		RepoCardResponseDto responseDto = repoService.RepoCardDetail(repoId);
@@ -130,7 +146,8 @@ public class RepoController {
 
 	@ApiOperation(value = "개인 레포 카드 정보")
 	@GetMapping("/{repoId}/card/personal")
-	public ResponseEntity<RepoPersonalCardResponseDto> getPersonalRepoCard(Long repoId,Long userId) {
+
+	public ResponseEntity<RepoPersonalCardResponseDto> getPersonalRepoCard(Long repoId, Long userId) throws IOException, InterruptedException {
 		RepoPersonalCardResponseDto responseDto = repoService.RepoPersonalCardDetail(repoId, userId);
 		return ResponseEntity.ok(responseDto);
 	}
@@ -155,10 +172,11 @@ public class RepoController {
 
 	@ApiOperation(value = "레포몬 선택지 반환")
 	@GetMapping("/repomon")
-	public ResponseEntity<ResultDto<RepomonResponseDto>> createSelectRepomon() {
+	public ResponseEntity<ResultDto<RepomonSelectResponseDto>> createSelectRepomon() {
 
-		RepomonResponseDto repomonResponseDto = repoService.createSelectRepomon();
+		RepomonSelectResponseDto repomonSelectResponseDto = repoService.createSelectRepomon();
 
-		return ResponseEntity.ok().body(ResultDto.of(repomonResponseDto));
+		return ResponseEntity.ok().body(ResultDto.of(repomonSelectResponseDto));
 	}
+
 }

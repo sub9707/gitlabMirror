@@ -6,5 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface RepoRedisConventionRepository extends CrudRepository<RepoConventionResponseDto, Long> {
 
-    Optional<RepoConventionResponseDto> findByRepoOwner(String repoOwner);
+    Optional<RepoConventionResponseDto> findByRepoId(Long repoId);
 }

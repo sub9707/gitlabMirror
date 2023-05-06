@@ -21,6 +21,7 @@ public class UserResponseDto {
 	private final String avatarUrl;
 	private Long totalExp;
 	private RepoListItem representRepo;
+	private Integer userRank;
 
 
 	public static UserResponseDto fromEntity(UserEntity user, Map<String, String> userInfo) {
