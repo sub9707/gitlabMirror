@@ -24,16 +24,13 @@ import org.kohsuke.github.GHRepository;
          * -------레포카드 detail------
          * 레포 이름 repoName
          * 레포 기간 repoStart repoEnd
-         * 레포 포크, 스타  starCnt forkCnt
-         * 레포 description
          * 레포 언어 languages
          * -----------그래프 ----------
          * 커밋 commits
          * 머지 merges
          * 이슈 issues
          * 리뷰 reviews
-         * 보안성 security
-         * 효율성 efficiency
+         * 레포 포크, 스타  starCnt forkCnt
          * --------------------------
          * 전체 커밋 totalcommit
          * 전체 코드 totalcode
@@ -41,31 +38,31 @@ import org.kohsuke.github.GHRepository;
          * 전체 경험치 repoExp
          * 컨트리뷰터 수 contributers
          */
-        private String repoName;
         private Long repomonId;
-        private String repoDescription;
         private Long repoExp;
-        private int starCnt;
-        private int forkCnt;
+        private int repomonTier;
+
+        private String repoName;
+        private int contributers;
         private LocalDateTime repoStart;
         private LocalDateTime repoEnd;
         private List<String> languages;
-        private int contributers;
+
+        private Long totalcommit;
+        private Long totalcode;
+        private int conventionrate;
+
+        private int starCnt;
+        private int forkCnt;
         private Long commits;
         private Long issues;
         private Long merges;
         private Long reviews;
-        private int security;
-        private int efficiency;
-        private Long totalcommit;
-        private Long totalcode;
 
         public static RepoCardResponseDto fromEntityAndGHRepository(RepoEntity repoEntity, GHRepository ghRepository, List<RepoHistoryEntity> historyEntityList, Long totalcode, Integer contributers) {
             try {
                 Map<String, Long> languageMap = ghRepository.listLanguages();
-
                 List<String> languages = new ArrayList<>();
-
                 languages.addAll(languageMap.keySet());
 
                 Long totalCommit = 0L;
@@ -96,24 +93,23 @@ import org.kohsuke.github.GHRepository;
                 }
 
                 return RepoCardResponseDto.builder()
-                        .repoName(repoEntity.getRepoName())
                         .repomonId(repoEntity.getRepomon().getRepomonId())
-                        .repoDescription(ghRepository.getDescription())
                         .repoExp(repoEntity.getRepoExp())
-                        .starCnt(ghRepository.getStargazersCount())
-                        .forkCnt(ghRepository.getForksCount())
+                        .repomonTier(repoEntity.getRepomon().getRepomonTier())
+                        .repoName(repoEntity.getRepoName())
+                        .contributers(contributers)
                         .repoStart(repoEntity.getRepoStart())
                         .repoEnd(repoEntity.getRepoEnd())
                         .languages(languages)
-                        .contributers(contributers)
+                        .totalcommit(totalCommit)
+                        .totalcode(totalcode)
+                        .conventionrate(60)
+                        .starCnt(ghRepository.getStargazersCount())
+                        .forkCnt(ghRepository.getForksCount())
                         .commits(commitsExp)
                         .issues(issuesExp)
                         .merges(mergesExp)
                         .reviews(reviewsExp)
-                        .efficiency(80)
-                        .security(70)
-                        .totalcommit(totalCommit)
-                        .totalcode(totalcode)
                         .build();
             } catch (IOException e) {
                 throw new RuntimeException(e);
