@@ -43,10 +43,6 @@
             text-align: center;
             font-size: 2rem;
           }
-
-          .level {
-            position: relative;
-          }
         }
       }
     }
@@ -113,33 +109,23 @@
       .lan-div {
         display: flex;
         overflow-x: auto;
-        margin: 0.5rem 0 0 0;
-        padding: 1rem 0 0 0;
+        margin: 0.7rem 0 0 0;
 
         &::-webkit-scrollbar {
-          margin: 1rem 0 0 0;
-          height: 7px;
-        }
-
-        &::-webkit-scrollbar-thumb {
-          background-color: rgb(119, 119, 119);
-        }
-
-        &::-webkit-scrollbar-track {
-          background-color: white;
+          display: none;
         }
 
         & span {
-          margin: 0 1rem 0.5rem 0;
-          padding: 0.3rem 1rem;
-          border-radius: 10px;
-          background-color: rgb(0, 149, 149);
+          margin: 0 0.5rem 0.5rem 0;
+          padding: 0.3rem 0.5rem;
+          border-radius: 5px;
+          background-color: $second;
           color: white;
-          font-size: 1.125rem;
+          font-size: 0.9rem;
           white-space: nowrap;
 
           &:hover {
-            background-color: rgb(0, 127, 127);
+            background-color: $sub;
           }
         }
       }
@@ -150,25 +136,16 @@
         margin: 1rem 0 0 0;
 
         &::-webkit-scrollbar {
-          margin: 1rem 0 0 0;
-          height: 7px;
-        }
-
-        &::-webkit-scrollbar-thumb {
-          background-color: rgb(119, 119, 119);
-        }
-
-        &::-webkit-scrollbar-track {
-          background-color: white;
+          display: none;
         }
 
         & span {
-          margin: 0 1rem 0.5rem 0;
-          padding: 0.3rem 1rem;
-          border-radius: 10px;
+          margin: 0 0.5rem 0.5rem 0;
+          padding: 0.3rem 0.5rem;
+          border-radius: 5px;
           background-color: rgb(168, 168, 168);
           color: white;
-          font-size: 1.125rem;
+          font-size: 0.9rem;
           white-space: nowrap;
 
           &:hover {
@@ -195,7 +172,7 @@
           width: 23%;
           height: 160px;
           border-radius: 15px;
-          background-color: $primary;
+          background-color: $second;
           box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
           color: white;
           transition: background-color 0.2s ease-in-out;
@@ -215,7 +192,7 @@
         }
 
         .selected {
-          background-color: $highlight;
+          background-color: rgb(109, 130, 250);
         }
       }
     }

@@ -6,7 +6,7 @@ import DetailRepomon from "@/components/Detail/DetailRepomon";
 import ProgressBar from "@/components/Detail/ProgressBar";
 import styles from "./page.module.scss";
 import {
-  MagnifyingGlassIcon,
+  PresentationChartLineIcon,
   ClipboardDocumentListIcon,
   ChartPieIcon,
 } from "@heroicons/react/24/outline";
@@ -14,16 +14,18 @@ import DetailAnalysis from "@/components/Detail/DetailAnalysis";
 import DetailBattle from "@/components/Detail/DetailBattle";
 import {
   BattleRecordType,
-  ConventionInfoType,
+  RepoDetailConventionInfoType,
   RepoDetailBattleType,
   RepoDetailResearchType,
   RepoDetailType,
+  RepoDetailContributionInfoType,
 } from "@/types/repoDetail";
 import {
   axiosRequestBattleRanking,
   axiosRequestBattleRecord,
   axiosRequestRepoDetail,
   axiosRequestRepoDetailBattleInfo,
+  axiosRequestRepoDetailContribution,
   axiosRequestRepoDetailConvention,
 } from "@/api/repoDetail";
 import { axiosRequestRepoDetailResearch } from "@/api/repoDetail";
@@ -33,6 +35,7 @@ import Modal from "react-modal";
 import RenameModal from "@/components/Detail/RenameModal";
 import Loading from "@/app/loading";
 import DetailConvention from "@/components/Detail/DetailConvention";
+import DetailContribution from "@/components/Detail/DetailContribution";
 
 function Page({ params }: { params: { userId: string; repoId: string } }) {
   const [loginUserId, setLoginUserId] = useState<string>();
@@ -49,7 +52,9 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
   const [showPage, setShowPage] = useState<boolean>(false);
   const [statUpdated, setStatUpdated] = useState<boolean>(false);
   const [repoDetailConventionInfo, setRepoDetailConventionInfo] =
-    useState<ConventionInfoType>();
+    useState<RepoDetailConventionInfoType>();
+  const [repoDetailContributionInfo, setRepoDetailContributionInfo] =
+    useState<RepoDetailContributionInfoType>();
 
   /** =============================================== useEffect =============================================== */
   useEffect(() => {
@@ -78,6 +83,7 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
     requestBattleRanking(parseInt(params.repoId, 10));
     requestBattleRecord(parseInt(params.repoId, 10));
     requestRepoDetailConvention(parseInt(params.repoId, 10));
+    requestRepoDetailContribution(parseInt(params.repoId, 10));
   }, []);
 
   useEffect(() => {
@@ -87,7 +93,8 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
       repoDetailBattleInfo &&
       battleRank &&
       battleRecordInfo &&
-      repoDetailConventionInfo
+      repoDetailConventionInfo &&
+      repoDetailContributionInfo
     ) {
       setShowPage(true);
     }
@@ -98,6 +105,7 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
     battleRank,
     battleRecordInfo,
     repoDetailConventionInfo,
+    repoDetailContributionInfo,
   ]);
 
   useEffect(() => {
@@ -200,11 +208,22 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
     }
   };
 
+  /** 레포 디테일 기여도 정보 */
+  const requestRepoDetailContribution = async (repoId: number) => {
+    try {
+      const res = await axiosRequestRepoDetailContribution(repoId);
+      console.log("레포 디테일 기여도 정보: ", res);
+      setRepoDetailContributionInfo(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
-    <>
+    <div id="repo-detail">
       {!showPage && <Loading />}
       {repoDetailInfo && showPage && (
-        <div id="repo-detail" className={styles.pageContainer}>
+        <div className={styles.pageContainer}>
           <div className={styles.info}>
             <div className={styles["repo-mon-card-div"]}>
               <div className={styles["repo-mon-card"]}>
@@ -226,7 +245,7 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
                         fontWeight: "bold",
                         fontStyle: "italic",
                         marginRight: "1rem",
-                        color: "blue",
+                        color: "rgb(124, 131, 255)",
                       }}
                     >
                       LV
@@ -296,8 +315,8 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
                   onClick={onClickTabBtn}
                   className={tabIndex === 1 ? styles.selected : ""}
                 >
-                  <MagnifyingGlassIcon id="1" onClick={onClickTabBtn} />
-                  분석
+                  <PresentationChartLineIcon id="1" onClick={onClickTabBtn} />
+                  성장
                 </button>
                 <button
                   id="2"
@@ -353,11 +372,18 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
                 myRepo={repoDetailInfo.myRepo}
               />
             )}
-            {tabIndex === 3 && <DetailConvention />}
+            {tabIndex === 3 && (
+              <DetailConvention conventionInfo={repoDetailConventionInfo!} />
+            )}
+            {tabIndex === 4 && (
+              <DetailContribution
+                contributionInfo={repoDetailContributionInfo!}
+              />
+            )}
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
 
