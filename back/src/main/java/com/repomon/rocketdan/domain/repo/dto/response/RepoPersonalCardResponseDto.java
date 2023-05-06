@@ -140,7 +140,8 @@ public class RepoPersonalCardResponseDto {
 
                     .totalcommit(60L)
                     .totalcode(contributeResponse.getTotalLineCount())
-                    .mytotalcommit(contributeResponse.getCommitters().get(userInfo.get("username")))
+//                    .mytotalcommit(contributeResponse.getCommitters().get(userInfo.get("username")))
+                    .mytotalcommit(10000)
                     .mytotalcode(mytotalcode)
                     .conventionrate(60)
 
