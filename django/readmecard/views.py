@@ -81,8 +81,6 @@ def svg_chart_personal(request, request2):
 # Create your views here.
 IMG = {
     'Per' : PER,
-    'Star': STAR,
-    'Fork': FORK,
     'pocket': POCKET,
     'img1': img1,
     'img2': img2,
@@ -151,49 +149,47 @@ class RepoDefaultSettings(object):
             self.json = requests.get(url_set.repo_information_url).json()
             print('🎀')
             print(self.json)
-            self.repoName = self.json['repoName']
-            self.repoDescription = self.is_none(self.json['repoDescription'])
+            self.repomonId = self.json['repomonId']
             self.repoExp = self.json['repoExp']
-            self.starCnt = self.json['starCnt']
-            self.forkCnt = self.json['forkCnt']
+            self.repomonTier = self.json['repomonTier']
+            self.repoName = self.json['repoName']
+            self.contributers = self.json['contributers']
             self.repoStart = self.day(self.json['repoStart'])
             self.repoEnd = self.day(self.json['repoEnd'])
             self.languages = self.json['languages']
-            self.contributers = self.json['contributers']
+            self.totalcommit = self.json['totalcommit']
+            self.totalcode = self.json['totalcode']
+            self.starCnt = self.json['starCnt']
+            self.forkCnt = self.json['forkCnt']
             self.commits = self.json['commits']
             self.issues = self.json['issues']
             self.merges = self.json['merges']
             self.reviews = self.json['reviews']
-            self.efficiency = int(self.json['efficiency'])
-            self.efficiency_percent = self.percent(self.json['efficiency'])
-            self.security = int(self.json['security'])
-            self.security_percent = self.percent(self.json['security'])
-            self.totalcommit = self.json['totalcommit']
-            self.totalcode = self.json['totalcode']
-            self.chart = svg_chart([self.commits, self.merges, self.issues, self.reviews, self.efficiency, self.security])
+            self.conventionrate = int(self.json['conventionrate'])
+            self.conventionrate_percent = self.percent(self.json['conventionrate'])
+            self.chart = svg_chart([self.commits, self.issues, self.reviews, self.forkCnt, self.starCnt, self.merges])
     
         except JSONDecodeError as e:
             logger.error(e)
+            self.repomonId = 1
+            self.repoExp = 123456
+            self.repomonTier = 1
             self.repoName = '레포몬'
-            self.repoDescription = '나의 레포몬을 불러보세요'
-            self.repoExp = '123456'
-            self.starCnt = '7'
-            self.forkCnt = '66'
+            self.contributers = 6
             self.repoStart = '23.03.10'
             self.repoEnd = '23.04.20'
             self.languages = ''
-            self.contributers = '6'
-            self.commits = 543 
-            self.issues = 123
-            self.merges = 321
-            self.reviews = 123
-            self.efficiency = 80
-            self.efficiency_percent = 80
-            self.security = 80
-            self.security_percent = 80
-            self.totalcommit = '123456'
-            self.totalcode = '654321'
-            self.chart = svg_chart([self.commits, self.merges, self.issues, self.reviews, self.efficiency, self.security])
+            self.totalcommit = 123456
+            self.totalcode = 654321
+            self.starCnt = 10
+            self.forkCnt = 5
+            self.commits = 82
+            self.issues = 75
+            self.merges = 70
+            self.reviews = 80
+            self.conventionrate = 60
+            self.conventionrate_percent = self.percent(self.conventionrate)
+            self.chart = svg_chart([self.commits, self.merges, self.issues, self.reviews, self.starCnt, self.forkCnt])
 
     def day(self, day):
         if day != None:
@@ -222,10 +218,7 @@ class RepoDefaultSettings(object):
 
 def repo_card(request):
     per = IMG['Per']
-    star = IMG['Star']
-    fork = IMG['Fork']
     url_set = UrlSettings(request, 'repo')
-    print(url_set)
     handle_set = RepoDefaultSettings(request, url_set)
     svg = '''
     <!DOCTYPE svg PUBLIC
@@ -364,7 +357,6 @@ def repo_card(request):
     </defs>
     <rect width="600" height="200" rx="10" ry="10" class="background"/>
     <ellipse class="{ellipsetype}"/>
-    <rect  x="25" y="25" width="140px" height="112px" style="stroke: red; stroke-width: 2px; fill: none;" />
     
     <image href="{img}" x="25" y="25" width="140px" height="112px" class="repomon-img"/>
     <line x1="40" y1="170" x2="150" y2="170" stroke-width="20" stroke="floralwhite" stroke-linecap="round"/>
@@ -373,10 +365,6 @@ def repo_card(request):
     <text x="190" y="40" class="boj-handle">{repoName}</text>
     <image href="{per}" x="190" y="46" height="13px" width="10px"/><text x="203" y="57" font-size="0.7em">{contributers}</text>
     <text x="225" y="57" font-size="0.7em">{repoStart} ~ {repoEnd}</text>
-    <text x="190" y="74" width="250px" height="100px" class="repo-detail">{repoDescription}</text>
-
-    <image href="{star}" x="515" y="11" width="11px"/><text x="530" y="20" font-size="0.6em">{starCnt}</text>
-    <image href="{fork}" x="550" y="11" width="8px"/><text x="563" y="20" font-size="0.6em">{forkCnt}</text>
 
     <g class="item" style="animation-delay: 200ms">
         <text x="190" y="130" class="subtitle">Total Commit</text><text x="270" y="130" class="rate value">{totalcommit} 회</text>
@@ -386,9 +374,9 @@ def repo_card(request):
     </g>
     <g class="item" style="animation-delay: 600ms">
         <text x="190" y="170" class="subtitle">Convention Rate</text><text x="260" y="170" class="class value"></text>
-        <line x1="290" y1="167" x2="{security_percent}" y2="167" stroke-width="10" stroke="floralwhite" stroke-linecap="round"/>
+        <line x1="290" y1="167" x2="{conventionrate_percent}" y2="167" stroke-width="10" stroke="floralwhite" stroke-linecap="round"/>
         <line x1="290" y1="167" x2="360" y2="167" stroke-width="10" stroke-opacity="40%" stroke="floralwhite" stroke-linecap="round"/>
-        <text x="320" y="171" dz="-30" class="repo-percent">{security} %</text>
+        <text x="320" y="171" dz="-30" class="repo-percent">{conventionrate} %</text>
     </g>
 
     <g transform="translate(190, 100)">
@@ -401,37 +389,28 @@ def repo_card(request):
         <image height="12px" xlink:href="https://img.shields.io/badge/CSS3-1572B6.svg?&amp;style=for-the-badge&amp;logo=CSS3&amp;logoColor=white"/>
     </g>
 
-    <image href="{chart}" x="425" y="40" height="160px" class="repomon-img"/>
-    <text x="505" y="40" class="charttitle">커밋</text>
-    <text x="580" y="85" class="charttitle">머지</text>
-    <text x="432" y="85" class="charttitle">이슈</text>
-    <text x="432" y="152" class="charttitle">리뷰</text>
-    <text x="578" y="152" class="charttitle">효율성</text>
-    <text x="504" y="193" class="charttitle">보안성</text>
+    <image href="{chart}" x="425" y="25" height="160px" class="repomon-img"/>
+    <text x="502" y="28" class="charttitle">Commit</text>
+    <text x="575" y="70" class="charttitle">Merge</text>
+    <text x="432" y="70" class="charttitle">Issue</text>
+    <text x="432" y="137" class="charttitle">Review</text>
+    <text x="575" y="137" class="charttitle">Star</text>
+    <text x="504" y="178" class="charttitle">Fork</text>
 </svg>
     '''.format(repoName = handle_set.repoName,
-               repoDescription = handle_set.repoDescription,
                repoExp = handle_set.repoExp,
                starCnt = handle_set.starCnt,
                forkCnt = handle_set.forkCnt,
                repoStart = handle_set.repoStart,
                repoEnd = handle_set.repoEnd,
                contributers = handle_set.contributers,
-               commits = handle_set.commits,
-               issues = handle_set.issues,
-               merges = handle_set.merges,
-               reviews = handle_set.reviews,
-               efficiency = handle_set.efficiency,
-               efficiency_percent = handle_set.efficiency_percent + 270,
-               security = handle_set.security,
-               security_percent = handle_set.security_percent + 270,
+               conventionrate = handle_set.conventionrate,
+               conventionrate_percent = handle_set.conventionrate_percent + 270,
                totalcommit = handle_set.totalcommit,
                totalcode = handle_set.totalcode,
                per=per,
-               star=star,
-               fork=fork,
-                # img=IMG['img'+str(handle_set.repomonId)],
-                # ellipsetype=ELLIPSE_TYPE[handle_set.repomon_tier],
+            #    img=IMG['img'+str(handle_set.repomonId)],
+            #    ellipsetype=ELLIPSE_TYPE[handle_set.repomon_tier],
                ellipsetype=ELLIPSE_TYPE[1],
                img=IMG['img28'],
                chart=handle_set.chart
@@ -451,27 +430,29 @@ class RepoPersonalDefaultSettings(object):
             self.json = requests.get(url_set.repo_information_url).json()
             print('🎀')
             print(self.json)
-            self.repoName = self.json['repoName']
             self.repomonId = self.json['repomonId']
-            self.repoDescription = self.is_none(self.json['repoDescription'])
             self.repoExp = self.json['repoExp']
-            self.starCnt = self.json['starCnt']
-            self.forkCnt = self.json['forkCnt']
+            self.repomonTier = self.json['repomonTier']
+            self.contribution = self.json['conventionrate'] #확인
+            self.repoName = self.json['repoName']
+            self.contributers = self.json['contributers']
             self.repoStart = self.day(self.json['repoStart'])
             self.repoEnd = self.day(self.json['repoEnd'])
             self.languages = self.json['languages']
-            self.contributers = self.json['contributers']
+            self.totalcommit = self.json['totalcommit']
+            self.totalcode = self.json['totalcode']
+            self.mytotalcommit = self.json['mytotalcommit']
+            self.mytotalcode = self.json['mytotalcode']
+            self.conventionrate = self.json['conventionrate']
+            self.conventionrate_percent = self.percent(self.json['conventionrate'])
+
+            self.starCnt = self.json['starCnt']
+            self.forkCnt = self.json['forkCnt']
             self.commits = self.json['commits']
             self.issues = self.json['issues']
             self.merges = self.json['merges']
             self.reviews = self.json['reviews']
-            self.efficiency = int(self.json['efficiency'])
-            self.efficiency_percent = self.percent(self.json['efficiency'])
-            self.security = int(self.json['security'])
-            self.security_percent = self.percent(self.json['security'])
-            self.totalcommit = self.json['totalcommit']
-            self.totalcode = self.json['totalcode']
-            self.contribution = self.json['mycontribution']
+
             self.gitname = self.json['userName'] 
             self.avatarUrl = self.json['avatarUrl'] 
 
@@ -479,11 +460,8 @@ class RepoPersonalDefaultSettings(object):
             self.myissues = self.json['myissues']
             self.mymerges = self.json['mymerges']
             self.myreviews = self.json['myreviews']
-            self.mytotalcommit = self.json['mytotalcommit']
-            self.mytotalcode = self.json['mytotalcode']
-            self.myefficiency = int(self.json['myefficiency'])            
-            self.mysecurity = int(self.json['mysecurity'])
-            self.chart = svg_chart_personal([self.commits, self.issues, self.reviews, self.security, self.efficiency, self.merges],[self.mycommits, self.myissues, self.myreviews, self.mysecurity, self.myefficiency, self.mymerges])
+
+            self.chart = svg_chart_personal([self.commits, self.issues, self.reviews, self.forkCnt, self.starCnt, self.merges],[self.mycommits, self.myissues, self.myreviews, self.forkCnt, self.starCnt, self.mymerges])
     
         except JSONDecodeError as e:
             logger.error(e)
@@ -529,8 +507,6 @@ class RepoPersonalDefaultSettings(object):
 
 def repo_personal_card(request):
     per = IMG['Per']
-    star = IMG['Star']
-    fork = IMG['Fork']
     url_set = UrlSettings(request, 'repo_personal')
     handle_set = RepoPersonalDefaultSettings(request, url_set)
     svg = '''
@@ -572,9 +548,9 @@ def repo_personal_card(request):
                 fill: white;
                 font-family: 'Noto Sans KR', sans-serif;
             }}
-            text.boj-handle {{
+            text.repo_title {{
                 font-weight: 700;
-                font-size: 1.30em;
+                font-size: 1.50em;
                 animation: fadeIn 1s ease-in-out forwards;
 
             }}
@@ -592,7 +568,7 @@ def repo_personal_card(request):
             }}
             .subtitle {{
                 font-weight: 500;
-                font-size: 0.7em;
+                font-size: 0.8em;
             }}
             .value {{
                 font-weight: 400;
@@ -600,7 +576,7 @@ def repo_personal_card(request):
             }}
             .value2 {{
                 font-weight: 400;
-                font-size: 0.5em;
+                font-size: 0.6em;
             }}
             .percentage {{
                 font-weight: 300;
@@ -677,71 +653,56 @@ def repo_personal_card(request):
     <text x="45" y="25" font-size="0.7em">{gitname}</text>
     
     <ellipse class="{ellipsetype}"/>
-    <rect  x="25" y="52" width="140px" height="112px" style="stroke: red; stroke-width: 2px; fill: none;" />
+    
     <image href="{img}" x="25" y="52" width="140px" height="112px" class="repomon-img"/>
     <line x1="40" y1="188" x2="150" y2="188" stroke-width="20" stroke="floralwhite" stroke-linecap="round"/>
     <text x="100" y="193" dz="-20" class="repo-exp">Exp | {repoExp}</text>
     <text x="39" y="215" font-size="0.7em">My contribution : {contribution}%</text>
 
-    <text x="190" y="45" class="boj-handle">{repoName}</text>
-    <image href="{per}" x="300" y="33" height="13px" width="10px"/><text x="313" y="44" font-size="0.7em">{contributers}</text>
-    <text x="335" y="43" font-size="0.7em">{repoStart} ~ {repoEnd}</text>
+    <text x="190" y="50" class="repo_title">{repoName}</text>
+    <image href="{per}" x="190" y="61" height="13px" width="10px"/><text x="203" y="72" font-size="0.7em">{contributers}</text>
+    <text x="225" y="72" font-size="0.7em">{repoStart} ~ {repoEnd}</text>
 
-    <image href="{star}" x="515" y="16" width="11px"/><text x="530" y="25" font-size="0.6em">{starCnt}</text>
-    <image href="{fork}" x="550" y="16" width="8px"/><text x="563" y="25" font-size="0.6em">{forkCnt}</text>
-        <text x="190" y="65" class="repo-detail">{repoDescription}</text>
-
-    <g transform="translate(190, 75)">
+    <g transform="translate(190, 85)">
         <image height="12px" xlink:href="https://img.shields.io/badge/HTML5-E34F26.svg?&amp;style=for-the-badge&amp;logo=HTML5&amp;logoColor=white"/>
     </g>
-    <g transform="translate(230, 75)">
+    <g transform="translate(230, 85)">
         <image height="12px" xlink:href="https://img.shields.io/badge/JavaScriipt-F7DF1E.svg?&amp;style=for-the-badge&amp;logo=JavaScript&amp;logoColor=black"/>
     </g>
-    <g transform="translate(290, 75)">
+    <g transform="translate(290, 85)">
         <image height="12px" xlink:href="https://img.shields.io/badge/CSS3-1572B6.svg?&amp;style=for-the-badge&amp;logo=CSS3&amp;logoColor=white"/>
     </g>
 
     <g class="item" style="animation-delay: 200ms">
-        <text x="190" y="134" class="subtitle">Total Commit</text><text x="270" y="134" class="rate value">{mytotalcommit} 회</text><text x="330" y="134" class="solved value2">/ {totalcommit} 줄</text>
+        <text x="190" y="139" class="subtitle">Total Commit</text><text x="280" y="139" class="rate value">{mytotalcommit} 회</text><text x="330" y="139" class="solved value2">/ {totalcommit} 줄</text>
     </g>
     <g class="item" style="animation-delay: 400ms">
-        <text x="190" y="156" class="subtitle">Total code</text><text x="270" y="156" class="solved value">{mytotalcode} 줄</text><text x="330" y="156" class="solved value2">/ {totalcode} 줄</text>
+        <text x="190" y="166" class="subtitle">Total code</text><text x="280" y="166" class="solved value">{mytotalcode} 줄</text><text x="330" y="166" class="solved value2">/ {totalcode} 줄</text>
     </g>
     <g class="item" style="animation-delay: 600ms">
-        <text x="190" y="178" class="subtitle">Security</text><text x="260" y="178" class="class value"></text>
-        <line x1="270" y1="175" x2="{security_percent}" y2="175" stroke-width="10" stroke="floralwhite" stroke-linecap="round"/>
-        <line x1="270" y1="175" x2="360" y2="175" stroke-width="10" stroke-opacity="40%" stroke="floralwhite" stroke-linecap="round"/>
-        <text x="320" y="179" dz="-30" class="repo-percent">{security} %</text>
-    </g>
-    <g class="item" style="animation-delay: 600ms">
-        <text x="190" y="200" class="subtitle">Efficiency</text><text x="260" y="170" class="class value"></text>
-        <line x1="270" y1="197" x2="{efficiency_percent}" y2="197" stroke-width="10" stroke="floralwhite" stroke-linecap="round"/>
-        <line x1="270" y1="197" x2="360" y2="197" stroke-width="10" stroke-opacity="40%" stroke="floralwhite" stroke-linecap="round"/>
-        <text x="320" y="201" dz="-20" class="repo-percent">{efficiency} %</text>
+        <text x="190" y="193" class="subtitle">Convention Rate</text><text x="260" y="193" class="class value"></text>
+        <line x1="300" y1="190" x2="{conventionrate_percent}" y2="190" stroke-width="10" stroke="floralwhite" stroke-linecap="round"/>
+        <line x1="300" y1="190" x2="380" y2="190" stroke-width="10" stroke-opacity="40%" stroke="floralwhite" stroke-linecap="round"/>
+        <text x="330" y="194" dz="-30" class="repo-percent">{conventionrate} %</text>
     </g>
 
-
-
-    <image href="{chart}" x="407" y="62" height="170px" class="repomon-img"/>
-    <text x="492" y="77" class="charttitle"> commit</text>
-    <text x="563" y="111" class="charttitle"> merge</text>
-    <text x="425" y="111" class="charttitle">issue</text>
-    <text x="425" y="183" class="charttitle">review</text>
-    <text x="563" y="183" class="charttitle">star</text>
-    <text x="491" y="217" class="charttitle">fork</text>
+    <image href="{chart}" x="425" y="35" height="160px" class="repomon-img"/>
+    <text x="502" y="38" class="charttitle">Commit</text>
+    <text x="575" y="80" class="charttitle">Merge</text>
+    <text x="432" y="80" class="charttitle">Issue</text>
+    <text x="432" y="147" class="charttitle">Review</text>
+    <text x="575" y="147" class="charttitle">Star</text>
+    <text x="504" y="188" class="charttitle">Fork</text>
 </svg>
     '''.format(repoName = handle_set.repoName,
-               repoDescription = handle_set.repoDescription,
                repoExp = handle_set.repoExp,
                starCnt = handle_set.starCnt,
                forkCnt = handle_set.forkCnt,
                repoStart = handle_set.repoStart,
                repoEnd = handle_set.repoEnd,
                contributers = handle_set.contributers,
-               efficiency = handle_set.efficiency,
-               efficiency_percent = handle_set.efficiency_percent + 270,
-               security = handle_set.security,
-               security_percent = handle_set.security_percent + 270,
+               conventionrate = handle_set.conventionrate,
+               conventionrate_percent = handle_set.conventionrate_percent + 270,
                totalcommit = handle_set.totalcommit,
                totalcode = handle_set.totalcode,
                contribution = handle_set.contribution,
@@ -750,12 +711,10 @@ def repo_personal_card(request):
                mytotalcommit = handle_set.mytotalcommit,
                mytotalcode = handle_set.mytotalcommit,
                per=per,
-               star=star,
-               fork=fork,
             #    img=IMG['img'+str(handle_set.repomonId)],
             #    ellipsetype=ELLIPSE_TYPE[handle_set.repomon_tier],
                ellipsetype=ELLIPSE_TYPE[3],
-               img=IMG['img24'],
+               img=IMG['img27'],
                chart=handle_set.chart
                )
 
@@ -839,7 +798,6 @@ class UserDefaultSettings(object):
             return ''
         else:
             return data
-
 
 def user_card(request):
     per = IMG['Per']
