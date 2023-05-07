@@ -120,7 +120,7 @@ public class UserService {
 		UserEntity user = userRepository.findById(userId).orElseThrow(() -> {throw new CustomException(NOT_FOUND_USER);});
 
 		try {
-			return UserCardResponseDto.fromEntity(ghUtils.getUserCardInfo(user.getUserName()));
+			return UserCardResponseDto.fromEntity(ghUtils.getUserCardInfo(user.getUserName()), user);
 
 		} catch (IOException | InterruptedException e) {
 			throw new CustomException(ErrorCode.DATA_BAD_REQUEST);

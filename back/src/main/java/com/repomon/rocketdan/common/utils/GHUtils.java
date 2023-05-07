@@ -448,27 +448,27 @@ public class GHUtils {
         return totalCommitCount;
     }
 
-    //    /**
-    //     * 유저 모든 레포지터리에서 이슈 조회
-    //     */
-    //    public Long getTotalIssueCountByUser(String userName) throws IOException {
-    //        GHUser user = gitHub.getUser(userName);
-    //
-    //        Map<String, GHRepository> map = getRepositoriesInPublicOrganization(user);
-    //        map.putAll(getRepositories(user));
-    //
-    //        Long totalIssueCount = 0L;
-    //        for (GHRepository repo : map.values()) {
-    //            List<GHIssue> issues = repo.getIssues(GHIssueState.CLOSED);
-    //            for (GHIssue issue : issues) {
-    //                if (issue.getAssignee() != null && issue.getAssignee().getLogin().equals(userName)) {
-    //                    totalIssueCount++;
-    //                }
-    //            }
-    //        }
-    //        System.out.println("totalIssueCount = " + totalIssueCount);
-    //        return totalIssueCount;
-    //    }
+        /**
+         * 유저 모든 레포지터리에서 이슈 조회
+         */
+        public Long getTotalIssueCountByUser(String userName) throws IOException {
+            GHUser user = gitHub.getUser(userName);
+
+            Map<String, GHRepository> map = getRepositoriesInPublicOrganization(user);
+            map.putAll(getRepositories(user));
+
+            Long totalIssueCount = 0L;
+            for (GHRepository repo : map.values()) {
+                List<GHIssue> issues = repo.getIssues(GHIssueState.CLOSED);
+                for (GHIssue issue : issues) {
+                    if (issue.getAssignee() != null && issue.getAssignee().getLogin().equals(userName)) {
+                        totalIssueCount++;
+                    }
+                }
+            }
+            System.out.println("totalIssueCount = " + totalIssueCount);
+            return totalIssueCount;
+        }
 
 
     /**
@@ -530,6 +530,42 @@ public class GHUtils {
         return Math.round(avgContribution / repos.size());
     }
 
+    /**
+     * 유저 모든 레포지터리에서 스타, 포크 조회
+     */
+    public List<Long> getStarAndForkByUser(Map<String, GHRepository> repos){
+        Long StarCount = 0L;
+        Long ForkCount = 0L;
+        for (GHRepository repo : repos.values()) {
+            StarCount += repo.getStargazersCount();
+            ForkCount += repo.getForksCount();
+        }
+        return List.of(StarCount,ForkCount);
+    }
+
+    /**
+     * 유저 모든 레포지터리에서 머지, 리뷰 조회
+     *
+     * @param repos
+     * @param userName
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public List<Long> getMergeAndReviewByUser(Map<String, GHRepository> repos, String userName) throws IOException, InterruptedException {
+        Long totalMergeCount = 0L;
+        Long totalReviewCount = 0L;
+        for (GHRepository repo : repos.values()) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.YEAR, -1);
+            Date date = calendar.getTime();
+
+            totalMergeCount += getMyMergeToHistory(repo, date, userName).get(0);
+            totalReviewCount += getMyMergeToHistory(repo, date, userName).get(1);
+        }
+        return List.of(totalMergeCount, totalReviewCount);
+    }
+
 
     /**
      * 유저 카드 정보 조회
@@ -545,10 +581,16 @@ public class GHUtils {
         Map<String, GHRepository> repos = getRepositoriesInPublicOrganization(user);
         repos.putAll(getRepositories(user));
 
+        userCardInfo.setRepoCount(repos.size());
         userCardInfo.setTotalCommitCount(getTotalCommitCountByUser(repos, userName));
         userCardInfo.setTotalCodeLineCount(getTotalCodeLineCountByUser(repos, userName));
         userCardInfo.setLanguages(getLanguagesByUser(repos));
         userCardInfo.setAvgContribution(getAvgContributionByUser(repos, userName));
+        userCardInfo.setTotalIssueCount(getTotalIssueCountByUser(userName));
+        userCardInfo.setStarCount(getStarAndForkByUser(repos).get(0));
+        userCardInfo.setForkCount(getStarAndForkByUser(repos).get(1));
+        userCardInfo.setTotalMergeCount(getMergeAndReviewByUser(repos, userName).get(0));
+        userCardInfo.setTotalReviewCount(getMergeAndReviewByUser(repos, userName).get(1));
 
         return userCardInfo;
     }

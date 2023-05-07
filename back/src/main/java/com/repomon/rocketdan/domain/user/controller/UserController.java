@@ -41,7 +41,7 @@ public class UserController {
 	}
 
 
-	@ApiOperation(value = "대표 레포몬을 설정합니다.")
+	@ApiOperation(value = "유저 카드 정보")
 	@GetMapping("/{userId}/card")
 	public ResponseEntity<UserCardResponseDto> getUserCard(@PathVariable("userId") Long userId) throws IOException, InterruptedException {
 		UserCardResponseDto responseDto = userService.getUserCard(userId);

@@ -12,10 +12,15 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserCardDetail {
+
+	private Integer repoCount;
 	private Long totalCommitCount;
 	private Long totalCodeLineCount;
 	private List<String> languages;
 	private Long avgContribution;
-	// private final Long totalMergeCount;
-	// private final Long totalIssueCount;
+	private Long totalMergeCount;
+	private Long totalReviewCount;
+	private Long totalIssueCount;
+	private Long starCount;
+	private Long forkCount;
 }
