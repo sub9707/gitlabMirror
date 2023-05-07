@@ -143,7 +143,7 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
       } else {
         res = await axiosRequestRepoDetail(repoId);
       }
-      console.log("레포 디테일 기본 정보: ", res);
+      console.log("레포 디테일 기본: ", res);
       setRepoDetailInfo(res.data);
     } catch (err) {
       console.error(err);
@@ -154,7 +154,7 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
   const requestRepoDetailResearch = async (repoId: number) => {
     try {
       const res = await axiosRequestRepoDetailResearch(repoId);
-      console.log("레포 디테일 분석 정보: ", res);
+      console.log("레포 디테일 분석: ", res);
       setRepoDetailResearchInfo(res.data);
     } catch (err) {
       console.error(err);
@@ -165,7 +165,7 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
   const requestRepoDetailBattleInfo = async (repoId: number) => {
     try {
       const res = await axiosRequestRepoDetailBattleInfo(repoId);
-      console.log("레포 디테일 배틀 정보: ", res);
+      console.log("레포 디테일 배틀: ", res);
       setRepoDetailBattleInfo(res.data.data);
     } catch (err) {
       console.error(err);
@@ -176,7 +176,7 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
   const requestBattleRanking = async (repoId: number) => {
     try {
       const res = await axiosRequestBattleRanking(repoId);
-      console.log("레포 디테일 배틀 랭킹 정보: ", res.data.rank);
+      console.log("레포 디테일 배틀 랭킹: ", res.data.rank);
       setBattleRank(res.data.rank);
     } catch (err) {
       console.error(err);
@@ -187,7 +187,7 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
   const requestBattleRecord = async (repoId: number) => {
     try {
       const res = await axiosRequestBattleRecord(repoId);
-      console.log("레포 디테일 배틀 전적 정보: ", res.data.data.battleLogList);
+      console.log("레포 디테일 배틀 전적: ", res.data.data.battleLogList);
       setBattleRecordInfo(res.data.data.battleLogList);
     } catch (err: any) {
       console.error(err);
@@ -201,7 +201,7 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
   const requestRepoDetailConvention = async (repoId: number) => {
     try {
       const res = await axiosRequestRepoDetailConvention(repoId);
-      console.log("레포 디테일 컨벤션 정보: ", res);
+      console.log("레포 디테일 컨벤션: ", res);
       setRepoDetailConventionInfo(res.data);
     } catch (err) {
       console.error(err);
@@ -212,7 +212,7 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
   const requestRepoDetailContribution = async (repoId: number) => {
     try {
       const res = await axiosRequestRepoDetailContribution(repoId);
-      console.log("레포 디테일 기여도 정보: ", res);
+      console.log("레포 디테일 기여도: ", res);
       setRepoDetailContributionInfo(res.data);
     } catch (err) {
       console.error(err);
