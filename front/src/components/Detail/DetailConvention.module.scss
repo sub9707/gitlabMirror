@@ -46,7 +46,14 @@
   width: 27%;
 }
 
-.comment {
-  margin: 6rem 0 0 0.5rem;
-  font-size: 1.5rem;
+.no-convention {
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .comment {
+    font-size: 1.5rem;
+  }
 }

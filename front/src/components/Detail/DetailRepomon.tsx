@@ -1,100 +1,71 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import styles from "./DetailRepomon.module.scss";
+import { Canvas, useLoader, useFrame } from "@react-three/fiber";
 
-function DetailRepomon() {
-  const canvas = useRef<HTMLDivElement>(null);
-  const [classRepoMon, setClassRepoMon] = useState<string>("");
-  const [isRender, setIsRender] = useState<boolean>(false);
+const Model = ({
+  repomonUrl,
+  isClicked,
+  setIsClicked,
+}: {
+  repomonUrl: string;
+  isClicked: boolean;
+  setIsClicked: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
+  const gltf = useLoader(GLTFLoader, repomonUrl);
 
-  useEffect(() => {
-    setClassRepoMon("repo-mon");
+  let mixer: THREE.AnimationMixer | undefined;
 
-    if (!classRepoMon || !canvas.current) {
-      return;
+  if (gltf.animations.length) {
+    mixer = new THREE.AnimationMixer(gltf.scene);
+    mixer.timeScale = 0.3;
+    if (isClicked) {
+      const randomIndex = Math.floor(Math.random() * 39);
+      const action = mixer.clipAction(gltf.animations[randomIndex]);
+      action.play();
+    } else {
+      const action = mixer.clipAction(gltf.animations[8]);
+      action.clampWhenFinished = true;
+      action.play();
     }
+  }
 
-    const scene = new THREE.Scene();
+  useFrame((state, delta) => {
+    mixer?.update(delta);
+    // gltf.scene.rotation.y += delta * 0.05; // 회전 속도를 조절할 수 있습니다.
+  });
 
-    const loader1 = new GLTFLoader();
-    loader1.load(
-      "/cute_fox.glb",
-      function (gltf) {
-        gltf.scene.position.set(0, 0, 0);
-        scene.add(gltf.scene);
-      },
-      undefined,
-      function (error) {
-        console.error(error);
-      }
-    );
+  return (
+    <primitive
+      object={gltf.scene}
+      scale={[2, 2, 2]}
+      position={[0, -1.5, 0]}
+      rotation={[0.3, -0.2, 0]}
+      onClick={() => {
+        setIsClicked(!isClicked);
+      }}
+    />
+  );
+};
 
-    const loader2 = new GLTFLoader();
-    loader2.load(
-      "/steppe_grass.glb",
-      function (gltf) {
-        gltf.scene.position.set(0, -2.35, 0);
-        scene.add(gltf.scene);
-      },
-      undefined,
-      function (error) {
-        console.error(error);
-      }
-    );
+function DetailRepomon({ repomonUrl }: { repomonUrl: string }) {
+  const [isClicked, setIsClicked] = useState<boolean>(false);
 
-    const light = new THREE.PointLight(0xffffff, 4.2, 100);
-    light.position.set(20, 20, 40);
-    scene.add(light);
-
-    const light2 = new THREE.PointLight(0xffffff, 3, 100);
-    light2.position.set(-20, 20, -40);
-    scene.add(light2);
-
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setClearColor(0xffffff, 1);
-
-    let camera: THREE.PerspectiveCamera;
-    let controls: OrbitControls;
-
-    function animate() {
-      requestAnimationFrame(animate);
-      controls.update();
-      renderer.render(scene, camera);
-    }
-
-    camera = new THREE.PerspectiveCamera(
-      80,
-      canvas.current.clientWidth / canvas.current.clientHeight
-    );
-
-    camera.position.y = 0.5;
-    camera.position.z = 1;
-
-    renderer.setSize(canvas.current.clientWidth, canvas.current.clientHeight);
-
-    canvas.current.appendChild(renderer.domElement);
-
-    controls = new OrbitControls(camera, canvas.current);
-
-    controls.rotateSpeed = 0.5;
-    controls.zoomSpeed = 1.2;
-    controls.panSpeed = 0.8;
-    controls.minDistance = 5;
-    controls.maxDistance = 500;
-
-    animate();
-
-    return () => {
-      renderer.dispose();
-      controls.dispose();
-    };
-  }, [classRepoMon, canvas]);
-
-  return <div ref={canvas} className={styles[classRepoMon]} />;
+  return (
+    <Canvas style={{ width: "100%", height: "500px" }}>
+      <ambientLight intensity={0.1} />
+      <ambientLight intensity={0.1} />
+      <directionalLight color="white" position={[0, 0, 5]} intensity={0.6} />
+      <directionalLight color="white" position={[-5, 0, -5]} intensity={0.6} />
+      <Model
+        repomonUrl={"/static/models/Dingo_3.glb"}
+        isClicked={isClicked}
+        setIsClicked={setIsClicked}
+      />
+    </Canvas>
+  );
 }
 
 export default DetailRepomon;
