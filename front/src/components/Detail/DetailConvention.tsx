@@ -2,6 +2,8 @@ import React from "react";
 import styles from "./DetailConvention.module.scss";
 import { ConventionChart } from "./ConventionChart";
 import { RepoDetailConventionInfoType } from "@/types/repoDetail";
+import Lottie from "react-lottie-player";
+import notFound from "public/static/lotties/not_found.json";
 
 function DetailConvention({
   conventionInfo,
@@ -32,12 +34,15 @@ function DetailConvention({
           </div>
         </div>
       )}
-      {!conventionInfo.conventions && (
+      {(!conventionInfo.conventions ||
+        conventionInfo.conventions?.length === 0) && (
         <div className={styles["no-convention"]}>
-          <iframe
-            src="https://embed.lottiefiles.com/animation/93134"
-            height="300"
-          ></iframe>
+          <Lottie
+            loop={true}
+            animationData={notFound}
+            play
+            style={{ width: "300px" }}
+          />
           <p className={styles.comment}>등록된 컨벤션이 없어요.</p>
         </div>
       )}
