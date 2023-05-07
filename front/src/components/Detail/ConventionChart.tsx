@@ -4,33 +4,44 @@ import { Pie } from "react-chartjs-2";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export const data = {
-  labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-  datasets: [
-    {
-      label: "# of Votes",
-      data: [12, 19, 3, 5, 2, 3],
-      backgroundColor: [
-        "rgba(255, 99, 132, 0.2)",
-        "rgba(54, 162, 235, 0.2)",
-        "rgba(255, 206, 86, 0.2)",
-        "rgba(75, 192, 192, 0.2)",
-        "rgba(153, 102, 255, 0.2)",
-        "rgba(255, 159, 64, 0.2)",
-      ],
-      borderColor: [
-        "rgba(255, 99, 132, 1)",
-        "rgba(54, 162, 235, 1)",
-        "rgba(255, 206, 86, 1)",
-        "rgba(75, 192, 192, 1)",
-        "rgba(153, 102, 255, 1)",
-        "rgba(255, 159, 64, 1)",
-      ],
-      borderWidth: 1,
-    },
-  ],
-};
+export function ConventionChart({
+  total,
+  obey,
+}: {
+  total: number;
+  obey: number;
+}) {
+  const data = {
+    labels: ["컨벤션 좋아", "컨벤션 몰라"],
+    datasets: [
+      {
+        data: [obey, total - obey],
+        backgroundColor: ["rgba(109, 130, 250, 0.2)", "rgba(255, 111, 0, 0.2)"],
+        borderColor: ["rgba(109, 130, 250, 1)", "rgba(255, 111, 0, 1)"],
+        borderWidth: 2,
+      },
+    ],
+  };
 
-export function ConventionChart() {
-  return <Pie data={data} />;
+  return (
+    <Pie
+      data={data}
+      options={{
+        plugins: {
+          legend: {
+            onClick: () => {},
+            position: "top" as const,
+            labels: {
+              font: {
+                size: 16,
+                family: "SUIT-Thin",
+                weight: "bold",
+              },
+              color: "rgb(50, 50, 50)",
+            },
+          },
+        },
+      }}
+    />
+  );
 }

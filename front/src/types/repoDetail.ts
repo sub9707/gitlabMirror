@@ -9,6 +9,7 @@ export type RepoDetailType = {
   repoStart: string;
   repomonId: number;
   repomonName: string;
+  repomonUrl: string;
   starCnt: number;
   tags: string[];
 };
@@ -144,7 +145,7 @@ export type StatType = {
   hitPoint: number;
 };
 
-export type ConventionInfoType = {
+export type RepoDetailConventionInfoType = {
   collectCnt: number;
   conventions: {
     description: string;
@@ -152,4 +153,15 @@ export type ConventionInfoType = {
   }[];
   repoOwner: string;
   totalCnt: number;
+};
+
+export type RepoDetailContributionInfoType = {
+  committers: {
+    [commiter: string]: number;
+  };
+  mvp: string;
+  repoId: number;
+  repoOwner: string;
+  totalCommitCount: number;
+  totalLineCount: number;
 };
