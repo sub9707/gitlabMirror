@@ -9,6 +9,7 @@ export type RepoDetailType = {
   repoStart: string;
   repomonId: number;
   repomonName: string;
+  repomonUrl: string;
   starCnt: number;
   tags: string[];
 };

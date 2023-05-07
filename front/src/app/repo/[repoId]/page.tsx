@@ -227,7 +227,7 @@ function Page({ params }: { params: { userId: string; repoId: string } }) {
           <div className={styles.info}>
             <div className={styles["repo-mon-card-div"]}>
               <div className={styles["repo-mon-card"]}>
-                <DetailRepomon />
+                <DetailRepomon repomonUrl={repoDetailInfo.repomonUrl} />
                 <div className={styles["repo-mon-info"]}>
                   <p>
                     {repoDetailInfo.repomonName}
