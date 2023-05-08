@@ -2,9 +2,9 @@ package com.repomon.rocketdan.domain.user.controller;
 
 
 import com.repomon.rocketdan.common.dto.ResultDto;
-import com.repomon.rocketdan.domain.user.dto.RepresentRepomonRequestDto;
-import com.repomon.rocketdan.domain.user.dto.UserCardResponseDto;
-import com.repomon.rocketdan.domain.user.dto.UserResponseDto;
+import com.repomon.rocketdan.domain.user.dto.request.RepresentRepomonRequestDto;
+import com.repomon.rocketdan.domain.user.dto.response.UserCardResponseDto;
+import com.repomon.rocketdan.domain.user.dto.response.UserResponseDto;
 import com.repomon.rocketdan.domain.user.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;

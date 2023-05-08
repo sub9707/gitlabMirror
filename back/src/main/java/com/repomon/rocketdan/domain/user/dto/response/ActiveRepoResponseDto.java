@@ -1,4 +1,4 @@
-package com.repomon.rocketdan.domain.user.dto;
+package com.repomon.rocketdan.domain.user.dto.response;
 
 
 import com.repomon.rocketdan.domain.repo.entity.ActiveRepoEntity;

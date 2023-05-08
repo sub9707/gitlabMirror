@@ -1,8 +1,11 @@
-package com.repomon.rocketdan.domain.user.dto;
+package com.repomon.rocketdan.domain.user.dto.response;
 
 
 import com.repomon.rocketdan.domain.user.entity.UserLanguageEntity;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
