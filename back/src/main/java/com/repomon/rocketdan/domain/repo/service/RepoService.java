@@ -21,6 +21,7 @@ import com.repomon.rocketdan.exception.CustomException;
 import com.repomon.rocketdan.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHRepositoryStatistics;
@@ -315,7 +316,6 @@ public class RepoService {
 	 * @param repoId
 	 */
 	public void activateRepo(Long repoId) {
-
 		String userName = SecurityUtils.getCurrentUserId();
 
 		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
@@ -326,10 +326,20 @@ public class RepoService {
 			throw new CustomException(ErrorCode.NO_ACCESS);
 		}
 
+		List<ActiveRepoEntity> allByRepo = activeRepoRepository.findAllByRepo(repoEntity);
+		List<UserEntity> userEntities = allByRepo.stream()
+			.map(activeRepoEntity -> activeRepoEntity.getUser()).collect(Collectors.toList());
+
+		Long repoExp = repoEntity.getRepoExp();
 		if (repoEntity.getIsActive()) {
+			repoExp = -repoExp;
 			repoEntity.deActivate();
 		} else {
 			repoEntity.activate();
+		}
+
+		for(UserEntity userEntity : userEntities){
+			userEntity.updateTotalExp(repoExp);
 		}
 	}
 
@@ -355,8 +365,7 @@ public class RepoService {
 					calendar.add(Calendar.YEAR, -1);
 					Date date = calendar.getTime();
 
-					Long exp = initRepositoryInfo(repomonStatusEntity, ghRepository, date);
-					userEntity.updateTotalExp(exp);
+					initRepositoryInfo(repomonStatusEntity, ghRepository, date);
 				});
 		});
 	}
@@ -484,13 +493,19 @@ public class RepoService {
 			instance.add(Calendar.DATE, 1);
 
 			Long exp = initRepositoryInfo(repoEntity, ghRepository, Date.from(instance.toInstant()));
-			userEntities.forEach(userEntity -> userEntity.updateTotalExp(exp));
+
+			if(repoEntity.getIsActive()) {
+				userEntities.forEach(userEntity -> userEntity.updateTotalExp(exp));
+			}
 		}, () -> {
 			Calendar calendar = Calendar.getInstance();
 			calendar.add(Calendar.YEAR, -1);
 			Date date = calendar.getTime();
 			Long exp = initRepositoryInfo(repoEntity, ghRepository, date);
-			userEntities.forEach(userEntity -> userEntity.updateTotalExp(exp));
+
+			if(repoEntity.getIsActive()) {
+				userEntities.forEach(userEntity -> userEntity.updateTotalExp(exp));
+			}
 		});
 
 		log.info("기존 레포지토리 업데이트 종료 => {}", repoEntity.getRepoName());
