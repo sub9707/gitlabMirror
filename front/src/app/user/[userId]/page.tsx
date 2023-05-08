@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import styles from "./page.module.scss";
-import Pagination from "@/components/Pagination";
 import RepositoryCard from "@/components/RepositoryCard";
 import { useRouter } from "next/navigation";
 import DropDown from "@/components/DropDown";
@@ -15,15 +14,23 @@ import {
 } from "@/api/userRepo";
 import { RepoListType, UserInfoType } from "@/types/repoInfo";
 import { useAppSelector } from "@/redux/hooks";
+import Paging from "@/components/UI/Pagination";
 
 const Page = ({ params }: { params: { userId: string } }) => {
   const router = useRouter();
 
   // 레포지터리 유저 정보 GET
   const [userInfo, setUserInfo] = useState<UserInfoType>();
-  const [repoInfo, setRepoInfo] = useState<RepoListType>();
+  const [repoInfo, setRepoInfo] = useState<RepoListType>({
+    repoListItems: [],
+    totalElements: 0,
+    totalPages: 0,
+  });
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [isReloaded, setIsReloaded] = useState<boolean>(false);
+  const [isListLoaded, setIsListLoaded] = useState<boolean>(true);
+  const arrowRef = useRef<SVGSVGElement>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   function getUserInfo(userId: string) {
     return getUserDetail(Number(userId));
@@ -33,7 +40,6 @@ const Page = ({ params }: { params: { userId: string } }) => {
       .then((response) => {
         const res = response.data.data;
         setUserInfo(res);
-        console.log(res);
       })
       .catch((error) => {
         console.error(error);
@@ -44,13 +50,15 @@ const Page = ({ params }: { params: { userId: string } }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getTotalRepoList(Number(params.userId), 0, 6);
+        const response = await getTotalRepoList(
+          Number(params.userId),
+          currentPage - 1,
+          6
+        );
         const data = response.data;
         setRepoInfo(data);
-        console.log("called List");
         setTimeout(() => {
           setIsLoaded(true);
-          console.log("reload done");
         }, 1500);
       } catch (error) {
         console.error(error);
@@ -58,7 +66,7 @@ const Page = ({ params }: { params: { userId: string } }) => {
     };
 
     fetchData();
-  }, [isReloaded]);
+  }, [isReloaded, currentPage]);
 
   // 동일 유저 체크
   const [isSameUser, setIsSameUser] = useState<boolean>();
@@ -108,25 +116,30 @@ const Page = ({ params }: { params: { userId: string } }) => {
           <div className={styles.bodyList}>
             <div className={styles.listTitle}>
               <div
-                style={{ display: "flex", width: "50%", alignItems: "center" }}
+                style={{
+                  display: "flex",
+                  width: "50%",
+                  alignItems: "center",
+                  marginLeft: "10%",
+                }}
               >
                 <p>레포지터리 목록</p>
                 <ArrowPathIcon
                   width="2rem"
                   style={{ marginLeft: "2%" }}
                   className={styles.arrow}
+                  ref={arrowRef}
                   onClick={async () => {
+                    setIsListLoaded(false);
                     console.log("loading...");
                     userInfo?.userId && (await refreshAllRepo(userInfo.userId));
+                    setIsListLoaded(true);
                     console.log("load done..!");
                     setIsLoaded(false);
                     setIsReloaded(!isReloaded);
                     console.log("done");
                   }}
                 />
-              </div>
-              <div className={styles.filterBox}>
-                <DropDown />
               </div>
             </div>
             <div className={styles.listCards}>
@@ -144,17 +157,26 @@ const Page = ({ params }: { params: { userId: string } }) => {
                         rating={repoInfo.repoListItems.at(i)?.repoRating}
                         isActive={repoInfo.repoListItems.at(i)?.isActive}
                         userId={params.userId}
-                        repoId={repoInfo.repoListItems.at(i)?.repoId}
+                        repoId={repoInfo.repoListItems.at(i)?.repoId || 0}
                         isSameUser={isSameUser}
                         setIsSameUser={setIsSameUser}
                         isLoaded={isLoaded}
+                        repomonId={repoInfo.repoListItems.at(i)?.repomonId}
+                        repomonUrl={
+                          repoInfo.repoListItems.at(i)?.repomonUrl || ""
+                        }
                       />
                     ) : null
                   )}
               </div>
 
               <div className={styles.paginations}>
-                <Pagination totalPage={1} totalElement={3} />
+                <Paging
+                  currentPage={currentPage}
+                  setCurrentPage={setCurrentPage}
+                  totalPage={repoInfo?.totalPages + 1}
+                  totalElement={repoInfo?.totalElements}
+                />
               </div>
             </div>
           </div>
