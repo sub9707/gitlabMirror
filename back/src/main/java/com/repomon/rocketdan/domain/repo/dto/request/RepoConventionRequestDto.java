@@ -5,7 +5,9 @@ import com.repomon.rocketdan.domain.repo.entity.RepoConventionEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.constraints.Size;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 
 @Data
@@ -21,6 +23,8 @@ public class RepoConventionRequestDto {
 
     @Data
     public static class ConventionItem{
+
+        @Size(min = 4)
         private String type;
         private String desc;
     }

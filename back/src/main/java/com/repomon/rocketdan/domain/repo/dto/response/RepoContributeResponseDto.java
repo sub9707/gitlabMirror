@@ -1,6 +1,7 @@
 package com.repomon.rocketdan.domain.repo.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import java.util.Map;
 import javax.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -17,6 +18,7 @@ public class RepoContributeResponseDto {
     @Id @JsonIgnore
     private Long id;
     @Indexed
+    private Long repoId;
     private String repoOwner;
     private int totalCommitCount;
     private long totalLineCount;
@@ -25,13 +27,14 @@ public class RepoContributeResponseDto {
 
 
     public static RepoContributeResponseDto of(int totalCommitCount, long totalLineCount,
-        Map<String, Integer> committers, String mvp, String repoOwner) {
+        Map<String, Integer> committers, String mvp, RepoEntity repoEntity) {
         return RepoContributeResponseDto.builder()
             .totalCommitCount(totalCommitCount)
             .totalLineCount(totalLineCount)
             .committers(committers)
             .mvp(mvp)
-            .repoOwner(repoOwner)
+            .repoId(repoEntity.getRepoId())
+            .repoOwner(repoEntity.getRepoOwner())
             .build();
     }
 }

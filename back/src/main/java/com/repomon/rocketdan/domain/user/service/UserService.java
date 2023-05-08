@@ -10,16 +10,19 @@ import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.repository.ActiveRepoRepository;
 import com.repomon.rocketdan.domain.repo.repository.RepoRepository;
 import com.repomon.rocketdan.domain.user.dto.RepresentRepomonRequestDto;
+import com.repomon.rocketdan.domain.user.dto.UserCardResponseDto;
 import com.repomon.rocketdan.domain.user.dto.UserResponseDto;
 import com.repomon.rocketdan.domain.user.entity.UserEntity;
 import com.repomon.rocketdan.domain.user.repository.UserRepository;
 import com.repomon.rocketdan.exception.CustomException;
+import com.repomon.rocketdan.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kohsuke.github.GHRepository;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +41,12 @@ public class UserService {
 	private final GHUtils ghUtils;
 
 
+	/**
+	 * 대표 레포몬 수정
+	 *
+	 * @param userId
+	 * @param requestDto
+	 */
 	public void modifyRepresentRepo(Long userId, RepresentRepomonRequestDto requestDto) {
 
 		UserEntity user = userRepository.findById(userId).orElseThrow(
@@ -66,6 +75,12 @@ public class UserService {
 	}
 
 
+	/**
+	 * 유저 정보 조회
+	 *
+	 * @param userId
+	 * @return
+	 */
 	public UserResponseDto getUserInfo(Long userId) {
 		UserEntity user = userRepository.findById(userId).orElseThrow(() -> {throw new CustomException(NOT_FOUND_USER);});
 		Map<String, String> userInfo = ghUtils.getUser(user.getUserName());
@@ -88,7 +103,28 @@ public class UserService {
 			RepoListItem repoListItem = RepoListItem.convertFromDetail(repoDetail);
 			userResponseDto.setRepresentRepo(repoListItem);
 		});
+
+		// 유저 순위 조회
+		userResponseDto.setUserRank(userRepository.findRankByUserId(userId));
 		return userResponseDto;
+	}
+
+
+	/**
+	 * 유저 카드 조회
+	 *
+	 * @param userId
+	 * @return
+	 */
+	public UserCardResponseDto getUserCard(Long userId) {
+		UserEntity user = userRepository.findById(userId).orElseThrow(() -> {throw new CustomException(NOT_FOUND_USER);});
+
+		try {
+			return UserCardResponseDto.fromEntity(ghUtils.getUserCardInfo(user.getUserName()));
+
+		} catch (IOException | InterruptedException e) {
+			throw new CustomException(ErrorCode.DATA_BAD_REQUEST);
+		}
 	}
 
 }

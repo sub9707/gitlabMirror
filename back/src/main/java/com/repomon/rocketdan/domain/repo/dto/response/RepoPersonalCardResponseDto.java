@@ -25,23 +25,18 @@ public class RepoPersonalCardResponseDto {
      * -------레포 개인 카드 detail------
      * 레포 이름 repoName
      * 레포 기간 repoStart repoEnd
-     * 레포 포크, 스타  starCnt forkCnt
-     * 레포 description
      * 레포 언어 languages
      * -----------그래프 ----------
      * 커밋 commits
      * 머지 merges
      * 이슈 issues
      * 리뷰 reviews
-     * 보안성 security
-     * 효율성 efficiency
+     * 레포 포크, 스타  starCnt forkCnt
      *-----------그래프 ----------
      * 커밋 mycommits
      * 머지 mymerges
      * 이슈 myissues
      * 리뷰 myreviews
-     * 보안성 mysecurity
-     * 효율성 myefficiency
      * 전체 커밋 mytotalcommit
      * 전체 코드 mytotalcode
      * 기여도 my contribution
@@ -53,40 +48,39 @@ public class RepoPersonalCardResponseDto {
      * 깃허브 아이디 gitname
      * 깃허브 사진 git img
      */
-    private String repoName;
     private Long repomonId;
-    private String repoDescription;
     private Long repoExp;
-    private int starCnt;
-    private int forkCnt;
+    private int repomonTier;
+    private int contribution;
+
+    private String repoName;
+    private int contributers;
     private LocalDateTime repoStart;
     private LocalDateTime repoEnd;
     private List<String> languages;
-    private int contributers;
+
+    private Long totalcommit;
+    private Long totalcode;
+    private int mytotalcommit;
+    private Long mytotalcode;
+    private int conventionrate;
+
+    private int starCnt;
+    private int forkCnt;
     private Long commits;
     private Long issues;
     private Long merges;
     private Long reviews;
-    private int security;
-    private int efficiency;
-    private int totalcommit;
-    private Long totalcode;
 
-    private Long mycommits;
-    private Long myissues;
-    private Long mymerges;
-    private Long myreviews;
-    private int mysecurity;
-    private int myefficiency;
-    private int mytotalcommit;
-    private Long mytotalcode;
+    private int myissues;
+    private int mymerges;
+    private int myreviews;
 
-    private int mycontribution;
     private String userName;
     private String avatarUrl;
 
 
-    public static RepoPersonalCardResponseDto fromEntityAndGHRepository(RepoEntity repoEntity, GHRepository ghRepository, List<RepoHistoryEntity> historyEntityList, Integer contributers, Map<String, String> userInfo, RepoContributeResponseDto contributeResponse) {
+    public static RepoPersonalCardResponseDto fromEntityAndGHRepository(RepoEntity repoEntity, GHRepository ghRepository, List<RepoHistoryEntity> historyEntityList, Integer contributers, Map<String, String> userInfo, RepoContributeResponseDto contributeResponse,Integer myissue, Long mytotalcode, List<Integer> mymerges) {
         try {
             Map<String, Long> languageMap = ghRepository.listLanguages();
 
@@ -119,41 +113,40 @@ public class RepoPersonalCardResponseDto {
                 }
             }
 
-            int mycontribution = contributeResponse.getCommitters().get(userInfo.get("username"))/contributeResponse.getTotalCommitCount()*100;
+//            int mycontribution = contributeResponse.getCommitters().get(userInfo.get("username"))/contributeResponse.getTotalCommitCount()*100;
 
             return RepoPersonalCardResponseDto.builder()
-                    .repoName(repoEntity.getRepoName())
                     .repomonId(repoEntity.getRepomon().getRepomonId())
-                    .repoDescription(ghRepository.getDescription())
+                    .repomonTier(repoEntity.getRepomon().getRepomonTier())
+                    .contribution(60)
                     .repoExp(repoEntity.getRepoExp())
-                    .starCnt(ghRepository.getStargazersCount())
-                    .forkCnt(ghRepository.getForksCount())
+
+                    .repoName(repoEntity.getRepoName())
+                    .contributers(contributers)
                     .repoStart(repoEntity.getRepoStart())
                     .repoEnd(repoEntity.getRepoEnd())
                     .languages(languages)
-                    .contributers(contributers)
+
+                    .starCnt(ghRepository.getStargazersCount())
+                    .forkCnt(ghRepository.getForksCount())
                     .commits(commitsExp)
                     .issues(issuesExp)
                     .merges(mergesExp)
                     .reviews(reviewsExp)
-                    .efficiency(80)
-                    .security(70)
-                    .totalcommit(contributeResponse.getTotalCommitCount())
+
+                    .myissues(myissue)
+                    .mymerges(mymerges.get(0))
+                    .myreviews(mymerges.get(1))
+
+                    .totalcommit(60L)
                     .totalcode(contributeResponse.getTotalLineCount())
+//                    .mytotalcommit(contributeResponse.getCommitters().get(userInfo.get("username")))
+                    .mytotalcommit(10000)
+                    .mytotalcode(mytotalcode)
+                    .conventionrate(60)
 
-                    .mycommits(commitsExp)
-                    .myissues(issuesExp)
-                    .mymerges(mergesExp)
-                    .myreviews(reviewsExp)
-                    .myefficiency(80)
-                    .mysecurity(70)
-                    .mytotalcommit(contributeResponse.getCommitters().get(userInfo.get("username")))
-                    .mytotalcode(contributeResponse.getTotalLineCount())
-
-                    .mycontribution(mycontribution)
                     .userName(userInfo.get("nickname"))
                     .avatarUrl(userInfo.get("avatarUrl"))
-
                     .build();
         } catch (IOException e) {
             throw new RuntimeException(e);

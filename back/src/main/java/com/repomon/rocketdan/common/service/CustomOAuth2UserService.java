@@ -51,6 +51,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 		String avatarUrl = (String) userAttributes.get("avatar_url");
 		Long userId = authService.login(login);
 
+		name = name == null ? "" : name;
 		GithubOAuth2UserInfo userInfo = new GithubOAuth2UserInfo(userId, login, name, accessToken, avatarUrl);
 
 		return new DefaultOAuth2User(
