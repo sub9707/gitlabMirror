@@ -88,7 +88,7 @@ public class RepoController {
 
 
 	@ApiOperation(value = "모든 레포지토리 갱신")
-	@PutMapping ("/{userId}/repos")
+	@PutMapping ("/{userId}/reload")
 	public ResponseEntity<ResultDto> modifyAllRepo(@PathVariable Long userId) {
 		repoService.modifyAllRepo(userId);
 		return ResponseEntity.ok(ResultDto.ofSuccess());

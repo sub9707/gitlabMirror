@@ -24,10 +24,10 @@ public class UserController {
 
 	@ApiOperation("유저 정보를 조회합니다")
 	@GetMapping("/{userId}")
-	public ResponseEntity getUserInfo(@PathVariable("userId") Long userId) {
+	public ResponseEntity<ResultDto<UserResponseDto>> getUserInfo(@PathVariable("userId") Long userId) {
 
 		UserResponseDto userResponseDto = userService.getUserInfo(userId);
-		return ResponseEntity.ok().body(userResponseDto);
+		return ResponseEntity.ok().body(ResultDto.of(userResponseDto));
 	}
 
 
@@ -45,7 +45,7 @@ public class UserController {
 	@GetMapping("/{userId}/card")
 	public ResponseEntity<UserCardResponseDto> getUserCard(@PathVariable("userId") Long userId) {
 		UserCardResponseDto responseDto = userService.getUserCard(userId);
-		return ResponseEntity.ok(responseDto);
+		return ResponseEntity.ok(ResultDto.of(responseDto));
 	}
 
 }

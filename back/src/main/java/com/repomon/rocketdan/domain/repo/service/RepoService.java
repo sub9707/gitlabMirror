@@ -80,7 +80,7 @@ public class RepoService {
 			RepoListResponseDto.empty(userName) :
 			dtoList.get(0);
 
-		if (responseDto.getRepoListItems().size() < pageable.getPageSize()) {
+		if (responseDto.getRepoListItems() == null || responseDto.getRepoListItems().size() < pageable.getPageSize()) {
 			Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(userName);
 
 			Page<ActiveRepoEntity> activeRepoPage = activeRepoRepository.findByUser(userEntity,
@@ -287,7 +287,7 @@ public class RepoService {
 
 
 	/**
-	 * 레포 컨벤션 수정 및 등록
+	 * 레포 컨벤션 등록
 	 *
 	 * @param repoId
 	 * @param requestDto
@@ -304,7 +304,6 @@ public class RepoService {
 			throw new CustomException(ErrorCode.NO_ACCESS);
 		}
 
-		conventionRepository.deleteAllByRepo(repoEntity);
 		List<RepoConventionEntity> entities = requestDto.toEntities(repoEntity);
 		conventionRepository.saveAll(entities);
 	}
