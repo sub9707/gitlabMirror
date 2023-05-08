@@ -41,9 +41,9 @@ public class UserController {
 	}
 
 
-	@ApiOperation(value = "유저 카드를 반환합니다.")
+	@ApiOperation(value = "유저 카드 정보")
 	@GetMapping("/{userId}/card")
-	public ResponseEntity<ResultDto<UserCardResponseDto>> getUserCard(@PathVariable("userId") Long userId) throws IOException, InterruptedException {
+	public ResponseEntity<UserCardResponseDto> getUserCard(@PathVariable("userId") Long userId) {
 		UserCardResponseDto responseDto = userService.getUserCard(userId);
 		return ResponseEntity.ok(ResultDto.of(responseDto));
 	}
