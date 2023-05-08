@@ -1,4 +1,4 @@
-package com.repomon.rocketdan.domain.user.dto;
+package com.repomon.rocketdan.domain.user.dto.request;
 
 
 import lombok.Data;

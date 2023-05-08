@@ -1,11 +1,12 @@
 package com.repomon.rocketdan.domain.user.service;
 
 
-import com.repomon.rocketdan.domain.repo.dto.response.RepoRankResponseDto;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.repository.ActiveRepoRepository;
 import com.repomon.rocketdan.domain.repo.repository.RepoRepository;
-import com.repomon.rocketdan.domain.user.dto.UserRankResponseDto;
+import com.repomon.rocketdan.domain.user.dto.response.RepoRankResponseDto;
+import com.repomon.rocketdan.domain.user.dto.response.RepomonRankResponseDto;
+import com.repomon.rocketdan.domain.user.dto.response.UserRankResponseDto;
 import com.repomon.rocketdan.domain.user.entity.UserEntity;
 import com.repomon.rocketdan.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +46,8 @@ public class RankService {
 
 		for (UserEntity user : userEntityList) {
 			Long activeRepoCount = activeRepoRepository.countByUserAndRepoIsActive(user, true);
-			userRankResponseDtoList.add(UserRankResponseDto.fromEntity(user, activeRepoCount));
+			Long userRank = getUserRank(user);
+			userRankResponseDtoList.add(UserRankResponseDto.fromEntity(user, activeRepoCount, userRank));
 		}
 		return new PageImpl<>(userRankResponseDtoList, pageable, userEntityList.getTotalElements());
 	}
@@ -59,13 +61,15 @@ public class RankService {
 	 * @return
 	 */
 	public Page<RepoRankResponseDto> getRepoRankList(String search, Pageable pageable) {
-		if (search.isEmpty()) {
-			Page<RepoEntity> repoEntityList = repoRepository.findByIsActiveTrue(pageable);
-			return repoEntityList.map(RepoRankResponseDto::fromEntity);
-		} else {
-			Page<RepoEntity> repoEntityList = repoRepository.findByRepoNameContainingAndIsActiveTrue(search, pageable);
-			return repoEntityList.map(RepoRankResponseDto::fromEntity);
+
+		List<RepoRankResponseDto> repoRankResponseDtoList = new ArrayList<>();
+		Page<RepoEntity> repoEntityList = search.isEmpty() ? repoRepository.findByIsActiveTrue(pageable) : repoRepository.findByRepoNameContainingAndIsActiveTrue(search, pageable);
+
+		for (RepoEntity repo : repoEntityList) {
+			Long repoRank = getRepoRank(repo);
+			repoRankResponseDtoList.add(RepoRankResponseDto.fromEntity(repo, repoRank));
 		}
+		return new PageImpl<>(repoRankResponseDtoList, pageable, repoEntityList.getTotalElements());
 	}
 
 
@@ -76,19 +80,32 @@ public class RankService {
 	 * @param pageable : 페이지네이션 size, page
 	 * @return
 	 */
-	public Page<RepoRankResponseDto> getRepomonRankList(String search, Pageable pageable) {
-		if (search.isEmpty()) {
-			Page<RepoEntity> repoEntityList = repoRepository.findByIsActiveTrue(pageable);
-			return repoEntityList.map(RepoRankResponseDto::fromEntity);
-		} else {
-			Page<RepoEntity> repoEntityList = repoRepository.findByRepoNameContainingAndIsActiveTrue(search, pageable);
-			return repoEntityList.map(RepoRankResponseDto::fromEntity);
+	public Page<RepomonRankResponseDto> getRepomonRankList(String search, Pageable pageable) {
+
+		List<RepomonRankResponseDto> repomonRankResponseDtoList = new ArrayList<>();
+		Page<RepoEntity> repoEntityList = search.isEmpty() ? repoRepository.findByIsActiveTrue(pageable) : repoRepository.findByRepoNameContainingAndIsActiveTrue(search, pageable);
+
+		for (RepoEntity repo : repoEntityList) {
+			Long repomonRank = getRepomonRank(repo);
+			repomonRankResponseDtoList.add(RepomonRankResponseDto.fromEntity(repo, repomonRank));
 		}
+		return new PageImpl<>(repomonRankResponseDtoList, pageable, repoEntityList.getTotalElements());
 	}
 
 
 	/**
-	 * 레포 순위 구하기
+	 * 유저 순위 구하기(총경험치)
+	 *
+	 * @param user
+	 * @return
+	 */
+	private Long getUserRank(UserEntity user) {
+		return userRepository.findRankByTotalExp(user.getTotalExp());
+	}
+
+
+	/**
+	 * 레포 순위 구하기(경험치)
 	 *
 	 * @param repo
 	 * @return
