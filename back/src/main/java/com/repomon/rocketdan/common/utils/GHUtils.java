@@ -103,7 +103,7 @@ public class GHUtils {
 
         PagedIterable<CommitActivity> commitActivities = statistics
             .getCommitActivity()
-            .withPageSize(10);
+            .withPageSize(100);
 
         for(CommitActivity commitActivity : commitActivities){
             long week = commitActivity.getWeek();
@@ -147,7 +147,7 @@ public class GHUtils {
             .state(GHIssueState.CLOSED)
             .direction(GHDirection.DESC)
             .list()
-            .withPageSize(10);
+            .withPageSize(100);
 
         for (GHPullRequest pr : pullRequests) {
             Date closedAt = pr.getClosedAt();
@@ -190,7 +190,7 @@ public class GHUtils {
             .state(GHIssueState.CLOSED)
             .since(date)
             .list()
-            .withPageSize(10);
+            .withPageSize(100);
 
         for (GHIssue issue : issues) {
             Date closedAt = issue.getClosedAt();
@@ -216,7 +216,7 @@ public class GHUtils {
 
         PagedIterable<GHRepository> ghRepositories = ghRepository
             .listForks()
-            .withPageSize(10);
+            .withPageSize(100);
 
         for (GHRepository repo : ghRepositories) {
             Date createdAt = repo.getCreatedAt();
@@ -241,7 +241,7 @@ public class GHUtils {
 
         PagedIterable<GHStargazer> ghStargazers = ghRepository
             .listStargazers2()
-            .withPageSize(10);
+            .withPageSize(100);
 
         for (GHStargazer stargazer : ghStargazers) {
             Date starredAt = stargazer.getStarredAt();
@@ -298,7 +298,7 @@ public class GHUtils {
     @Retries
     public int getTotalCommitCount(GHRepositoryStatistics statistics) throws IOException {
         PagedIterable<CommitActivity> commitActivities = statistics.getCommitActivity()
-            .withPageSize(10);
+            .withPageSize(100);
 
         int totalCommitCount = 0;
         for(CommitActivity commitActivity : commitActivities){
