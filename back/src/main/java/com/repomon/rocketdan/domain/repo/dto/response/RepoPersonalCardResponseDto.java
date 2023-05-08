@@ -80,7 +80,7 @@ public class RepoPersonalCardResponseDto {
     private String avatarUrl;
 
 
-    public static RepoPersonalCardResponseDto fromEntityAndGHRepository(RepoEntity repoEntity, GHRepository ghRepository, List<RepoHistoryEntity> historyEntityList, Integer contributers, Map<String, String> userInfo, RepoContributeResponseDto contributeResponse,Integer myissue, Long mytotalcode, List<Integer> mymerges) {
+    public static RepoPersonalCardResponseDto fromEntityAndGHRepository(RepoEntity repoEntity, GHRepository ghRepository, List<RepoHistoryEntity> historyEntityList, Integer contributers, Map<String, String> userInfo, RepoContributeResponseDto contributeResponse,Integer myissue, Long mytotalcode, List<Integer> mymerges, Double conventionrate) {
         try {
             Map<String, Long> languageMap = ghRepository.listLanguages();
 
@@ -113,8 +113,7 @@ public class RepoPersonalCardResponseDto {
                 }
             }
 
-//            int mycontribution = contributeResponse.getCommitters().get(userInfo.get("username"))/contributeResponse.getTotalCommitCount()*100;
-
+            int convention = (int) Math.round(conventionrate);
             return RepoPersonalCardResponseDto.builder()
                     .repomonId(repoEntity.getRepomon().getRepomonId())
                     .repomonTier(repoEntity.getRepomon().getRepomonTier())
@@ -140,10 +139,10 @@ public class RepoPersonalCardResponseDto {
 
                     .totalcommit(60L)
                     .totalcode(contributeResponse.getTotalLineCount())
-//                    .mytotalcommit(contributeResponse.getCommitters().get(userInfo.get("username")))
+                    .mytotalcommit(contributeResponse.getCommitters().get(userInfo.get("username")))
                     .mytotalcommit(10000)
                     .mytotalcode(mytotalcode)
-                    .conventionrate(60)
+                    .conventionrate(convention)
 
                     .userName(userInfo.get("nickname"))
                     .avatarUrl(userInfo.get("avatarUrl"))

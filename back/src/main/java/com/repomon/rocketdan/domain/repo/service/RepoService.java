@@ -4,6 +4,7 @@ package com.repomon.rocketdan.domain.repo.service;
 import com.repomon.rocketdan.common.utils.GHUtils;
 import com.repomon.rocketdan.common.utils.SecurityUtils;
 import com.repomon.rocketdan.domain.repo.app.RepoDetail;
+import com.repomon.rocketdan.domain.repo.dto.request.RepoCardRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoConventionRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoPeriodRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.response.*;
@@ -546,6 +547,15 @@ public class RepoService {
 	}
 
 
+	public void modifyPersonalRepo(Long repoId, RepoCardRequestDto requestDto){
+		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+		});
+		for (String item : requestDto.getLangueges()) {
+			activeRepoRepository.save(PersonalLanguageEntity.of(userEntity, repomonStatusEntity));
+		}
+	}
+
 	/**
 	 * 레포 card detail
 	 */
@@ -579,7 +589,14 @@ public class RepoService {
 			throw new RuntimeException(e);
 		}
 
-		return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository, historyEntityList, totalLineCount, contributers);
+		//컨벤션 지킴율
+		double conventionrate = 0;
+		RepoConventionResponseDto conventionDto = getRepoConventionInfo(repoId);
+		if (conventionDto.getTotalCnt() != 0 && conventionDto.getCollectCnt() != 0){
+			conventionrate = conventionDto.getCollectCnt()/conventionDto.getTotalCnt()*100;
+		}
+
+		return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository, historyEntityList, totalLineCount, contributers, conventionrate);
 	}
 
 	/**
@@ -643,8 +660,13 @@ public class RepoService {
 		//내 코드 수
 		Long mytotalcode = ghUtils.getLineCountWithUser(statistics, user.getUserName());
 
+		//컨벤션 지킴율
+		double conventionrate = 0;
+		RepoConventionResponseDto conventionDto = getRepoConventionInfo(repoId);
+		if (conventionDto.getTotalCnt() != 0 && conventionDto.getCollectCnt() != 0){
+			conventionrate = conventionDto.getCollectCnt()/conventionDto.getTotalCnt()*100;
+		}
 
-
-		return RepoPersonalCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository, historyEntityList, contributers, userInfo, contributeResponse, myissue ,mytotalcode, mymerges);
+		return RepoPersonalCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository, historyEntityList, contributers, userInfo, contributeResponse, myissue ,mytotalcode, mymerges, conventionrate);
 	}
 }
