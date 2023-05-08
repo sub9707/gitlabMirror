@@ -25,6 +25,14 @@ export const refreshDetail = async (repoId: number) => {
   return res;
 };
 
+// 모든 레포 갱신
+// PUT
+export const refreshAllRepo = async (userId: number) => {
+  const res = await http.put(`/repo/${userId}/reload`);
+
+  return res.data.resultCode;
+};
+
 // 레포지토리 활성화 설정
 // PUT
 export const setRepoActive = async (repoId: number) => {
