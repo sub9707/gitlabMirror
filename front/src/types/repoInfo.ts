@@ -24,4 +24,5 @@ export type RepoListItemType = {
   repomonName: string;
   repoDescription: string;
   repoRating: number;
+  repomonUrl: string;
 };
