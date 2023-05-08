@@ -16,17 +16,24 @@ const Model = ({
 }) => {
   const gltf = useLoader(GLTFLoader, repomonUrl);
 
-  let mixer: THREE.AnimationMixer | undefined;
+  let mixer: THREE.AnimationMixer;
 
   if (gltf.animations.length) {
     mixer = new THREE.AnimationMixer(gltf.scene);
+    console.log(mixer);
+
     mixer.timeScale = 0.3;
     if (isClicked) {
-      const randomIndex = Math.floor(Math.random() * 39);
+      const randomIndex = Math.floor(Math.random() * gltf.animations.length);
       const action = mixer.clipAction(gltf.animations[randomIndex]);
       action.play();
-    } else {
+    } else if (gltf.animations.length >= 9) {
       const action = mixer.clipAction(gltf.animations[8]);
+      action.clampWhenFinished = true;
+      action.play();
+    } else {
+      const randomIndex = Math.floor(Math.random() * gltf.animations.length);
+      const action = mixer.clipAction(gltf.animations[randomIndex]);
       action.clampWhenFinished = true;
       action.play();
     }
@@ -34,7 +41,6 @@ const Model = ({
 
   useFrame((state, delta) => {
     mixer?.update(delta);
-    // gltf.scene.rotation.y += delta * 0.05; // 회전 속도를 조절할 수 있습니다.
   });
 
   return (
@@ -60,7 +66,7 @@ function DetailRepomon({ repomonUrl }: { repomonUrl: string }) {
       <directionalLight color="white" position={[0, 0, 5]} intensity={0.6} />
       <directionalLight color="white" position={[-5, 0, -5]} intensity={0.6} />
       <Model
-        repomonUrl={"/static/models/Dingo_3.glb"}
+        repomonUrl={repomonUrl}
         isClicked={isClicked}
         setIsClicked={setIsClicked}
       />

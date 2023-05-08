@@ -153,7 +153,7 @@ const Page = () => {
 
   function getMatchResult() {
     // oppo - my
-    return requestMatchResult(2, 4);
+    return requestMatchResult(1, 4);
   }
 
   useEffect(() => {
