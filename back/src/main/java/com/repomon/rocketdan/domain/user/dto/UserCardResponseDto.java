@@ -25,17 +25,17 @@ import java.util.Map;
 @Builder
 public class UserCardResponseDto {
 
-	private Long MyrepomonId;
-	private Long MyrepoExp;
-	private int MyrepomonTier;
-	private String MyrepoName;
+	private final Long myrepomonId;
+	private final Long myrepoExp;
+	private final int myrepomonTier;
+	private final String myrepoName;
 
 	private final Long totalExp;
 
-	private String userName;
-	private String avatarUrl;
-	private String introduce;
-	private Integer repoCount;
+	private final String userName;
+	private final String avatarUrl;
+	private final String introduce;
+	private final Integer repoCount;
 
 	private final Long totalCommitCount;
 	private final Long totalCodeLineCount;
@@ -48,29 +48,19 @@ public class UserCardResponseDto {
 	private final Long forkCount;
 
 
-	public static UserCardResponseDto fromEntity(UserCardDetail userCardDetail, UserEntity user) throws IOException {
+	public static UserCardResponseDto fromEntity(UserCardDetail userCardDetail, UserEntity user, RepoEntity representrepo) throws IOException {
 
-		RepoRepository repoRepository = null;
-
-		GitHub gitHub = null;
-		GHUtils ghUtils = new GHUtils();
-		Map<String, String> userInfo = ghUtils.getUser(user.getUserName());
-		GHUser githubUser = gitHub.getUser(user.getUserName());
-
-		RepoEntity repoEntity = repoRepository.findById(user.getRepresentRepo().get().getActiveRepoId()).orElseThrow(() -> {
-			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-		});
 
 		return UserCardResponseDto.builder()
-			.userName(userInfo.get("nickname"))
-			.avatarUrl(userInfo.get("avatarUrl"))
+			.userName(userCardDetail.getUserName())
+			.avatarUrl(userCardDetail.getAvatarUrl())
 			.totalExp(user.getTotalExp())
-			.introduce(githubUser.getBio())
+			.introduce(userCardDetail.getIntroduce())
 			.repoCount(userCardDetail.getRepoCount())
-				.MyrepoExp(repoEntity.getRepoExp())
-				.MyrepomonId(repoEntity.getRepoId())
-				.MyrepoName(repoEntity.getRepoName())
-				.MyrepomonTier(repoEntity.getRepomon().getRepomonTier())
+				.myrepoExp(representrepo.getRepoExp())
+				.myrepomonId(representrepo.getRepoId())
+				.myrepoName(representrepo.getRepoName())
+				.myrepomonTier(representrepo.getRepomon().getRepomonTier())
 			.totalCommitCount(userCardDetail.getTotalCommitCount())
 			.totalCodeLineCount(userCardDetail.getTotalCodeLineCount())
 			.languages(userCardDetail.getLanguages())

@@ -13,7 +13,18 @@ import java.util.List;
 @AllArgsConstructor
 public class UserCardDetail {
 
+	private Long myrepomonId;
+	private Long myrepoExp;
+	private int myrepomonTier;
+	private String myrepoName;
+
+	private Long totalExp;
+
+	private String userName;
+	private String avatarUrl;
+	private String introduce;
 	private Integer repoCount;
+
 	private Long totalCommitCount;
 	private Long totalCodeLineCount;
 	private List<String> languages;

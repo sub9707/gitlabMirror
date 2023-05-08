@@ -581,6 +581,10 @@ public class GHUtils {
         Map<String, GHRepository> repos = getRepositoriesInPublicOrganization(user);
         repos.putAll(getRepositories(user));
 
+        userCardInfo.setUserName(userName);
+        userCardInfo.setAvatarUrl(user.getAvatarUrl());
+        userCardInfo.setIntroduce(user.getBio());
+
         userCardInfo.setRepoCount(repos.size());
         userCardInfo.setTotalCommitCount(getTotalCommitCountByUser(repos, userName));
         userCardInfo.setTotalCodeLineCount(getTotalCodeLineCountByUser(repos, userName));
