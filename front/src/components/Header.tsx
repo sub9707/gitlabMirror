@@ -84,6 +84,11 @@ const Header = () => {
         <Link href="/rank" className={styles.item}>
           랭킹
         </Link>
+        {userId && userId !== -1 && (
+          <Link href={`user/${userId}`} className={styles.item}>
+            내 프로필
+          </Link>
+        )}
       </div>
       <div className={styles.right}>
         {userId === -1 && (
@@ -107,7 +112,7 @@ const Header = () => {
                   style={{ marginBottom: "1rem" }}
                   onClick={onClickRepoList}
                 >
-                  내 레포지토리
+                  내 프로필
                 </button>
                 <button onClick={onClickLogout}>로그아웃</button>
               </div>
