@@ -11,7 +11,7 @@ import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
 @Getter @Builder
-@RedisHash("repo-contribute")
+@RedisHash(value = "repo-contribute", timeToLive = 86400)
 @AllArgsConstructor
 public class RepoContributeResponseDto {
 
