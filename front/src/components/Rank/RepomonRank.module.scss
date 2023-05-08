@@ -17,6 +17,12 @@
     font-size: 18px;
     overflow: hidden;
 
+    @include desktop125 {
+      height: 200px;
+      font-size: 16px;
+      padding: 1rem 2rem 0 3.5rem;
+    }
+
     .main-element {
       position: absolute;
       top: 1%;
@@ -146,6 +152,10 @@
 
 .list {
   font-size: 1.25rem;
+
+  @include desktop125 {
+    font-size: 1.125rem;
+  }
 
   & > div {
     display: grid;
