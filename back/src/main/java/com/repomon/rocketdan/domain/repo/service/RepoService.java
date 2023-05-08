@@ -287,7 +287,7 @@ public class RepoService {
 
 
 	/**
-	 * 레포 컨벤션 수정 및 등록
+	 * 레포 컨벤션 등록
 	 *
 	 * @param repoId
 	 * @param requestDto
@@ -304,7 +304,6 @@ public class RepoService {
 			throw new CustomException(ErrorCode.NO_ACCESS);
 		}
 
-		conventionRepository.deleteAllByRepo(repoEntity);
 		List<RepoConventionEntity> entities = requestDto.toEntities(repoEntity);
 		conventionRepository.saveAll(entities);
 	}
