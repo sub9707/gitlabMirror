@@ -67,7 +67,7 @@ public class RepomonStatusEntity extends RepoEntity {
 	}
 
 
-	public static RepomonStatusEntity fromGHRepository(GHRepository ghRepository, RepomonEntity repomonEntity) {
+	public static RepomonStatusEntity fromGHRepository(String ownerName, GHRepository ghRepository, RepomonEntity repomonEntity) {
 		LocalDateTime repoCreatedAt = null;
 
 		try {
@@ -81,7 +81,7 @@ public class RepomonStatusEntity extends RepoEntity {
 
 		return RepomonStatusEntity.builder()
 			.repoName(ghRepository.getName())
-			.repoOwner(ghRepository.getOwnerName())
+			.repoOwner(ownerName)
 			.repomonNickname(repomonEntity.getRepomonName())
 			.repoExp(0L)
 			.repoKey(ghRepository.getNodeId())

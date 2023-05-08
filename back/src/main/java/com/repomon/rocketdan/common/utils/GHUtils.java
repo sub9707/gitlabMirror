@@ -6,11 +6,9 @@ import com.repomon.rocketdan.domain.repo.app.GrowthFactor;
 import com.repomon.rocketdan.domain.repo.app.UserCardDetail;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepoHistoryEntity;
-import java.sql.Time;
 import java.util.List;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import org.kohsuke.github.*;
 import org.kohsuke.github.GHRepositoryStatistics.CodeFrequency;
 import org.kohsuke.github.GHRepositoryStatistics.CommitActivity;
@@ -23,7 +21,6 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.*;
 
 
 import org.kohsuke.github.GHIssue;
@@ -48,6 +45,14 @@ public class GHUtils {
     @PostConstruct
     private void init() throws IOException {
         gitHub = new GitHubBuilder().withOAuthToken(accessToken).build();
+    }
+
+    public String getOrganizationFirstOwner(String orgName) {
+        try {
+            return gitHub.getOrganization(orgName).listMembersWithRole("Owner").toList().get(0).getLogin();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Map<String, GHRepository> getRepositoriesWithName(String name){
@@ -598,5 +603,4 @@ public class GHUtils {
 
         return userCardInfo;
     }
-
 }

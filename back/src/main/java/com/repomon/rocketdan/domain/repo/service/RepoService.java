@@ -21,7 +21,6 @@ import com.repomon.rocketdan.exception.CustomException;
 import com.repomon.rocketdan.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.kohsuke.github.GHCommit;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHRepositoryStatistics;
@@ -322,7 +321,7 @@ public class RepoService {
 			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 		});
 
-		if (!repoEntity.getRepoOwner().equals(userName)) {
+		if(!repoEntity.getRepoOwner().equals(userName)){
 			throw new CustomException(ErrorCode.NO_ACCESS);
 		}
 
@@ -356,7 +355,12 @@ public class RepoService {
 							throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 						});
 
-					RepomonStatusEntity repomonStatusEntity = RepomonStatusEntity.fromGHRepository(ghRepository, repomonEntity);
+					String orgName = ghRepository.getOwnerName();
+					if(!orgName.equals(userEntity.getUserName())){
+						orgName = ghUtils.getOrganizationFirstOwner(orgName);
+					}
+
+					RepomonStatusEntity repomonStatusEntity = RepomonStatusEntity.fromGHRepository(orgName, ghRepository, repomonEntity);
 					repomonStatusRepository.save(repomonStatusEntity);
 					activeRepoRepository.save(ActiveRepoEntity.of(userEntity, repomonStatusEntity));
 
