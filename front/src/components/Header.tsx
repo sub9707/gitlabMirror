@@ -81,7 +81,7 @@ const Header = () => {
             />
           </Link>
         </div>
-        <Link href="/" className={styles.item}>
+        <Link href="/rank" className={styles.item}>
           랭킹
         </Link>
       </div>

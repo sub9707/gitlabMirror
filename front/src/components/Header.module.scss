@@ -7,7 +7,7 @@
   justify-content: space-between;
   width: 100%;
   height: 90px;
-  padding: 0 5%;
+  padding: 0 8%;
   border-bottom: 2px solid rgba(255, 255, 255, 0.5);
   background-color: white;
   position: fixed;
@@ -17,8 +17,8 @@
   -moz-box-shadow: 1px 9px 15px -2px rgba(0, 0, 0, 0.1);
 
   .item {
-    font-size: 22px;
-    margin-left: 2rem;
+    font-size: 24px;
+    margin-left: 3rem;
     color: $highlight;
     transition: all 0.2s ease-in-out;
 
@@ -58,14 +58,15 @@
       width: 300%;
       transform: translateX(-30%);
       position: absolute;
-      padding: 0.5rem 0.3rem;
+      top: 120%;
+      padding: 0.5rem;
       border-radius: 10px;
-      background: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.6);
       box-shadow: 0 8px 20px 0 rgba(31, 38, 135, 0.37);
       backdrop-filter: blur(9px);
       -webkit-backdrop-filter: blur(9px);
       border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.18);
+      border: 1px solid $primary;
       animation: fade-in 0.2s ease-in-out;
 
       @keyframes fade-in {
@@ -77,24 +78,14 @@
         }
       }
 
-      .menu-item {
-        font-size: 22px;
-        margin-left: 2rem;
-        color: $highlight;
-        transition: all 0.2s ease-in-out;
-
-        &:hover {
-          color: rgb(13, 111, 224);
-        }
-      }
-
       & button {
-        padding: 0.2rem;
+        padding: 0.4rem;
         border-radius: 5px;
         text-align: center;
+        font-size: 18px;
 
         &:hover {
-          background-color: rgba(255, 255, 255, 0.3);
+          background-color: rgba(255, 255, 255, 0.5);
         }
       }
     }
