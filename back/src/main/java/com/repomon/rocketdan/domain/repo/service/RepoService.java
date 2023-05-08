@@ -336,7 +336,9 @@ public class RepoService {
 
 	private void saveAndUpdateRepo(Map<String, GHRepository> repositories, UserEntity userEntity) {
 		repositories.forEach((repoKey, ghRepository) -> {
-			repoRepository.findByRepoKey(repoKey).ifPresentOrElse(repoEntity -> repoEntity.update(ghRepository),
+			repoRepository.findByRepoKey(repoKey).ifPresentOrElse(repoEntity -> {
+					updateRepositoryInfo(repoEntity, ghRepository, List.of(userEntity));
+				},
 				() -> {
 					Long eggId = 9995L + (new Random().nextInt(5));
 					RepomonEntity repomonEntity = repomonRepository.findById(eggId)
