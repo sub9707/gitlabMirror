@@ -65,9 +65,6 @@ public class RepoEntity extends CommonEntity {
 	}
 
 
-	public void update(GHRepository ghRepository) {
-		this.repoName = ghRepository.getName();
-	}
 
 
 	public void updateExp(Long totalExp) {
