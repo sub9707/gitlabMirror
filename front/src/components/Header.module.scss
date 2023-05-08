@@ -84,6 +84,10 @@
         text-align: center;
         font-size: 18px;
 
+        @include desktop125 {
+          font-size: 16px;
+        }
+
         &:hover {
           background-color: rgba(255, 255, 255, 0.5);
         }

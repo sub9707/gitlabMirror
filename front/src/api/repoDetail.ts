@@ -91,7 +91,7 @@ export const axiosRequestUpStat = async (
     data = { ...data, [statPoint]: increaseInfo[statPoint] };
   }
 
-  const res = await http.put("repomon/stat", { data });
+  const res = await http.put("repomon/stat", data);
 
   return res;
 };
