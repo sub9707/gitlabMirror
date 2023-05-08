@@ -116,7 +116,12 @@ const Page = ({ params }: { params: { userId: string } }) => {
           <div className={styles.bodyList}>
             <div className={styles.listTitle}>
               <div
-                style={{ display: "flex", width: "50%", alignItems: "center" }}
+                style={{
+                  display: "flex",
+                  width: "50%",
+                  alignItems: "center",
+                  marginLeft: "10%",
+                }}
               >
                 <p>레포지터리 목록</p>
                 <ArrowPathIcon
@@ -135,9 +140,6 @@ const Page = ({ params }: { params: { userId: string } }) => {
                     console.log("done");
                   }}
                 />
-              </div>
-              <div className={styles.filterBox}>
-                <DropDown />
               </div>
             </div>
             <div className={styles.listCards}>

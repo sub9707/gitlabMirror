@@ -108,7 +108,7 @@ function RepositoryCard(props: propType) {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            border: "1px solid black",
+            // border: "1px solid black",
             height: "100%",
           }}
         >
@@ -165,8 +165,37 @@ type modelProps = {
 const Model = (props: modelProps) => {
   const [repomonURL, setRepomonURL] = useState<string>(props.repomonUrl);
   const [repoId, setRepoId] = useState<number>(props.repoId);
+  // 기본값은 알 크기
+  const filename = repomonURL.slice(repomonURL.lastIndexOf("/") + 1);
+  const num = filename.slice(-5, filename.length - 4);
+  const str = num.toString();
+  // console.log(repomonURL + "?id=" + repoId);
+  const getModelLevel = (str: string): number[] => {
+    switch (str) {
+      case "2":
+        return [4.5, 4.5, 4.5];
+      case "3":
+        return [4, 4, 4];
+      default:
+        return [5, 5, 5];
+    }
+  };
+  const getModelPosition = (str: string): number[] => {
+    switch (str) {
+      case "2":
+        return [1, -2, 0];
+      case "3":
+        return [1, -2, 0];
+      default:
+        return [0, -2, 0];
+    }
+  };
 
-  console.log(repomonURL + "?id=" + repoId);
+  const [scaleState, setScaleState] = useState<number[]>(getModelLevel(str));
+  const [positionState, setPositionState] = useState<number[]>(
+    getModelPosition(str)
+  );
+
   const gltf = useLoader(GLTFLoader, repomonURL + "?id=" + repoId);
 
   let mixer: THREE.AnimationMixer | undefined;
@@ -187,8 +216,8 @@ const Model = (props: modelProps) => {
   return (
     <primitive
       object={gltf.scene}
-      scale={[4, 4, 4]}
-      position={[0, -2, 0]}
+      scale={scaleState}
+      position={positionState}
       rotation={[0.2, -0.8, 0]}
     />
   );

@@ -56,13 +56,9 @@
         height: 10%;
         display: flex;
         align-items: center;
-        justify-content: space-around;
+        justify-content: start;
         p {
           font-size: 2em;
-        }
-        & .filterBox {
-          width: 8em;
-          height: 2em;
         }
       }
       & .listCards {
