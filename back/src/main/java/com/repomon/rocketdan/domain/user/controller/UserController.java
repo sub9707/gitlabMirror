@@ -24,10 +24,10 @@ public class UserController {
 
 	@ApiOperation("유저 정보를 조회합니다")
 	@GetMapping("/{userId}")
-	public ResponseEntity getUserInfo(@PathVariable("userId") Long userId) {
+	public ResponseEntity<ResultDto<UserResponseDto>> getUserInfo(@PathVariable("userId") Long userId) {
 
 		UserResponseDto userResponseDto = userService.getUserInfo(userId);
-		return ResponseEntity.ok().body(userResponseDto);
+		return ResponseEntity.ok().body(ResultDto.of(userResponseDto));
 	}
 
 
@@ -41,11 +41,11 @@ public class UserController {
 	}
 
 
-	@ApiOperation(value = "대표 레포몬을 설정합니다.")
+	@ApiOperation(value = "유저 카드를 반환합니다.")
 	@GetMapping("/{userId}/card")
-	public ResponseEntity<UserCardResponseDto> getUserCard(@PathVariable("userId") Long userId) throws IOException, InterruptedException {
+	public ResponseEntity<ResultDto<UserCardResponseDto>> getUserCard(@PathVariable("userId") Long userId) throws IOException, InterruptedException {
 		UserCardResponseDto responseDto = userService.getUserCard(userId);
-		return ResponseEntity.ok(responseDto);
+		return ResponseEntity.ok(ResultDto.of(responseDto));
 	}
 
 }
