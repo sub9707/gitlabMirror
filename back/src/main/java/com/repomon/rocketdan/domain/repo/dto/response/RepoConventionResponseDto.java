@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 
 @Getter
-@RedisHash(value = "repo-convention")
+@RedisHash(value = "repo-convention", timeToLive = 86400)
 @AllArgsConstructor
 public class RepoConventionResponseDto {
 
