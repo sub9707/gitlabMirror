@@ -12,11 +12,7 @@ export const metadata = {
   description: "깃으로 키우는 Repomon 프로젝트",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <Providers>
       <html lang="ko">
@@ -30,4 +26,6 @@ export default function RootLayout({
       </html>
     </Providers>
   );
-}
+};
+
+export default RootLayout;

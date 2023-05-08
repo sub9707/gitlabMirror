@@ -18,13 +18,12 @@ import {
 import { axiosRequestUpStat } from "@/api/repoDetail";
 import { useRouter } from "next/navigation";
 import sword from "public/static/icons/sword_icon.png";
-import tmp1 from "public/tmp_record_repomon_1.png";
-import tmp2 from "public/tmp_record_repomon_2.png";
 import bronze from "public/static/tier/bronze.svg";
 import silver from "public/static/tier/silver.svg";
 import gold from "public/static/tier/gold.svg";
 import platinum from "public/static/tier/platinum.svg";
 import diamond from "public/static/tier/diamond.svg";
+import { pretreatModelUrl } from "@/app/utils/PretreatModelUrl";
 
 const DetailBattle = ({
   battleInfo,
@@ -106,6 +105,7 @@ const DetailBattle = ({
     try {
       const res = await axiosRequestUpStat(parseInt(repoId, 10), pointStats);
       console.log("스탯 변경 응답: ", res);
+      setStatChanged(false);
       setStatUpdated((prev) => !prev);
     } catch (err) {
       console.error("스탯 변경 에러", err);
@@ -338,7 +338,14 @@ const DetailBattle = ({
                     )}
                   </div>
                   <div id="left">
-                    <Image src={tmp1} alt="tmp1"></Image>
+                    <Image
+                      src={`/static/models_png/${pretreatModelUrl(
+                        record.attackRepo.repomon.repomonUrl
+                      )}.png`}
+                      alt="공격 레포몬"
+                      width={50}
+                      height={50}
+                    ></Image>
                     <div
                       className={`${styles["record-refo-info"]} ${styles.attack}`}
                     >
@@ -390,7 +397,14 @@ const DetailBattle = ({
                         <p>{record.defenseRepo.repomonNickname}</p>
                       </p>
                     </div>
-                    <Image src={tmp2} alt="tmp2"></Image>
+                    <Image
+                      src={`/static/models_png/${pretreatModelUrl(
+                        record.defenseRepo.repomon.repomonUrl
+                      )}.png`}
+                      alt="방어 레포몬"
+                      width={50}
+                      height={50}
+                    ></Image>
                   </div>
                 </div>
               ))}
