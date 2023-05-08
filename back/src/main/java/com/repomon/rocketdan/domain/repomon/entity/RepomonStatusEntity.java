@@ -49,11 +49,11 @@ public class RepomonStatusEntity extends RepoEntity {
 
 
 	public void setStartStatus(int atk, int dodge, int def, int critical, int hit) {
-		this.atkPoint = atk;
-		this.dodgePoint = dodge;
-		this.defPoint = def;
-		this.criticalPoint = critical;
-		this.hitPoint = hit;
+		this.startAtk = atk;
+		this.startDodge = dodge;
+		this.startDef = def;
+		this.startCritical = critical;
+		this.startHit = hit;
 	}
 
 
