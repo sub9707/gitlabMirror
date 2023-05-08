@@ -19,6 +19,7 @@ public enum ErrorCode {
 
 	/* 400 BAD REQUEST : 잘못된 요청. 입력된 데이터에 문제가 있음 */
 	DATA_BAD_REQUEST(BAD_REQUEST, "입력된 데이터에 문제가 있습니다."),
+	DATA_CONVENTION_TOO_SHORT(BAD_REQUEST, "입력된 컨벤션이 너무 짧습니다."),
 
 	MESSAGE_REQUEST_ERROR(BAD_REQUEST, "입력된 메세지에 문제가 있습니다."),
 
