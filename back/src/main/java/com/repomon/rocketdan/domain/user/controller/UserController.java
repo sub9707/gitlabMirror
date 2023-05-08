@@ -45,7 +45,7 @@ public class UserController {
 	@GetMapping("/{userId}/card")
 	public ResponseEntity<UserCardResponseDto> getUserCard(@PathVariable("userId") Long userId) {
 		UserCardResponseDto responseDto = userService.getUserCard(userId);
-		return ResponseEntity.ok(ResultDto.of(responseDto));
+		return ResponseEntity.ok(responseDto);
 	}
 
 }
