@@ -5,6 +5,7 @@ export type UserInfoType = {
   totalExp: number;
   userId: number;
   username: string;
+  userRank: number;
 };
 
 export type RepoListType = {

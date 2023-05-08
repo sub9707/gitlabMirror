@@ -8,7 +8,11 @@ import Pagination from "@/components/Pagination";
 import RepositoryCard from "@/components/RepositoryCard";
 import { useRouter } from "next/navigation";
 import DropDown from "@/components/DropDown";
-import { getTotalRepoList, getUserDetail } from "@/api/userRepo";
+import {
+  getTotalRepoList,
+  getUserDetail,
+  refreshAllRepo,
+} from "@/api/userRepo";
 import { RepoListType, UserInfoType } from "@/types/repoInfo";
 import { useAppSelector } from "@/redux/hooks";
 
@@ -19,6 +23,7 @@ const Page = ({ params }: { params: { userId: string } }) => {
   const [userInfo, setUserInfo] = useState<UserInfoType>();
   const [repoInfo, setRepoInfo] = useState<RepoListType>();
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const [isReloaded, setIsReloaded] = useState<boolean>(false);
 
   function getUserInfo(userId: string) {
     return getUserDetail(Number(userId));
@@ -26,7 +31,7 @@ const Page = ({ params }: { params: { userId: string } }) => {
   useEffect(() => {
     const data = getUserInfo(params.userId)
       .then((response) => {
-        const res = response.data;
+        const res = response.data.data;
         setUserInfo(res);
         console.log(res);
       })
@@ -39,19 +44,21 @@ const Page = ({ params }: { params: { userId: string } }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getTotalRepoList(Number(params.userId), 1, 6);
+        const response = await getTotalRepoList(Number(params.userId), 0, 6);
         const data = response.data;
         setRepoInfo(data);
+        console.log("called List");
         setTimeout(() => {
           setIsLoaded(true);
-        }, 2000);
+          console.log("reload done");
+        }, 1500);
       } catch (error) {
         console.error(error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [isReloaded]);
 
   // 동일 유저 체크
   const [isSameUser, setIsSameUser] = useState<boolean>();
@@ -67,7 +74,7 @@ const Page = ({ params }: { params: { userId: string } }) => {
               height: "100%",
               display: "flex",
             }}
-          ></iframe>
+          />
         </div>
         <div className={styles.bodyContainer}>
           <div className={styles.sideProfile}>
@@ -82,7 +89,7 @@ const Page = ({ params }: { params: { userId: string } }) => {
                 {userInfo?.userId}({userInfo?.nickname})
               </p>
               <p className={styles.boxContent}>
-                총 경험치 : {userInfo?.totalExp}(14위)
+                총 경험치 : {userInfo?.totalExp}({userInfo?.userRank}위)
               </p>
             </div>
             <div>
@@ -97,11 +104,6 @@ const Page = ({ params }: { params: { userId: string } }) => {
               <p className={styles.boxContent}>경험치 : 18502 (14위)</p>
               <p className={styles.boxContent}>배틀 레이팅 : 1850 (12위)</p>
             </div>
-            <div>
-              <Link href="/" className={styles.visitLink}>
-                레포 농장 방문 &gt;&gt;
-              </Link>
-            </div>
           </div>
           <div className={styles.bodyList}>
             <div className={styles.listTitle}>
@@ -113,7 +115,14 @@ const Page = ({ params }: { params: { userId: string } }) => {
                   width="2rem"
                   style={{ marginLeft: "2%" }}
                   className={styles.arrow}
-                  onClick={() => router.push("/user/123/abc/registRepo")}
+                  onClick={async () => {
+                    console.log("loading...");
+                    userInfo?.userId && (await refreshAllRepo(userInfo.userId));
+                    console.log("load done..!");
+                    setIsLoaded(false);
+                    setIsReloaded(!isReloaded);
+                    console.log("done");
+                  }}
                 />
               </div>
               <div className={styles.filterBox}>

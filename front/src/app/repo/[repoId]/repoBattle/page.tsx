@@ -153,7 +153,7 @@ const Page = () => {
 
   function getMatchResult() {
     // oppo - my
-    return requestMatchResult(1, 4);
+    return requestMatchResult(2, 4);
   }
 
   useEffect(() => {
@@ -169,12 +169,20 @@ const Page = () => {
       });
   }, []);
 
-  const audioRef = useRef(null);
+  // audio control
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
-    if (audioRef.current) {
-      // audioRef.current.play();
-    }
+    const audio = audioRef.current;
+
+    const playAudio = () => {
+      audio?.play();
+      document.removeEventListener("click", playAudio);
+      document.removeEventListener("keydown", playAudio);
+    };
+
+    document.addEventListener("click", playAudio);
+    document.addEventListener("keydown", playAudio);
   }, []);
 
   // 초기화면
@@ -236,11 +244,11 @@ const Page = () => {
                 }}
               >
                 <Suspense fallback={<Loader />}>
-                  <ambientLight intensity={0.1} />
+                  <ambientLight intensity={0.5} />
                   <directionalLight
                     color="white"
-                    position={[0, 0, 5]}
-                    intensity={0.5}
+                    position={[5, 0, 5]}
+                    intensity={0.6}
                   />
                   <Model />
                   <SecondModel />
@@ -253,7 +261,6 @@ const Page = () => {
               <div style={{ height: "200px", overflowY: "auto" }}>
                 {loadData ? (
                   <>
-                    <p>done...!</p>
                     {matchData?.data.battleLog.map((resData, index, array) => {
                       return (
                         <React.Fragment key={resData.turn}>
