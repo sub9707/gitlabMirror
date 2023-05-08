@@ -69,13 +69,7 @@ export const getTotalRepoList = async (
   pageNum: number,
   sizeNum: number
 ) => {
-  const data = {
-    page: pageNum,
-    size: sizeNum,
-  };
-
-  const res = await http.get(`/repo/${userId}`, { data });
-
+  const res = await http.get(`/repo/${userId}?page=${pageNum}&size=${sizeNum}`);
   return res;
 };
 

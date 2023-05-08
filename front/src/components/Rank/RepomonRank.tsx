@@ -5,7 +5,7 @@ import { axiosRequestRepoRank } from "@/api/rank";
 import { RepomonRankContentType, RepomonRankInfoType } from "@/types/rank";
 import styles from "./RepomonRank.module.scss";
 import Image from "next/image";
-import Pagination from "../Pagination";
+import Pagination from "@/components/UI/Pagination";
 import top1Icon from "public/static/rank/1.png";
 import top2Icon from "public/static/rank/2.png";
 import top3Icon from "public/static/rank/3.png";
