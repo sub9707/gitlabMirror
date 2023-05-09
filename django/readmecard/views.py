@@ -5,7 +5,7 @@ from json import JSONDecodeError
 import base64
 
 # This code example demonstrates how to convert HTML document to PNG images.
-
+import random
 
 from django.http import HttpResponse
 from .images import PER, POCKET, img0, img1,img2,img3,img4,img5,img6,img7,img8,img9,img10,img11,img12,img13,img14,img15,img16,img17,img18,img19,img20,img21,img22,img23,img24,img25,img26,img27,img28,img29,img30
@@ -116,9 +116,38 @@ IMG = {
 }
 
 ELLIPSE_TYPE = {
+    0 : 'elli1',
     1 : 'elli1',
     2 : 'elli2',
     3 : 'elli3',
+}
+
+COLOR_DICT = {
+'JavaScript' : '#F7DF1E',
+'Java' : '#007396',
+'Python' : '#3776AB',
+'HTML' : '#E34F26',
+'CSS' : '#1572B6',
+'TypeScript' : '#3178C6',
+'Shell' : '#FFD500',
+'SCSS' : '#1572B6',
+'Dockerfile' : '#2496ED',
+'Solidity' : '#363636',
+'Vue' : '#4FC08D',
+}
+
+RANDOM_COLOR = {
+'0' : '#F7DF1E',
+'1' : '#007396',
+'2' : '#3776AB',
+'3' : '#E34F26',
+'4' : '#1572B6',
+'5' : '#3178C6',
+'6' : '#FFD500',
+'7' : '#1572B6',
+'8' : '#2496ED',
+'9' : '#363636',
+'10' : '#4FC08D',
 }
 
 class UrlSettings(object):
@@ -157,7 +186,7 @@ class RepoDefaultSettings(object):
             self.contributers = self.json['contributers']
             self.repoStart = self.day(self.json['repoStart'])
             self.repoEnd = self.day(self.json['repoEnd'])
-            self.languages = self.json['languages']
+            self.languages = self.languageCount(self.json['languages'])
             self.totalcommit = self.json['totalcommit']
             self.totalcode = self.json['totalcode']
             self.starCnt = self.json['starCnt']
@@ -179,7 +208,7 @@ class RepoDefaultSettings(object):
             self.contributers = 6
             self.repoStart = '23.03.10'
             self.repoEnd = '23.04.20'
-            self.languages = ''
+            self.languages = [('JavaScript', '#F7DF1E',0,50),('Java','#007396',52,70)]
             self.totalcommit = 123456
             self.totalcode = 654321
             self.starCnt = 10
@@ -216,6 +245,33 @@ class RepoDefaultSettings(object):
                 return data
         else:
             return ''
+
+    def languageCount(self, data):
+        if data != None:
+            if len(data) > 7:
+                data = data[:5]
+            else:
+                while len(data) <= 6:
+                    data.append('')
+        else:
+            data = ['']*6
+        
+        img_enter = 0
+        for i in range(len(data)):
+            if i != 0:
+                img_enter = data[i][2] + 2
+            else:
+                img_enter += len(data[i])*5 + 2
+            
+            if data[i] in COLOR_DICT:
+                data[i] = (data[i], COLOR_DICT[data[i]], img_enter, len(data[i])*5)
+            else:
+                color = random(0,len(RANDOM_COLOR))
+                data[i] = (data[i], COLOR_DICT[color], img_enter, len(data[i])*5)
+                
+        print('data = ' + data)
+        return data
+        
 
 def repo_card(request):
     per = IMG['Per']
@@ -380,15 +436,10 @@ def repo_card(request):
         <text x="335" y="171" dz="-30" class="repo-percent">{conventionrate} %</text>
     </g>
 
-    <g transform="translate(190, 100)">
-        <image height="12px" xlink:href="https://img.shields.io/badge/HTML5-E34F26.svg?&amp;style=for-the-badge&amp;logo=HTML5&amp;logoColor=white"/>
-    </g>
-    <g transform="translate(230, 100)">
-        <image height="12px" xlink:href="https://img.shields.io/badge/JavaScriipt-F7DF1E.svg?&amp;style=for-the-badge&amp;logo=JavaScript&amp;logoColor=black"/>
-    </g>
-    <g transform="translate(290, 100)">
-        <image height="12px" xlink:href="https://img.shields.io/badge/CSS3-1572B6.svg?&amp;style=for-the-badge&amp;logo=CSS3&amp;logoColor=white"/>
-    </g>
+
+    <rect x="{lang0_2}" y="50" rx="20" ry="20" width="{lang0_3}" height="50" style="fill:{lang0_1};"/>
+    <text x="{lang0_2}" y="50" class="subtitle">{lang0_0}</text>
+
 
     <image href="{chart}" x="425" y="25" height="160px" class="repomon-img"/>
     <text x="502" y="28" class="charttitle">Commit</text>
@@ -410,14 +461,16 @@ def repo_card(request):
                totalcommit = handle_set.totalcommit,
                totalcode = handle_set.totalcode,
                per=per,
-            #    img=IMG['img'+str(handle_set.repomonId)],
-            #    ellipsetype=ELLIPSE_TYPE[handle_set.repomon_tier],
-               ellipsetype=ELLIPSE_TYPE[1],
-               img=IMG['img28'],
+               img=IMG['img'+str(handle_set.repomonId)],
+               ellipsetype=ELLIPSE_TYPE[handle_set.repomonTier],
+                # (data[i], COLOR_DICT[data[i]], img_enter, len(data[i])*5)
+                lang0_0=handle_set.languages[0][0],
+                lang0_1=handle_set.languages[0][1],
+                lang0_2=int(handle_set.languages[0][2]) + 190,
+                lang0_3=int(handle_set.languages[0][3]),
                chart=handle_set.chart
                )
 
-    logger.info('[/generate_badge/repocard] repo: {}, repoExp: {}'.format(handle_set.repoName, handle_set.repoExp))
     response = HttpResponse(content=svg)
     response['Content-Type'] = 'image/svg+xml'
     response['Cache-Control'] = 'max-age=3600'
@@ -483,20 +536,20 @@ class RepoPersonalDefaultSettings(object):
             self.conventionrate = 77
             self.conventionrate_percent = self.percent(self.conventionrate)
 
-            self.starCnt = 5
-            self.forkCnt = 10
-            self.commits = 30
-            self.issues = 10
-            self.merges = 20
-            self.reviews = 10
+            self.starCnt = 5000
+            self.forkCnt = 4000
+            self.commits = 12345
+            self.issues = 7000
+            self.merges = 8000
+            self.reviews = 4800
 
             self.gitname = '로켓단'
             self.avatarUrl = IMG['img0']
 
-            self.mycommits = 123
-            self.myissues = 12
-            self.mymerges = 12
-            self.myreviews = 12
+            self.mycommits = 10000
+            self.myissues = 6000
+            self.mymerges = 5000
+            self.myreviews = 4800
 
             self.chart = svg_chart_personal([self.commits, self.issues, self.reviews, self.forkCnt, self.starCnt, self.merges],[self.mycommits, self.myissues, self.myreviews, self.forkCnt, self.starCnt, self.mymerges])
 
