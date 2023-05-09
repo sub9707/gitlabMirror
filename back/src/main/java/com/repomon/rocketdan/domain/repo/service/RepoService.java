@@ -548,11 +548,25 @@ public class RepoService {
 	}
 
 	public void modifyPersonalRepo(Long repoId, RepoCardRequestDto requestDto){
-		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
+		String userName = SecurityUtils.getCurrentUserId();
+		UserEntity user = userRepository.findByUserName(userName).orElseThrow(
+				() -> {throw new CustomException(ErrorCode.NOT_FOUND_USER);}
+		);
+		RepoEntity repo = repoRepository.findById(repoId).orElseThrow(() -> {
 			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 		});
+		ActiveRepoEntity activeRepoEntity = activeRepoRepository.findByRepoAndUser(repo, user).orElseThrow(() -> {
+			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+		});
+
+		List<PersonalLanguageEntity> pastLanguage = languageRepository.findAllByActiveRepoEntity(activeRepoEntity);
+		if (null != pastLanguage){
+			for (PersonalLanguageEntity item : pastLanguage){
+				languageRepository.delete(item);
+			}
+		}
 		for (String item : requestDto.getLangueges()) {
-			languageRepository.save(PersonalLanguageEntity.of(item, repoEntity));
+			languageRepository.save(PersonalLanguageEntity.of(item, activeRepoEntity));
 		}
 	}
 
@@ -632,6 +646,14 @@ public class RepoService {
         UserEntity user = userRepository.findById(userId).orElseThrow(() -> {throw new CustomException(ErrorCode.NOT_FOUND_USER);});
         Map<String, String> userInfo = ghUtils.getUser(user.getUserName());
 
+		//언어 설정
+		ActiveRepoEntity activeRepo = activeRepoRepository.findByRepoAndUser(repoEntity, user).orElseThrow(()-> {throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);});
+		List<PersonalLanguageEntity> language = languageRepository.findAllByActiveRepoEntity(activeRepo);
+		List<String> languages = new ArrayList<>();
+		for (PersonalLanguageEntity item : language){
+			languages.add(item.getLanguageCode());
+		}
+
 		//기여도
 		RepoContributeResponseDto contributeResponse = redisContributeRepository.findByRepoId(repoId)
 				.orElseGet(() -> findContributeDtoWithGHApi(repoEntity));
@@ -667,6 +689,6 @@ public class RepoService {
 			conventionrate = conventionDto.getCollectCnt()/conventionDto.getTotalCnt()*100;
 		}
 
-		return RepoPersonalCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository, historyEntityList, contributers, userInfo, contributeResponse, myissue ,mytotalcode, mymerges, conventionrate);
+		return RepoPersonalCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository, historyEntityList, contributers, userInfo, contributeResponse, myissue ,mytotalcode, mymerges, conventionrate, languages);
 	}
 }
