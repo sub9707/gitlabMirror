@@ -136,7 +136,7 @@ public class RepoController {
 		return ResponseEntity.ok().build();
 	}
 
-	@ApiOperation(value = "레포 카드 정보")
+	@ApiOperation(value = "레포카드 정보")
 	@GetMapping("/{repoId}/card/detail")
 	public ResponseEntity<RepoCardResponseDto> getRepoCardDetail(Long repoId) {
 		RepoCardResponseDto responseDto = repoService.RepoCardDetail(repoId);
@@ -144,7 +144,7 @@ public class RepoController {
 	}
 
 
-	@ApiOperation(value = "개인 레포 카드 정보")
+	@ApiOperation(value = "래포개인카드 정보")
 	@GetMapping("/{repoId}/card/personal")
 	public ResponseEntity<RepoPersonalCardResponseDto> getPersonalRepoCard(Long repoId, Long userId) throws IOException, InterruptedException {
 		RepoPersonalCardResponseDto responseDto = repoService.RepoPersonalCardDetail(repoId, userId);
@@ -152,10 +152,10 @@ public class RepoController {
 	}
 
 
-	@ApiOperation(value = "개인 레포 카드 언어설정")
+	@ApiOperation(value = "레포개인카드 언어설정")
 	@PutMapping("/{repoId}/card/personal")
-	public ResponseEntity<ResultDto> modifyPersonalRepoCard(Long repoId, RepoCardRequestDto requestDto) {
-		repoService.modifyPersonalRepo(repoId, requestDto);
+	public ResponseEntity<ResultDto> modifyPersonalRepoCard(@PathVariable Long repoId, @RequestBody RepoCardRequestDto requestDto) {
+		repoService.modifyPersonalRepo(repoId,requestDto);
 		return ResponseEntity.ok(ResultDto.ofSuccess());
 	}
 

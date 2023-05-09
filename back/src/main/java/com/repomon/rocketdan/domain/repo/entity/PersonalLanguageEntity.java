@@ -1,7 +1,6 @@
 package com.repomon.rocketdan.domain.repo.entity;
 
 
-import com.repomon.rocketdan.domain.user.entity.UserEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -28,11 +27,9 @@ public class PersonalLanguageEntity {
 
     public static PersonalLanguageEntity of(String languageCode, RepoEntity repoEntity) {
         return PersonalLanguageEntity.builder()
-                .languageCode()
+                .languageCode(languageCode)
                 .repoEntity(repoEntity)
                 .build();
     }
 
-    private static Object builder() {
-    }
 }

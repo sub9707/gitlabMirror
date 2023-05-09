@@ -54,6 +54,7 @@ public class RepoService {
 	private final RepoHistoryRepository repoHistoryRepository;
 	private final RepoConventionRepository conventionRepository;
 	private final ActiveRepoRepository activeRepoRepository;
+	private final PersonalLanguageRepository languageRepository;
 
 	// redis repository
 	private final RepoRedisListRepository redisListRepository;
@@ -546,13 +547,12 @@ public class RepoService {
 		return RepomonSelectResponseDto.createSelectRepomon(repomonList);
 	}
 
-
 	public void modifyPersonalRepo(Long repoId, RepoCardRequestDto requestDto){
 		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
 			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 		});
 		for (String item : requestDto.getLangueges()) {
-			activeRepoRepository.save(PersonalLanguageEntity.of(userEntity, repomonStatusEntity));
+			languageRepository.save(PersonalLanguageEntity.of(item, repoEntity));
 		}
 	}
 
