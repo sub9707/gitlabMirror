@@ -7,11 +7,13 @@ import javax.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
 @Getter @Builder
-@RedisHash("repo-contribute")
+@RedisHash(value = "repo-contribute", timeToLive = 86400)
+@NoArgsConstructor
 @AllArgsConstructor
 public class RepoContributeResponseDto {
 
@@ -28,6 +30,8 @@ public class RepoContributeResponseDto {
 
     public static RepoContributeResponseDto of(int totalCommitCount, long totalLineCount,
         Map<String, Integer> committers, String mvp, RepoEntity repoEntity) {
+        committers = committers.isEmpty() ? new HashMap<>() : committers;
+
         return RepoContributeResponseDto.builder()
             .totalCommitCount(totalCommitCount)
             .totalLineCount(totalLineCount)

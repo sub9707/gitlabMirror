@@ -4,8 +4,11 @@ package com.repomon.rocketdan.domain.repo.dto.response;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.repomon.rocketdan.domain.repo.entity.RepoConventionEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
+import java.util.ArrayList;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
@@ -14,8 +17,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-@Getter
-@RedisHash(value = "repo-convention")
+@Getter @Builder
+@RedisHash(value = "repo-convention", timeToLive = 86400)
+@NoArgsConstructor
 @AllArgsConstructor
 public class RepoConventionResponseDto {
 
@@ -25,7 +29,7 @@ public class RepoConventionResponseDto {
 	@Indexed
 	private Long repoId;
 	private String repoOwner;
-	private List<ConventionInfo> conventions;
+	private List<ConventionInfo> conventions = new ArrayList<>();
 	private int totalCnt;
 	private int collectCnt;
 
@@ -33,10 +37,18 @@ public class RepoConventionResponseDto {
 	public static RepoConventionResponseDto fromEntities(RepoEntity repoEntity, List<RepoConventionEntity> conventions,
 		int totalCnt, int collectCnt) {
 
-		List<ConventionInfo> collect = conventions.stream().map(ConventionInfo::of)
-			.collect(Collectors.toList());
+		List<ConventionInfo> collect = conventions.isEmpty() ? new ArrayList<>()
+			:conventions.stream()
+				.map(ConventionInfo::of)
+				.collect(Collectors.toList());
 
-		return new RepoConventionResponseDto(null, repoEntity.getRepoId(), repoEntity.getRepoOwner(), collect, totalCnt, collectCnt);
+		return RepoConventionResponseDto.builder()
+			.repoId(repoEntity.getRepoId())
+			.repoOwner(repoEntity.getRepoOwner())
+			.conventions(collect)
+			.totalCnt(totalCnt)
+			.collectCnt(collectCnt)
+			.build();
 	}
 
 

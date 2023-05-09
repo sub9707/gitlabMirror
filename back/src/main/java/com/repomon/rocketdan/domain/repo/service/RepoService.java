@@ -82,7 +82,7 @@ public class RepoService {
 			RepoListResponseDto.empty(userName) :
 			dtoList.get(0);
 
-		if (responseDto.getRepoListItems() == null || responseDto.getRepoListItems().size() < pageable.getPageSize()) {
+		if (responseDto.getRepoListItems().size() < pageable.getPageSize()) {
 			Map<String, GHRepository> repositories = ghUtils.getRepositoriesWithName(userName);
 
 			Page<ActiveRepoEntity> activeRepoPage = activeRepoRepository.findByUser(userEntity,
@@ -200,6 +200,10 @@ public class RepoService {
 		RepoConventionResponseDto responseDto = redisConventionRepository.findByRepoId(repoId)
 			.orElseGet(() -> findConventionDtoWithGHApi(repoEntity));
 
+		for(int retries = 5; retries > 0 && responseDto.getConventions().isEmpty(); retries--){
+			responseDto = findConventionDtoWithGHApi(repoEntity);
+		}
+
 		return responseDto;
 	}
 
@@ -218,6 +222,11 @@ public class RepoService {
 
 		RepoContributeResponseDto responseDto = redisContributeRepository.findByRepoId(repoId)
 			.orElseGet(() -> findContributeDtoWithGHApi(repoEntity));
+
+		for(int retries = 5; retries > 0 && responseDto.getCommitters().isEmpty(); retries--){
+			redisContributeRepository.delete(responseDto);
+			responseDto = findContributeDtoWithGHApi(repoEntity);
+		}
 
 		return responseDto;
 	}
@@ -392,7 +401,12 @@ public class RepoService {
 			Map<String, Integer> commitCountMap = ghUtils.getCommitterInfoMap(statistics);
 
 			String mvp = null;
-			int totalCommitCount = ghUtils.getTotalCommitCount(statistics);
+
+			int totalCommitCount = 0;
+			while(totalCommitCount == 0 && !commitCountMap.isEmpty()) {
+				totalCommitCount = ghUtils.getTotalCommitCount(statistics);
+			}
+
 			for (String user : commitCountMap.keySet()) {
 				if (mvp == null || commitCountMap.get(user) > commitCountMap.get(mvp)) {
 					mvp = user;
