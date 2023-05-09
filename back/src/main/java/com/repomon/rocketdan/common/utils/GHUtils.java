@@ -1,7 +1,6 @@
 package com.repomon.rocketdan.common.utils;
 
 
-import com.repomon.rocketdan.common.Retries;
 import com.repomon.rocketdan.domain.repo.app.GrowthFactor;
 import com.repomon.rocketdan.domain.repo.app.UserCardDetail;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
@@ -10,12 +9,10 @@ import java.util.List;
 
 import java.util.*;
 import org.kohsuke.github.*;
-import org.kohsuke.github.GHRepository.ForkSort;
 import org.kohsuke.github.GHRepositoryStatistics.CodeFrequency;
 import org.kohsuke.github.GHRepositoryStatistics.CommitActivity;
 import org.kohsuke.github.GHRepositoryStatistics.ContributorStats;
 import org.kohsuke.github.GHRepositoryStatistics.ContributorStats.Week;
-import org.kohsuke.github.connector.GitHubConnectorRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -101,13 +98,12 @@ public class GHUtils {
     }
 
 
-    @Retries
     public Collection<RepoHistoryEntity> GHCommitToHistory(GHRepositoryStatistics statistics, RepoEntity repoEntity, Date date)
         throws IOException, InterruptedException {
         Map<LocalDate, RepoHistoryEntity> histories = new HashMap<>();
 
-        PagedIterable<CommitActivity> commitActivities = statistics
-            .getCommitActivity();
+        List<CommitActivity> commitActivities = statistics
+            .getCommitActivity().toList();
 
         for(CommitActivity commitActivity : commitActivities){
             long week = commitActivity.getWeek();
@@ -293,7 +289,6 @@ public class GHUtils {
     }
 
 
-    @Retries
     public Long getTotalLineCount(GHRepositoryStatistics statistics) throws IOException, InterruptedException {
         long totalLineCount = 0L;
         List<CodeFrequency> codeFrequencies = statistics.getCodeFrequency();
@@ -305,7 +300,6 @@ public class GHUtils {
         return totalLineCount;
     }
 
-    @Retries
     public int getTotalCommitCount(GHRepositoryStatistics statistics) throws IOException {
         PagedIterable<CommitActivity> commitActivities = statistics.getCommitActivity();
 
@@ -316,7 +310,6 @@ public class GHUtils {
 
         return totalCommitCount;
     }
-    @Retries
     public Map<String, Integer> getCommitterInfoMap(GHRepositoryStatistics statistics) throws IOException, InterruptedException {
         Map<String, Integer> commitCountMap = new HashMap<>();
         PagedIterable<ContributorStats> contributorStatList = statistics
@@ -341,7 +334,6 @@ public class GHUtils {
      * @throws IOException
      * @throws InterruptedException
      */
-    @Retries
     public Long getLineCountWithUser(GHRepositoryStatistics statistics, String userName) throws IOException, InterruptedException {
         long lineCount = 0L;
         PagedIterable<ContributorStats> contributorStatList = statistics
@@ -369,7 +361,6 @@ public class GHUtils {
      * @throws IOException
      * @throws InterruptedException
      */
-    @Retries
     public Long getCommitCountWithUser(GHRepositoryStatistics statistics, String userName)
         throws IOException, InterruptedException {
         Long commitCount = 0L;
@@ -388,7 +379,6 @@ public class GHUtils {
     /**
      * 유저 이름의 총 이슈 수
      */
-    @Retries
     public Integer getMyIssueToHistory(GHRepository ghRepository, Date date, String username) throws IOException {
 
 
@@ -407,7 +397,6 @@ public class GHUtils {
     /**
      * 유저 이름의 총 머지, 리뷰 수
      */
-    @Retries
     public List<Integer> getMyMergeToHistory(GHRepository ghRepository, Date date, String username) throws IOException {
         int mymerge = 0;
         int myreview = 0;

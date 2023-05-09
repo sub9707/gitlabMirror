@@ -37,7 +37,7 @@ public class GHUtilsAop {
     private final GHUtils ghUtils;
 
     @Around("execution(* com.repomon.rocketdan.common.utils.GHUtils.*(..))")
-    public Object aroundRetriesAnno(ProceedingJoinPoint proceedingJoinPoint) throws Throwable{
+    public Object aroundRetriesAnno(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         long start = System.currentTimeMillis();
         String methodName = proceedingJoinPoint.getSignature().getName();
         try {
@@ -57,10 +57,12 @@ public class GHUtilsAop {
             }
 
             return proceedingJoinPoint.proceed();
-        }finally{
+        } catch (RuntimeException e) {
+            return aroundRetriesAnno(proceedingJoinPoint);
+        } finally {
             long finish = System.currentTimeMillis();
             long timeMs = finish - start;
-            log.info("END: " + methodName + " " + timeMs+"ms");
+            log.info("END: " + methodName + " " + timeMs + "ms");
         }
     }
 
