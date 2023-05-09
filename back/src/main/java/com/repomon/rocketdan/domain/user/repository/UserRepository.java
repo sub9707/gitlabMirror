@@ -23,4 +23,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 		+ "WHERE ranked.user_id = :userId")
 	Integer findRankByUserId(@Param("userId") Long userId);
 
+	@Query(value = "SELECT COUNT(u) + 1 " +
+		"FROM UserEntity u " +
+		"WHERE u.totalExp > :totalExp")
+	Long findRankByTotalExp(@Param("totalExp") Long totalExp);
+
 }
