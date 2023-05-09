@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { axiosRequestRepoRank } from "@/api/rank";
+import { axiosRequestBattleRank } from "@/api/rank";
 import { RepoRankContentType, RepoRankInfoType } from "@/types/rank";
-import styles from "./RepomonRank.module.scss";
+import styles from "./BattleRank.module.scss";
 import Image from "next/image";
 import Pagination from "@/components/UI/Pagination";
 import top1Icon from "public/static/rank/1.png";
@@ -12,7 +12,7 @@ import top3Icon from "public/static/rank/3.png";
 import { pretreatModelUrl } from "@/app/utils/PretreatModelUrl";
 import { useRouter } from "next/navigation";
 
-const RepomonRank = ({
+const BattleRank = ({
   searchInput,
   searchRequestSign,
 }: {
@@ -22,22 +22,22 @@ const RepomonRank = ({
   const [page, setPage] = useState<number>(0);
   const [top3, setTop3] = useState<RepoRankContentType[]>([]);
   const [isInitial, setIsInitial] = useState<boolean>(true);
-  const [repomonRankInfo, setRepomonRankInfo] = useState<RepoRankInfoType>();
+  const [battleRankInfo, setBattleRankInfo] = useState<RepoRankInfoType>();
   const router = useRouter();
 
   useEffect(() => {
-    requestRepoRank();
+    requestBattleRank();
   }, [page, searchRequestSign]);
 
   const onClickRepoItem = (repoId: number) => {
     router.push(`/repo/${repoId}`);
   };
 
-  const requestRepoRank = async () => {
+  const requestBattleRank = async () => {
     try {
-      const res = await axiosRequestRepoRank(page, searchInput);
-      console.log("레포몬 랭킹: ", res);
-      setRepomonRankInfo(res.data);
+      const res = await axiosRequestBattleRank(page, searchInput);
+      console.log("배틀 랭킹: ", res);
+      setBattleRankInfo(res.data);
       if (isInitial) {
         setTop3(res.data.content.slice(0, 3));
         setIsInitial(false);
@@ -80,9 +80,9 @@ const RepomonRank = ({
               <p className={styles["card-content"]}>{data.repoOwner}</p>
               <p className={styles["card-title"]}>레포지토리</p>
               <p className={styles["card-content"]}>{data.repoName}</p>
-              <p className={styles["card-title"]}>경험치</p>
+              <p className={styles["card-title"]}>레이팅</p>
               <p className={styles["card-content"]}>
-                {data.repoExp.toLocaleString()} <span>EXP</span>
+                {data.rating.toLocaleString()}
               </p>
             </div>
           </div>
@@ -94,15 +94,15 @@ const RepomonRank = ({
           <span>레포몬</span>
           <span>레포지토리</span>
           <span>유저</span>
-          <span>경험치</span>
+          <span>레이팅</span>
         </div>
-        {repomonRankInfo?.content.map((item, index) => (
+        {battleRankInfo?.content.map((item, index) => (
           <div
             key={index}
             className={styles["list-item"]}
             onClick={() => onClickRepoItem(item.repoId)}
           >
-            <span>{item.repoRank}</span>
+            <span>{item.repomonRank}</span>
             <span>
               <Image
                 alt="레포몬"
@@ -117,14 +117,14 @@ const RepomonRank = ({
             <span>{item.repoName}</span>
             <span>{item.repoOwner}</span>
             <span>
-              {item.repoExp.toLocaleString()}
+              {item.rating.toLocaleString()}
               <span
                 style={{
+                  color: "rgb(70, 70, 70)",
+                  fontSize: "1rem",
                   margin: "0 0 0 0.3rem",
                 }}
-              >
-                EXP
-              </span>
+              ></span>
             </span>
           </div>
         ))}
@@ -134,12 +134,12 @@ const RepomonRank = ({
           size={15}
           currentPage={page}
           setCurrentPage={setPage}
-          totalPage={repomonRankInfo?.totalPages!}
-          totalElement={repomonRankInfo?.totalElements!}
+          totalPage={battleRankInfo?.totalPages!}
+          totalElement={battleRankInfo?.totalElements!}
         />
       </div>
     </div>
   );
 };
 
-export default RepomonRank;
+export default BattleRank;

@@ -9,6 +9,8 @@ import {
 import Lottie from "react-lottie-player";
 import rankingLottie from "public/static/lotties/ranking.json";
 import RepomonRank from "@/components/Rank/RepomonRank";
+import BattleRank from "@/components/Rank/BattleRank";
+import UserRank from "@/components/Rank/UserRank";
 
 const Page = () => {
   const [tabIndex, setTabIndex] = useState<string>("레포몬");
@@ -30,6 +32,7 @@ const Page = () => {
 
     setTabIndex(target.id);
     sessionStorage.setItem("rankTabIndex", target.id);
+    setSearchInput("");
   };
 
   /** 검색 입력 값 변경 시 */
@@ -125,6 +128,18 @@ const Page = () => {
       <div className={styles.content}>
         {tabIndex === "레포몬" && (
           <RepomonRank
+            searchInput={searchInput}
+            searchRequestSign={searchRequestSign}
+          />
+        )}
+        {tabIndex === "배틀" && (
+          <BattleRank
+            searchInput={searchInput}
+            searchRequestSign={searchRequestSign}
+          />
+        )}
+        {tabIndex === "유저" && (
+          <UserRank
             searchInput={searchInput}
             searchRequestSign={searchRequestSign}
           />

@@ -223,6 +223,7 @@ const Page = ({ params }: { params: { userId: string } }) => {
 
               <div className={styles.paginations}>
                 <Paging
+                  size={6}
                   currentPage={currentPage}
                   setCurrentPage={setCurrentPage}
                   totalPage={repoInfo?.totalPages + 1}
