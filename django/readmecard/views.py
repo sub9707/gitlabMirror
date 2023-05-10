@@ -144,20 +144,6 @@ ELLIPSE_TYPE = {
     2 : 'elli2',
     3 : 'elli3',
 }
-print(COLOR_DICT)
-# COLOR_DICT = {
-# 'JavaScript' : '#F7DF1E',
-# 'Java' : '#007396',
-# 'Python' : '#3776AB',
-# 'HTML' : '#E34F26',
-# 'CSS' : '#1572B6',
-# 'TypeScript' : '#3178C6',
-# 'Shell' : '#FFD500',
-# 'SCSS' : '#1572B6',
-# 'Dockerfile' : '#2496ED',
-# 'Solidity' : '#363636',
-# 'Vue' : '#4FC08D',
-# }
 
 RANDOM_COLOR = {
 '0' : '#F7DF1E',
