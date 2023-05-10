@@ -69,6 +69,12 @@ const Page: NextPage<PageProps> = ({ params }) => {
       }, 2000);
     }
   }
+  useEffect(() => {
+    console.log(repoInitData.repomonId);
+    if (repoInitData.repomonId <= 9000) {
+      // alert("이미 등록된 레포몬 입니다");
+    }
+  }, []);
 
   useEffect(() => {
     setRepoInitData({
