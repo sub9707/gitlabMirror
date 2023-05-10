@@ -1,6 +1,7 @@
 package com.repomon.rocketdan.domain.repo.service;
 
 
+import com.repomon.rocketdan.common.utils.DateUtils;
 import com.repomon.rocketdan.common.utils.GHUtils;
 import com.repomon.rocketdan.common.utils.SecurityUtils;
 import com.repomon.rocketdan.domain.repo.app.RepoDetail;
@@ -200,7 +201,8 @@ public class RepoService {
 		RepoConventionResponseDto responseDto = redisConventionRepository.findByRepoId(repoId)
 			.orElseGet(() -> findConventionDtoWithGHApi(repoEntity));
 
-		for(int retries = 5; retries > 0 && responseDto.getConventions().isEmpty(); retries--){
+		if(responseDto.getConventions().isEmpty()){
+			redisConventionRepository.delete(responseDto);
 			responseDto = findConventionDtoWithGHApi(repoEntity);
 		}
 
@@ -223,7 +225,7 @@ public class RepoService {
 		RepoContributeResponseDto responseDto = redisContributeRepository.findByRepoId(repoId)
 			.orElseGet(() -> findContributeDtoWithGHApi(repoEntity));
 
-		for(int retries = 5; retries > 0 && responseDto.getCommitters().isEmpty(); retries--){
+		if(responseDto.getCommitters().isEmpty()){
 			redisContributeRepository.delete(responseDto);
 			responseDto = findContributeDtoWithGHApi(repoEntity);
 		}
@@ -375,10 +377,7 @@ public class RepoService {
 					repomonStatusRepository.save(repomonStatusEntity);
 					activeRepoRepository.save(ActiveRepoEntity.of(userEntity, repomonStatusEntity));
 
-
-					Calendar calendar = Calendar.getInstance();
-					calendar.add(Calendar.YEAR, -1);
-					Date date = calendar.getTime();
+					Date date = DateUtils.yearsAgo();
 
 					initRepositoryInfo(repomonStatusEntity, ghRepository, date);
 				});
@@ -398,14 +397,24 @@ public class RepoService {
 		try {
 			GHRepositoryStatistics statistics = ghRepository.getStatistics();
 			long totalLineCount = ghUtils.getTotalLineCount(statistics);
-			Map<String, Integer> commitCountMap = ghUtils.getCommitterInfoMap(statistics);
+
+			RepoHistoryEntity historyEntity = repoHistoryRepository.findFirstByRepoOrderByWorkedAtDesc(
+				repoEntity).orElseGet(null);
+
+			Date fromDate;
+			if(historyEntity == null) {
+				fromDate = DateUtils.yearsAgo();
+			}else{
+				LocalDate workedAt = historyEntity.getWorkedAt();
+				fromDate = Date.from(workedAt.atStartOfDay(ZoneId.systemDefault()).toInstant());
+				fromDate = DateUtils.fewDateAgo(fromDate, 1);
+			}
+
+			Map<String, Integer> commitCountMap = ghUtils.getCommitterInfoMap(statistics, fromDate);
 
 			String mvp = null;
 
-			int totalCommitCount = 0;
-			while(totalCommitCount == 0 && !commitCountMap.isEmpty()) {
-				totalCommitCount = ghUtils.getTotalCommitCount(statistics);
-			}
+			int totalCommitCount = ghUtils.getTotalCommitCount(statistics);
 
 			for (String user : commitCountMap.keySet()) {
 				if (mvp == null || commitCountMap.get(user) > commitCountMap.get(mvp)) {
@@ -475,12 +484,13 @@ public class RepoService {
 		try {
 			List<RepoHistoryEntity> list = new ArrayList<>();
 
-			GHRepositoryStatistics statistics = ghRepository.getStatistics();
-			list.addAll(ghUtils.GHCommitToHistory(statistics, repoEntity, fromDate));
+			list.addAll(ghUtils.GHCommitToHistory(ghRepository, repoEntity, fromDate));
 			list.addAll(ghUtils.GHPullRequestToHistory(ghRepository, repoEntity, fromDate));
 			list.addAll(ghUtils.GHIssueToHistory(ghRepository, repoEntity, fromDate));
-			list.addAll(ghUtils.GHForkToHistory(ghRepository, repoEntity, fromDate));
-			list.addAll(ghUtils.GHStarToHistory(ghRepository, repoEntity, fromDate));
+
+			LocalDate now = LocalDate.now();
+			list.addAll(ghUtils.GHForkToHistory(ghRepository, repoEntity, now));
+			list.addAll(ghUtils.GHStarToHistory(ghRepository, repoEntity, now));
 
 			Long totalExp = 0L;
 			for (RepoHistoryEntity item : list) {
@@ -508,19 +518,14 @@ public class RepoService {
 			LocalDate workedAt = historyEntity.getWorkedAt();
 			Date workDate = Date.from(workedAt.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
-			Calendar instance = Calendar.getInstance();
-			instance.setTime(workDate);
-			instance.add(Calendar.DATE, 1);
-
-			Long exp = initRepositoryInfo(repoEntity, ghRepository, Date.from(instance.toInstant()));
+			workDate = DateUtils.fewDateAgo(workDate, 1);
+			Long exp = initRepositoryInfo(repoEntity, ghRepository, workDate);
 
 			if(repoEntity.getIsActive()) {
 				userEntities.forEach(userEntity -> userEntity.updateTotalExp(exp));
 			}
 		}, () -> {
-			Calendar calendar = Calendar.getInstance();
-			calendar.add(Calendar.YEAR, -1);
-			Date date = calendar.getTime();
+			Date date = DateUtils.yearsAgo();
 			Long exp = initRepositoryInfo(repoEntity, ghRepository, date);
 
 			if(repoEntity.getIsActive()) {
@@ -681,15 +686,11 @@ public class RepoService {
 		if (repoHistoryOptional.isPresent()) {
 			LocalDate workedAt = repoHistoryOptional.get().getWorkedAt();
 			Date workDate = Date.from(workedAt.atStartOfDay(ZoneId.systemDefault()).toInstant());
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(workDate);
-			cal.add(Calendar.DATE, 1);
-			myissue = ghUtils.getMyIssueToHistory(ghRepository, Date.from(cal.toInstant()), user.getUserName());
-			mymerges = ghUtils.getMyMergeToHistory(ghRepository, Date.from(cal.toInstant()), user.getUserName());
+			workDate = DateUtils.fewDateAgo(workDate, 1);
+			myissue = ghUtils.getMyIssueToHistory(ghRepository, workDate, user.getUserName());
+			mymerges = ghUtils.getMyMergeToHistory(ghRepository, workDate, user.getUserName());
 		} else {
-			Calendar calendar = Calendar.getInstance();
-			calendar.add(Calendar.YEAR, -1);
-			Date date = calendar.getTime();
+			Date date = DateUtils.yearsAgo();
 
 			myissue = ghUtils.getMyIssueToHistory(ghRepository, date, user.getUserName());
 			mymerges = ghUtils.getMyMergeToHistory(ghRepository, date, user.getUserName());
