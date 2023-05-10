@@ -72,6 +72,7 @@ public class RepoPersonalCardResponseDto {
     private Long merges;
     private Long reviews;
 
+    private int mycommit;
     private int myissues;
     private int mymerges;
     private int myreviews;
@@ -118,6 +119,10 @@ public class RepoPersonalCardResponseDto {
             Double contribution = ((double) mytotalcommit/ (double) contributeResponse.getTotalCommitCount())*100 ;
             mycontribution = (long) Math.round(contribution);
         }
+        int mycommitexp = (int) (mytotalcommit * GrowthFactor.idxToEnum(1).getExp());
+        int myissueexp = (int) (myissue * GrowthFactor.idxToEnum(3).getExp());
+        int mymergeexp = (int) (mymerges.get(0) * GrowthFactor.idxToEnum(2).getExp());
+        int myreviewexp = (int) (mymerges.get(1) * GrowthFactor.idxToEnum(4).getExp());
 
 return RepoPersonalCardResponseDto.builder()
                 .repomonId(repoEntity.getRepomon().getRepomonId())
@@ -138,9 +143,10 @@ return RepoPersonalCardResponseDto.builder()
                 .merges(mergesExp)
                 .reviews(reviewsExp)
 
-                .myissues(myissue)
-                .mymerges(mymerges.get(0))
-                .myreviews(mymerges.get(1))
+                .mycommit(mycommitexp)
+                .myissues(myissueexp)
+                .mymerges(mymergeexp)
+                .myreviews(myreviewexp)
 
                 .totalcommit(contributeResponse.getTotalCommitCount())
                 .totalcode(contributeResponse.getTotalLineCount())
