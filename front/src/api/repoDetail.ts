@@ -91,7 +91,7 @@ export const axiosRequestUpStat = async (
     data = { ...data, [statPoint]: increaseInfo[statPoint] };
   }
 
-  const res = await http.put("repomon/stat", { data });
+  const res = await http.put("repomon/stat", data);
 
   return res;
 };
@@ -104,6 +104,12 @@ export const axiosRequestRepoDetailConvention = async (repoId: number) => {
 
 export const axiosRequestRepoDetailContribution = async (repoId: number) => {
   const res = await http.get(`repo/${repoId}/info/contribute`);
+
+  return res;
+};
+
+export const axiosRequestRepoDetailUpdate = async (repoId: number) => {
+  const res = await http.put(`repo/${repoId}/info`);
 
   return res;
 };

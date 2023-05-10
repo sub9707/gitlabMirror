@@ -11,9 +11,63 @@
 }
 
 .left {
-  width: 30%;
+  margin: 0 3% 0 0;
+  width: 42%;
+
+  @include desktop125 {
+    margin: 0 7% 0 0;
+    width: 38%;
+  }
 }
 
 .right {
-  width: 70%;
+  width: 55%;
+  font-size: 1.125rem;
+
+  @include desktop125 {
+    font-size: 1rem;
+  }
+
+  & > div {
+    display: grid;
+    grid-template-columns: 1fr 2.5fr 1fr;
+    border-radius: 5px;
+
+    & span {
+      text-align: center;
+    }
+  }
+
+  .title-line {
+    margin: 0 0 0.5rem 0;
+    padding: 0.5rem 0;
+    background-color: $sub;
+    color: white;
+  }
+
+  .item-line {
+    margin: 0 0 0.5rem 0;
+    padding: 0.3rem 0;
+
+    &:hover {
+      background-color: aliceblue;
+    }
+  }
+
+  .top {
+    color: rgb(162, 101, 255);
+    font-weight: bold;
+  }
+}
+
+.no-commiter {
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  & p {
+    font-size: 1.5rem;
+  }
 }

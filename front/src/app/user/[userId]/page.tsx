@@ -1,29 +1,33 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ArrowPathIcon } from "@heroicons/react/24/solid";
-import Link from "next/link";
 import styles from "./page.module.scss";
-import Pagination from "@/components/Pagination";
 import RepositoryCard from "@/components/RepositoryCard";
 import { useRouter } from "next/navigation";
-import DropDown from "@/components/DropDown";
 import {
   getTotalRepoList,
   getUserDetail,
   refreshAllRepo,
 } from "@/api/userRepo";
 import { RepoListType, UserInfoType } from "@/types/repoInfo";
-import { useAppSelector } from "@/redux/hooks";
+import Paging from "@/components/UI/Pagination";
+import Modal from "react-modal";
+import LoadingSpinner from "@/components/Skeletons/LoadingSpinner";
 
 const Page = ({ params }: { params: { userId: string } }) => {
-  const router = useRouter();
-
-  // 레포지터리 유저 정보 GET
+  // 레포지토리 유저 정보 GET
   const [userInfo, setUserInfo] = useState<UserInfoType>();
-  const [repoInfo, setRepoInfo] = useState<RepoListType>();
+  const [repoInfo, setRepoInfo] = useState<RepoListType>({
+    repoListItems: [],
+    totalElements: 0,
+    totalPages: 0,
+  });
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [isReloaded, setIsReloaded] = useState<boolean>(false);
+  const [isListLoaded, setIsListLoaded] = useState<boolean>(true);
+  const arrowRef = useRef<SVGSVGElement>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   function getUserInfo(userId: string) {
     return getUserDetail(Number(userId));
@@ -33,24 +37,25 @@ const Page = ({ params }: { params: { userId: string } }) => {
       .then((response) => {
         const res = response.data.data;
         setUserInfo(res);
-        console.log(res);
       })
       .catch((error) => {
         console.error(error);
       });
   }, []);
 
-  // 레포지터리 리스트 GET
+  // 레포지토리 리스트 GET
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getTotalRepoList(Number(params.userId), 0, 6);
+        const response = await getTotalRepoList(
+          Number(params.userId),
+          currentPage - 1,
+          6
+        );
         const data = response.data;
         setRepoInfo(data);
-        console.log("called List");
         setTimeout(() => {
           setIsLoaded(true);
-          console.log("reload done");
         }, 1500);
       } catch (error) {
         console.error(error);
@@ -58,13 +63,53 @@ const Page = ({ params }: { params: { userId: string } }) => {
     };
 
     fetchData();
-  }, [isReloaded]);
+  }, [isReloaded, currentPage]);
 
   // 동일 유저 체크
   const [isSameUser, setIsSameUser] = useState<boolean>();
 
+  // Loading Modal
+  const [modalIsOpen, setIsOpen] = useState<boolean>(false);
+
+  const customStyles = {
+    content: {
+      zIndex: "10_000_000",
+      top: "50%",
+      left: "50%",
+      right: "auto",
+      bottom: "auto",
+      marginRight: "-50%",
+      transform: "translate(-50%, -50%)",
+      width: "370px",
+      height: "190px",
+      display: "flex",
+      justifyContent: "center",
+    },
+  };
+  const afterOpenModal = () => {};
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
+  useEffect(() => {
+    Modal.setAppElement("#pageContainer");
+  }, []);
+
   return (
-    <>
+    <div id="pageContainer">
+      <Modal
+        isOpen={modalIsOpen}
+        onAfterOpen={afterOpenModal}
+        onRequestClose={closeModal}
+        style={customStyles}
+        contentLabel=""
+      >
+        <p className="text-center flex items-center justify-center text-2xl antialiased font-semibold text-sky-600">
+          레포지토리 리스트 로딩중
+        </p>
+        <LoadingSpinner />
+      </Modal>
       <div className={styles.pageContainer}>
         <div className={styles.bannerBack}>
           <iframe
@@ -106,28 +151,43 @@ const Page = ({ params }: { params: { userId: string } }) => {
             </div>
           </div>
           <div className={styles.bodyList}>
-            <div className={styles.listTitle}>
+            <div className={styles.listTitle} style={{ display: "block" }}>
               <div
-                style={{ display: "flex", width: "50%", alignItems: "center" }}
+                style={{
+                  display: "flex",
+                  width: "50%",
+                  alignItems: "center",
+                  marginLeft: "10%",
+                }}
               >
-                <p>레포지터리 목록</p>
+                <p style={{ width: "7em" }}>레포지토리 목록</p>
                 <ArrowPathIcon
                   width="2rem"
                   style={{ marginLeft: "2%" }}
                   className={styles.arrow}
+                  ref={arrowRef}
                   onClick={async () => {
-                    console.log("loading...");
+                    setIsListLoaded(false);
+                    setIsOpen(true);
                     userInfo?.userId && (await refreshAllRepo(userInfo.userId));
-                    console.log("load done..!");
+                    setIsListLoaded(true);
+                    setIsOpen(false);
                     setIsLoaded(false);
                     setIsReloaded(!isReloaded);
-                    console.log("done");
                   }}
                 />
               </div>
-              <div className={styles.filterBox}>
-                <DropDown />
-              </div>
+              <p
+                style={{
+                  fontSize: "1em",
+                  opacity: "0.7",
+                  marginLeft: "10%",
+                  marginBlock: "1%",
+                }}
+              >
+                <span style={{ color: "red", fontWeight: "800" }}>*</span> 최초
+                로드 시, 리스트가 보이지 않을 때 갱신 버튼을 눌러주세요
+              </p>
             </div>
             <div className={styles.listCards}>
               <div className="grid grid-cols-2 gap-4">
@@ -144,23 +204,33 @@ const Page = ({ params }: { params: { userId: string } }) => {
                         rating={repoInfo.repoListItems.at(i)?.repoRating}
                         isActive={repoInfo.repoListItems.at(i)?.isActive}
                         userId={params.userId}
-                        repoId={repoInfo.repoListItems.at(i)?.repoId}
+                        repoId={repoInfo.repoListItems.at(i)?.repoId || 0}
                         isSameUser={isSameUser}
                         setIsSameUser={setIsSameUser}
                         isLoaded={isLoaded}
+                        repomonId={repoInfo.repoListItems.at(i)?.repomonId || 0}
+                        repomonUrl={
+                          repoInfo.repoListItems.at(i)?.repomonUrl || ""
+                        }
                       />
                     ) : null
                   )}
               </div>
 
               <div className={styles.paginations}>
-                <Pagination totalPage={1} totalElement={3} />
+                <Paging
+                  size={6}
+                  currentPage={currentPage}
+                  setCurrentPage={setCurrentPage}
+                  totalPage={repoInfo?.totalPages + 1}
+                  totalElement={repoInfo?.totalElements}
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

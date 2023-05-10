@@ -16,17 +16,24 @@ const Model = ({
 }) => {
   const gltf = useLoader(GLTFLoader, repomonUrl);
 
-  let mixer: THREE.AnimationMixer | undefined;
+  let mixer: THREE.AnimationMixer;
 
   if (gltf.animations.length) {
     mixer = new THREE.AnimationMixer(gltf.scene);
+    console.log(mixer);
+
     mixer.timeScale = 0.3;
     if (isClicked) {
-      const randomIndex = Math.floor(Math.random() * 39);
+      const randomIndex = Math.floor(Math.random() * gltf.animations.length);
       const action = mixer.clipAction(gltf.animations[randomIndex]);
       action.play();
-    } else {
+    } else if (gltf.animations.length >= 9) {
       const action = mixer.clipAction(gltf.animations[8]);
+      action.clampWhenFinished = true;
+      action.play();
+    } else {
+      const randomIndex = Math.floor(Math.random() * gltf.animations.length);
+      const action = mixer.clipAction(gltf.animations[randomIndex]);
       action.clampWhenFinished = true;
       action.play();
     }
@@ -34,14 +41,13 @@ const Model = ({
 
   useFrame((state, delta) => {
     mixer?.update(delta);
-    // gltf.scene.rotation.y += delta * 0.05; // 회전 속도를 조절할 수 있습니다.
   });
 
   return (
     <primitive
       object={gltf.scene}
       scale={[2, 2, 2]}
-      position={[0, -1.5, 0]}
+      position={[0, -2, 0]}
       rotation={[0.3, -0.2, 0]}
       onClick={() => {
         setIsClicked(!isClicked);
@@ -54,13 +60,21 @@ function DetailRepomon({ repomonUrl }: { repomonUrl: string }) {
   const [isClicked, setIsClicked] = useState<boolean>(false);
 
   return (
-    <Canvas style={{ width: "100%", height: "500px" }}>
+    <Canvas
+      style={{
+        width: "97%",
+        height: "450px",
+        backgroundColor: "white",
+        margin: "0.5rem auto 0 auto",
+        borderRadius: "10px",
+      }}
+    >
       <ambientLight intensity={0.1} />
       <ambientLight intensity={0.1} />
       <directionalLight color="white" position={[0, 0, 5]} intensity={0.6} />
       <directionalLight color="white" position={[-5, 0, -5]} intensity={0.6} />
       <Model
-        repomonUrl={"/static/models/Dingo_3.glb"}
+        repomonUrl={repomonUrl}
         isClicked={isClicked}
         setIsClicked={setIsClicked}
       />

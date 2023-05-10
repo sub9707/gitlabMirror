@@ -165,3 +165,13 @@ export type RepoDetailContributionInfoType = {
   totalCommitCount: number;
   totalLineCount: number;
 };
+
+export type ContributionChartType = {
+  labels: string[];
+  datasets: {
+    data: number[];
+    backgroundColor: string[];
+    borderColor: string[];
+    borderWidth: number;
+  }[];
+};

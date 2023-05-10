@@ -21,7 +21,7 @@ import { gitTipData } from "./dashboard/gitData";
 const Model = ({ isClicked, onIsClickedChange }: any) => {
   // const [isClicked, SetIsClicked] = useState<boolean>(false);
   const [repomonURL, setRepomonURL] = useState<string>(
-    "/static/models/Chick_1.glb"
+    "/static/models/tempLoader.glb"
   );
 
   const handleClick = useCallback(() => {
@@ -70,7 +70,7 @@ const Model = ({ isClicked, onIsClickedChange }: any) => {
   return (
     <primitive
       object={gltf.scene}
-      scale={[3, 3, 3]}
+      scale={[5, 5, 5]}
       position={[1, -2, 0]}
       rotation={[0, -0.8, 0]}
       onClick={() => {

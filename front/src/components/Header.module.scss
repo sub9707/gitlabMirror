@@ -1,7 +1,7 @@
 @import "@/styles/variables.scss";
 
 .component {
-  z-index: 10000;
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -32,7 +32,7 @@
     align-items: center;
 
     .logo-div {
-      width: 75px;
+      width: 80px;
       height: auto;
 
       .logo {
@@ -83,6 +83,10 @@
         border-radius: 5px;
         text-align: center;
         font-size: 18px;
+
+        @include desktop125 {
+          font-size: 16px;
+        }
 
         &:hover {
           background-color: rgba(255, 255, 255, 0.5);

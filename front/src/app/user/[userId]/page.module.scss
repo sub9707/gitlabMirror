@@ -25,7 +25,7 @@
       justify-content: space-around;
       text-align: center;
       top: -15%;
-      left: 5%;
+      left: 4%;
       & .charaterDiv {
         width: 18em;
         height: 18em;
@@ -44,7 +44,7 @@
     }
     & .bodyList {
       position: absolute;
-      right: 1%;
+      right: 2%;
       width: 70%;
       height: 100%;
       display: flex;
@@ -56,13 +56,9 @@
         height: 10%;
         display: flex;
         align-items: center;
-        justify-content: space-around;
+        justify-content: start;
         p {
           font-size: 2em;
-        }
-        & .filterBox {
-          width: 8em;
-          height: 2em;
         }
       }
       & .listCards {
@@ -105,5 +101,14 @@
   cursor: pointer;
   &:hover {
     transform: rotate(150deg);
+  }
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }

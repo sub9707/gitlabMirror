@@ -1,18 +1,4 @@
-export type RepomonRankContentType = {
-  rating: number;
-  repoExp: number;
-  repoId: number;
-  repoKey: string;
-  repoName: string;
-  repoOwner: string;
-  repomon: string;
-  repomonNickname: string;
-  repomonTier: number;
-  username: string;
-};
-
-export type RepomonRankInfoType = {
-  content: RepomonRankContentType[];
+type RankInfoType = {
   empty: boolean;
   first: boolean;
   last: boolean;
@@ -30,4 +16,34 @@ export type RepomonRankInfoType = {
   };
   totalElements: number;
   totalPages: number;
+};
+
+export type RepoRankContentType = {
+  repoId: number;
+  repoName: string;
+  repoExp: number;
+  repoOwner: string;
+  repomonNickname: string;
+  rating: number;
+  repomonTier: number;
+  repoRank?: number;
+  repomonRank?: number;
+  repomonUrl: string;
+};
+
+export type UserRankContentType = {
+  activeRepoCount: number;
+  totalExp: number;
+  userId: number;
+  userRank: number;
+  username: string;
+  avatarUrl: string;
+};
+
+export type RepoRankInfoType = RankInfoType & {
+  content: RepoRankContentType[];
+};
+
+export type UserRankInfoType = RankInfoType & {
+  content: UserRankContentType[];
 };
