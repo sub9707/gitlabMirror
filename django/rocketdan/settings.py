@@ -28,7 +28,7 @@ SECRET_KEY = 'w$!*5a@j%h$k!i$k16%ej652rqav(n9&h2pw5imu-n8vyvj&il'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["repomon.kr"]
+ALLOWED_HOSTS = ["repomon.kr","127.0.0.1"]
 
 
 # Application definition
