@@ -53,36 +53,13 @@ const Page = () => {
   };
 
   /** 초기화 버튼 클릭 시 */
-  const onClickClearBtn = (e: React.MouseEvent<SVGSVGElement>) => {
+  const onClickClearBtn = (e: React.MouseEvent<HTMLButtonElement>) => {
     setSearchInput("");
     setSearchRequestSign(!searchRequestSign);
   };
 
   return (
     <div>
-      <div className={styles.tab}>
-        <button
-          id="레포몬"
-          onClick={onClickTabBtn}
-          className={tabIndex === "레포몬" ? styles.selected : undefined}
-        >
-          레포몬
-        </button>
-        <button
-          id="배틀"
-          onClick={onClickTabBtn}
-          className={tabIndex === "배틀" ? styles.selected : undefined}
-        >
-          배틀
-        </button>
-        <button
-          id="유저"
-          onClick={onClickTabBtn}
-          className={tabIndex === "유저" ? styles.selected : undefined}
-        >
-          유저
-        </button>
-      </div>
       <div className={styles.banner}>
         <div className={styles["banner-inner"]}>
           <div className={styles["banner-text"]}>
@@ -115,15 +92,37 @@ const Page = () => {
               onClick={onClickSearchBtn}
               className={styles["search-icon"]}
             />
-            <ArrowPathIcon
-              onClick={onClickClearBtn}
-              className={styles["clear-icon"]}
-            />
           </div>
+          <button className={styles.clear} onClick={onClickClearBtn}>
+            검색 초기화
+          </button>
           <div className={styles["banner-lottie"]}>
             <Lottie loop={false} animationData={rankingLottie} play />
           </div>
         </div>
+      </div>
+      <div className={styles.tab}>
+        <button
+          id="레포몬"
+          onClick={onClickTabBtn}
+          className={tabIndex === "레포몬" ? styles.selected : undefined}
+        >
+          레포몬
+        </button>
+        <button
+          id="배틀"
+          onClick={onClickTabBtn}
+          className={tabIndex === "배틀" ? styles.selected : undefined}
+        >
+          배틀
+        </button>
+        <button
+          id="유저"
+          onClick={onClickTabBtn}
+          className={tabIndex === "유저" ? styles.selected : undefined}
+        >
+          유저
+        </button>
       </div>
       <div className={styles.content}>
         {tabIndex === "레포몬" && (
