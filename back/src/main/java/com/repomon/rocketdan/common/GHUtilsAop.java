@@ -62,7 +62,7 @@ public class GHUtilsAop {
         } finally {
             long finish = System.currentTimeMillis();
             long timeMs = finish - start;
-            log.info("END: " + methodName + " " + timeMs + "ms");
+            log.info("END: " + methodName + " " + (timeMs / 1000.0) + "s");
         }
     }
 

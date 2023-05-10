@@ -7,10 +7,10 @@ import java.util.Date;
 
 public class DateUtils {
 
-    public static Date yearsAgo(){
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.YEAR, -1);
-        return null;
+    public static Date fewYearsAgo(int year){
+        Calendar instance = Calendar.getInstance();
+        instance.add(Calendar.YEAR, -year);
+        return Date.from(instance.toInstant());
     }
 
     public static Date fewDateAgo(Date date, int day){
@@ -24,5 +24,9 @@ public class DateUtils {
         return date.toInstant()
             .atZone(ZoneId.systemDefault())
             .toLocalDate();
+    }
+
+    public static Date LocalDateToDate(LocalDate localDate) {
+        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 }
