@@ -3,28 +3,89 @@ import React, { useState, useEffect, useRef } from "react";
 import { NextPage } from "next";
 import styles from "./page.module.scss";
 import Image from "next/image";
-import { PageProps, RandomRepoType, Todo } from "@/types/repoRegist";
+import {
+  conventionType,
+  PageProps,
+  RandomRepoType,
+  Todo,
+} from "@/types/repoRegist";
 import "animate.css";
 import GitTable from "@/components/GitTable";
 import Button_OK from "@/components/Button_OK";
 import Button_NO from "@/components/Button_NO";
-import { getRandomRepo } from "@/api/userRepo";
+import {
+  getRandomRepo,
+  setCommitConvention,
+  setRepoInit,
+} from "@/api/userRepo";
 import { Canvas } from "@react-three/fiber";
 import { Model1 } from "./Model1";
 import { Model2 } from "./Model2";
 import { Model3 } from "./Model3";
 import InputField from "@/components/UI/InputField";
+import { RepoInitType } from "@/types/repoRegist";
+import Modal from "react-modal";
+import { useRouter } from "next/navigation";
 
 const Page: NextPage<PageProps> = ({ params }) => {
   const [numArr, setNumArr] = useState([0, 0, 0, 0, 0]);
   const dice = useRef<HTMLImageElement>(null);
   const diceShadow = useRef<HTMLDivElement>(null);
 
-  // Post 데이터
   const [repoName, setRepoName] = useState<string>("");
+  const [selectedChar, setSelectedChar] = useState<number>(0);
+  const [isReady, setIsReady] = useState<boolean>(false);
+  const [repoInitData, setRepoInitData] = useState<RepoInitType>({
+    repoId: parseInt(params.repoId),
+    repomonId: 0,
+    repomonNickname: "",
+    startAtk: 0,
+    startCritical: 0,
+    startDef: 0,
+    startDodge: 0,
+    startHit: 0,
+  });
+  const [conventionData, setConventionData] = useState<conventionType[]>([
+    { type: "", desc: "" },
+  ]);
+
+  const router = useRouter();
+  const localUserId = sessionStorage.getItem("userId");
+
+  async function handlePostClick() {
+    if (isReady && selectedChar !== 0) {
+      setRepoInit(repoInitData);
+      setCommitConvention(conventionData, parseInt(params.repoId));
+      setIsOpen(true);
+      setTimeout(() => {
+        setIsOpen(false);
+        router.push(`/user/${localUserId}`);
+      }, 2000);
+      console.log("post done");
+    } else {
+      setIsOpen(true);
+      setTimeout(() => {
+        setIsOpen(false);
+      }, 2000);
+    }
+  }
+
   useEffect(() => {
-    console.log(repoName);
-  }, [repoName]);
+    setRepoInitData({
+      repoId: parseInt(params.repoId),
+      repomonId: selectedChar,
+      repomonNickname: repoName,
+      startAtk: numArr[0],
+      startCritical: numArr[3],
+      startDef: numArr[2],
+      startDodge: numArr[1],
+      startHit: numArr[4],
+    });
+  }, [numArr, repoName, selectedChar]);
+
+  useEffect(() => {
+    console.log("레포데이터", repoInitData);
+  }, [repoInitData]);
 
   function generateRandomNumArr() {
     const MAX_VALUE = 10;
@@ -135,13 +196,21 @@ const Page: NextPage<PageProps> = ({ params }) => {
   }, [numArr]);
 
   // 랜덤 3개의 레포몬 요청
-  const [randomRepos, setRandomRepos] = useState<RandomRepoType>();
-  const [isHoverOne, setIsHoverOne] = useState<boolean>(false);
+  const [randomRepos, setRandomRepos] = useState<RandomRepoType>({
+    selectRepomonList: [
+      {
+        repomonId: 0,
+        repomonUrl: "",
+        repomonName: "",
+      },
+    ],
+  });
   const [isClickOne, setIsClickOne] = useState<boolean>(false);
   const [isClickTwo, setIsClickTwo] = useState<boolean>(false);
   const [isClickThree, setIsClickThree] = useState<boolean>(false);
-  const [isHoverTwo, setIsHoverTwo] = useState<boolean>(false);
-  const [isHoverThree, setIsHoverThree] = useState<boolean>(false);
+  const [isHoveredOne, setIsHoveredOne] = useState<boolean>(false);
+  const [isHoveredTwo, setIsHoveredTwo] = useState<boolean>(false);
+  const [isHoveredThree, setIsHoveredThree] = useState<boolean>(false);
   const [selectedRef, setSelectedRef] =
     useState<React.RefObject<HTMLDivElement>>();
   const monRef1 = useRef<HTMLDivElement>(null);
@@ -177,6 +246,7 @@ const Page: NextPage<PageProps> = ({ params }) => {
         setIsClickOne(true);
         setIsClickTwo(false);
         setIsClickThree(false);
+        setSelectedChar(randomRepos?.selectRepomonList[0].repomonId);
       } else if (refDiv === monRef2) {
         (refDiv.current.style as CSSStyleDeclaration).backgroundColor =
           "rgba(201,199,194,255)";
@@ -187,6 +257,7 @@ const Page: NextPage<PageProps> = ({ params }) => {
         setIsClickOne(false);
         setIsClickTwo(true);
         setIsClickThree(false);
+        setSelectedChar(randomRepos?.selectRepomonList[1].repomonId);
       } else if (refDiv === monRef3) {
         (refDiv.current.style as CSSStyleDeclaration).backgroundColor =
           "rgba(201,199,194,255)";
@@ -197,12 +268,59 @@ const Page: NextPage<PageProps> = ({ params }) => {
         setIsClickOne(false);
         setIsClickTwo(false);
         setIsClickThree(true);
+        setSelectedChar(randomRepos?.selectRepomonList[2].repomonId);
       }
     }
   }
+  // Modal
+  const [modalIsOpen, setIsOpen] = useState<boolean>(false);
+
+  const customStyles = {
+    content: {
+      zIndex: "10_000_000",
+      top: "50%",
+      left: "50%",
+      right: "auto",
+      bottom: "auto",
+      marginRight: "-50%",
+      transform: "translate(-50%, -50%)",
+      width: "370px",
+      height: "190px",
+      display: "flex",
+      justifyContent: "center",
+    },
+  };
+  const afterOpenModal = () => {};
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
+  useEffect(() => {
+    Modal.setAppElement("#pageContainer");
+  }, []);
 
   return (
-    <div className={styles.pageContainer}>
+    <div className={styles.pageContainer} id="pageContainer">
+      <Modal
+        isOpen={modalIsOpen}
+        onAfterOpen={afterOpenModal}
+        onRequestClose={closeModal}
+        style={customStyles}
+        contentLabel=""
+      >
+        <p
+          className={`text-center flex items-center justify-center text-2xl antialiased font-semibold ${
+            isReady ? "text-sky-600" : "text-red-600"
+          }`}
+        >
+          {selectedChar === 0
+            ? "레포몬을 선택해주세요"
+            : isReady
+            ? "레포몬이 등록되었습니다."
+            : "레포몬 이름을 확정해주세요"}
+        </p>
+      </Modal>
       <div className={styles.selectBox}>
         <p className={styles.repoTitle}>함께할 레포몬을 선택해주세요!</p>
         <div style={{ display: "flex" }}>
@@ -210,22 +328,32 @@ const Page: NextPage<PageProps> = ({ params }) => {
             className={styles.monChar}
             ref={monRef1}
             onClick={() => clickMonHandle(monRef1)}
+            onMouseOver={() => setIsHoveredOne(true)}
+            onMouseLeave={() => setIsHoveredOne(false)}
           >
             <Canvas>
               {" "}
               <ambientLight intensity={0.03} />
               <directionalLight
-                color={isClickOne ? "white" : "black"}
+                color={
+                  isClickOne || (isHoveredOne && !isClickTwo && !isClickThree)
+                    ? "white"
+                    : "black"
+                }
                 position={[0, 0, 5]}
                 intensity={0.5}
               />
               <directionalLight
-                color={isClickOne ? "white" : "black"}
+                color={
+                  isClickOne || (isHoveredOne && !isClickTwo && !isClickThree)
+                    ? "white"
+                    : "black"
+                }
                 position={[-5, 0, -5]}
                 intensity={0.5}
               />
               <Model1
-                repomonUrl={randomRepos?.selectRepomonList[0].repomonUrl || ""}
+                repomonUrl={randomRepos?.selectRepomonList[0]?.repomonUrl}
               />
             </Canvas>
           </div>
@@ -233,22 +361,32 @@ const Page: NextPage<PageProps> = ({ params }) => {
             className={styles.monChar}
             ref={monRef2}
             onClick={() => clickMonHandle(monRef2)}
+            onMouseOver={() => setIsHoveredTwo(true)}
+            onMouseLeave={() => setIsHoveredTwo(false)}
           >
             <Canvas>
               {" "}
               <ambientLight intensity={0.03} />
               <directionalLight
-                color={isClickTwo ? "white" : "black"}
+                color={
+                  isClickTwo || (isHoveredTwo && !isClickOne && !isClickThree)
+                    ? "white"
+                    : "black"
+                }
                 position={[0, 0, 5]}
                 intensity={0.5}
               />
               <directionalLight
-                color={isClickTwo ? "white" : "black"}
+                color={
+                  isClickTwo || (isHoveredTwo && !isClickOne && !isClickThree)
+                    ? "white"
+                    : "black"
+                }
                 position={[-5, 0, -5]}
                 intensity={0.5}
               />
               <Model2
-                repomonUrl={randomRepos?.selectRepomonList[1].repomonUrl || ""}
+                repomonUrl={randomRepos?.selectRepomonList[1]?.repomonUrl}
               />
             </Canvas>
           </div>
@@ -256,22 +394,32 @@ const Page: NextPage<PageProps> = ({ params }) => {
             className={styles.monChar}
             ref={monRef3}
             onClick={() => clickMonHandle(monRef3)}
+            onMouseOver={() => setIsHoveredThree(true)}
+            onMouseLeave={() => setIsHoveredThree(false)}
           >
             <Canvas>
               {" "}
               <ambientLight intensity={0.03} />
               <directionalLight
-                color={isClickThree ? "white" : "black"}
+                color={
+                  isClickThree || (isHoveredThree && !isClickOne && !isClickTwo)
+                    ? "white"
+                    : "black"
+                }
                 position={[0, 0, 5]}
                 intensity={0.5}
               />
               <directionalLight
-                color={isClickThree ? "white" : "black"}
+                color={
+                  isClickThree || (isHoveredThree && !isClickOne && !isClickTwo)
+                    ? "white"
+                    : "black"
+                }
                 position={[-5, 0, -5]}
                 intensity={0.5}
               />
               <Model3
-                repomonUrl={randomRepos?.selectRepomonList[2].repomonUrl || ""}
+                repomonUrl={randomRepos?.selectRepomonList[2]?.repomonUrl}
               />
             </Canvas>
           </div>
@@ -291,10 +439,12 @@ const Page: NextPage<PageProps> = ({ params }) => {
               justifyContent: "flex-start",
             }}
           >
-            <p style={{ width: "25%" }}>레포몬 이름 설정</p>
-            <InputField setRepoName={setRepoName} />
+            <p style={{ width: "25%" }} id={styles.repomonNameTitle}>
+              레포몬 이름 설정
+            </p>
+            <InputField setRepoName={setRepoName} setIsReady={setIsReady} />
           </div>
-          <GitTable />
+          <GitTable setConventionData={setConventionData} />
         </div>
         <div className={styles.diceContainer}>
           <p className={styles.diceTitle}>초기 능력치 설정</p>
@@ -320,7 +470,7 @@ const Page: NextPage<PageProps> = ({ params }) => {
                       id={styles.tableText}
                     >
                       <tbody
-                        style={{ textAlign: "center" }}
+                        style={{ textAlign: "center", fontSize: "1.2em" }}
                         id={styles.tableBody}
                       >
                         <tr
@@ -430,7 +580,9 @@ const Page: NextPage<PageProps> = ({ params }) => {
         </div>
       </div>
       <div style={{ display: "flex", marginBlock: "3%" }}>
-        <Button_OK msg={"결정하기"} />
+        <div onClick={handlePostClick}>
+          <Button_OK msg={"결정하기"} />
+        </div>
         <Button_NO msg={"취소하기"} />
       </div>
     </div>
