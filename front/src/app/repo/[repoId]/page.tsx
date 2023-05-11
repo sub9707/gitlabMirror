@@ -315,7 +315,11 @@ function Page({ params }: { params: { repoId: string } }) {
                   className={updateLoading ? styles.loading : styles.update}
                   onClick={onClickUpdateBtn}
                 >
-                  {updateLoading ? <LoadingSpinner /> : <span>갱신하기</span>}
+                  {updateLoading ? (
+                    <LoadingSpinner ml={5} mr={5} size={6} />
+                  ) : (
+                    <span>갱신하기</span>
+                  )}
                 </button>
                 {repoDetailInfo.myRepo && (
                   <button className={styles.export} onClick={onClickExportBtn}>
