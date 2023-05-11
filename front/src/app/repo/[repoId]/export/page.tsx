@@ -65,7 +65,7 @@ const Page = () => {
           </div>
         </div>
         {kind === "레포 카드" && <p></p>}
-        {/* <ReactMarkdown>{a}</ReactMarkdown> */}
+        <ReactMarkdown>{a}</ReactMarkdown>
       </div>
     </div>
   );
