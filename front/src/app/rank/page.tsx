@@ -53,10 +53,10 @@ const Page = () => {
   };
 
   /** 초기화 버튼 클릭 시 */
-  const onClickClearBtn = (e: React.MouseEvent<HTMLButtonElement>) => {
-    setSearchInput("");
-    setSearchRequestSign(!searchRequestSign);
-  };
+  // const onClickClearBtn = (e: React.MouseEvent<HTMLButtonElement>) => {
+  //   setSearchInput("");
+  //   setSearchRequestSign(!searchRequestSign);
+  // };
 
   return (
     <div>
@@ -93,9 +93,9 @@ const Page = () => {
               className={styles["search-icon"]}
             />
           </div>
-          <button className={styles.clear} onClick={onClickClearBtn}>
+          {/* <button className={styles.clear} onClick={onClickClearBtn}>
             검색 초기화
-          </button>
+          </button> */}
           <div className={styles["banner-lottie"]}>
             <Lottie loop={false} animationData={rankingLottie} play />
           </div>

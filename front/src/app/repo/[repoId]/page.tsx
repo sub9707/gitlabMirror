@@ -42,6 +42,7 @@ import { languageColor } from "@/styles/colors";
 import { customAlert } from "@/app/utils/CustomAlert";
 import LoadingSpinner from "@/components/Skeletons/LoadingSpinner";
 import { useRouter } from "next/navigation";
+import ExportModal from "@/components/Detail/ExportModal";
 
 function Page({ params }: { params: { repoId: string } }) {
   const [loginUserId, setLoginUserId] = useState<string>();
@@ -311,20 +312,20 @@ function Page({ params }: { params: { repoId: string } }) {
                 </div>
               </div>
               <div className={styles["btn-div"]}>
-                <button
-                  className={updateLoading ? styles.loading : styles.update}
-                  onClick={onClickUpdateBtn}
-                >
+                <button onClick={onClickUpdateBtn}>
                   {updateLoading ? (
-                    <LoadingSpinner ml={5} mr={5} size={6} />
+                    <LoadingSpinner ml={4} mr={4} size={6} />
                   ) : (
                     <span>갱신하기</span>
                   )}
                 </button>
                 {repoDetailInfo.myRepo && (
-                  <button className={styles.export} onClick={onClickExportBtn}>
-                    <p>추출하기</p>
-                  </button>
+                  <ExportModal
+                    repoId={parseInt(params.repoId, 10)}
+                    userId={parseInt(loginUserId as string, 10)}
+                    isTeam={isTeam}
+                    lans={repoDetailInfo.languages}
+                  />
                 )}
               </div>
               <p className={styles.date}>

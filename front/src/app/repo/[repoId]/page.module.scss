@@ -142,7 +142,10 @@
       }
 
       .btn-div {
+        display: flex;
+
         & button {
+          width: 100px;
           border-radius: 5px;
           margin: 0 1rem 0 0;
           font-size: 1.125rem;
@@ -161,7 +164,8 @@
         }
 
         .loading {
-          padding: 0;
+          width: 100px;
+          // padding: 0 2rem;
         }
       }
 
@@ -215,7 +219,6 @@
           margin: 0 0.5rem 0.5rem 0;
           padding: 0.3rem 0.5rem;
           border-radius: 5px;
-          background-color: $second;
           color: white;
           font-size: 0.9rem;
           white-space: nowrap;
