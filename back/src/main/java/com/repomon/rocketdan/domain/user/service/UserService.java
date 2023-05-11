@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.repomon.rocketdan.exception.ErrorCode.*;
 
@@ -158,12 +159,9 @@ public class UserService {
 				() -> {throw new CustomException(ErrorCode.NOT_FOUND_USER);}
 		);
 		List<UserLanguageEntity> languageList = userLanguageRepository.findAllByUser(user);
-		List<String> userLanguageNow = new ArrayList<>();
-		if (null != languageList) {
-			for (UserLanguageEntity item : languageList) {
-				userLanguageNow.add(item.getLanguageCode());
-			}
-		}
+		List<String> userLanguageNow = languageList.stream()
+				.map(item -> item.getLanguageCode())
+				.collect(Collectors.toList());
 		return userLanguageNow;
 	}
 

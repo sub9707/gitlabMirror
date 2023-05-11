@@ -648,12 +648,11 @@ public class RepoService {
 
 		List<PersonalLanguageEntity> pastLanguage = languageRepository.findAllByActiveRepoEntity(activeRepoEntity)
 				.orElseThrow(() -> {throw new CustomException(ErrorCode.NOT_FOUND_ACTIVE_REPOSITORY);});
-		List<String> personalLanguageNow = new ArrayList<>();
-		if (null != pastLanguage) {
-			for (PersonalLanguageEntity item : pastLanguage) {
-				personalLanguageNow.add(item.getLanguageCode());
-			}
-		}
+
+		List<String> personalLanguageNow = pastLanguage.stream()
+				.map(item -> item.getLanguageCode())
+				.collect(Collectors.toList());
+
 		return personalLanguageNow;
 	}
 
