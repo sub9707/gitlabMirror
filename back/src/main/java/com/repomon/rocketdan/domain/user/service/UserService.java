@@ -153,6 +153,19 @@ public class UserService {
 		return userLanguage;
 	}
 
+	public List<String> getUserRepoLanguageNow(Long userId){
+		UserEntity user = userRepository.findById(userId).orElseThrow(
+				() -> {throw new CustomException(ErrorCode.NOT_FOUND_USER);}
+		);
+		List<UserLanguageEntity> languageList = userLanguageRepository.findAllByUser(user);
+		List<String> userLanguageNow = new ArrayList<>();
+		if (null != languageList) {
+			for (UserLanguageEntity item : languageList) {
+				userLanguageNow.add(item.getLanguageCode());
+			}
+		}
+		return userLanguageNow;
+	}
 
 	public void modifyUserRepo(Long userId, RepoCardRequestDto requestDto) {
 		UserEntity user = userRepository.findById(userId).orElseThrow(
