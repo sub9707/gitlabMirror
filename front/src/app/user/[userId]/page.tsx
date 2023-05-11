@@ -91,7 +91,7 @@ const Page = ({ params }: { params: { userId: string } }) => {
                 }}
               />
               <p className={styles.boxTitle}>
-                {userInfo?.userId}({userInfo?.nickname})
+                {userInfo?.nickname}({userInfo?.username})
               </p>
               <p className={styles.boxContent}>
                 총 경험치 : {userInfo?.totalExp}({userInfo?.userRank}위)
