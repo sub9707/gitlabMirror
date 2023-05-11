@@ -113,7 +113,7 @@ function RepositoryCard(props: propType) {
             justifyContent: 'center',
             height: '100%',
           }}>
-          <Canvas>
+          <Canvas key={props.repoId}>
             <directionalLight color='white' position={[0, 0, 5]} intensity={0.5} />
             <directionalLight color='white' position={[-5, 0, -5]} intensity={0.5} />
             <Model repomonUrl={props.repomonUrl} repoId={props.repoId} />
