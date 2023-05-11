@@ -358,6 +358,7 @@ public class RepoService {
 		}
 
 		for(UserEntity userEntity : userEntities){
+			redisListRepository.deleteAllByUserName(userEntity.getUserName());
 			userEntity.updateTotalExp(repoExp);
 		}
 	}
