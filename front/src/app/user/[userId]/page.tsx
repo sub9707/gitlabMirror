@@ -80,7 +80,7 @@ const Page = ({ params }: { params: { userId: string } }) => {
                 }}
               />
               <p className={styles.boxTitle}>{userInfo?.username}</p>
-              <p className='py-2'>여기에 내 소개 asdfeafsdfasef 마ㅣㄴ어라ㅣㅓㅁㄴ대ㅑㅓㅌㅇㄹ</p>
+              <p className='py-2'>{userInfo?.userDescription}</p>
               <div className='border-2 rounded-lg flex justify-center my-2 py-1 font-bold'>
                 <p>Export User Card</p>
               </div>
@@ -94,13 +94,13 @@ const Page = ({ params }: { params: { userId: string } }) => {
                 <div className='pr-3 py-1.5'>
                   <Image src='/static/images/pokeball.png' alt='logo' width={24} height={24} />
                 </div>
-                <div>github.com/{userInfo?.username.toLowerCase()}</div>
+                <div>{userInfo?.activeRepoCnt || 0} 마리</div>
               </div>
               <div className={`${styles.boxContent} flex items-center`}>
                 <div className='pr-3 py-1.5'>
                   <Image src='/static/images/trophy.png' alt='logo' width={24} height={24} />
                 </div>
-                <div>github.com/{userInfo?.username.toLowerCase()}</div>
+                <div>{userInfo?.userRank} 위</div>
               </div>
               <div className={`${styles.boxContent} flex items-center border-b-4 pb-3`}>
                 <div className='pr-3 py-1.5' style={{ fontWeight: '1000', fontFamily: 'SUIT-Bold', color: 'grey' }}>
@@ -109,21 +109,32 @@ const Page = ({ params }: { params: { userId: string } }) => {
                 <div>{userInfo?.totalExp}</div>
               </div>
             </div>
-            <div className='flex flex-col pt-10'>
-              <p>대표 레포지터리</p>
-              <p className={styles.boxContent} style={{ color: 'black', fontWeight: 'bold' }}>
-                레포이름 예시
-              </p>
-              <p>대표 레포몬</p>
-              <p className={styles.boxContent} style={{ color: 'black', fontWeight: 'bold' }}>
-                레포몬이름 예시
-              </p>
-              <div>
+
+            {/* 대표 레포몬 */}
+            {userInfo?.representRepo == null ? (
+              <div className='flex flex-col pt-10 items-center'>
                 <Image src='/static/images/forbidden.png' alt='없음' width={288} height={288} />
+                <p>대표 레포몬을 설정해 주세요!</p>
               </div>
-              <p className={styles.boxContent}>경험치 : 18502 (14위)</p>
-              <p className={styles.boxContent}>배틀 레이팅 : 1850 (12위)</p>
-            </div>
+            ) : (
+              <div className='flex flex-col pt-10'>
+                <p>대표 레포지터리</p>
+                <p className={styles.boxContent} style={{ color: 'black', fontWeight: 'bold' }}>
+                  {userInfo?.representRepo?.repoName}
+                </p>
+                <p>대표 레포몬</p>
+                <p className={styles.boxContent} style={{ color: 'black', fontWeight: 'bold' }}>
+                  {userInfo?.representRepo?.repomon?.repomonName}
+                </p>
+                <div></div>
+                <p className={styles.boxContent}>
+                  경험치 : {userInfo?.representRepo?.repoExp} ({userInfo?.representRepo?.repoRank}위)
+                </p>
+                <p className={styles.boxContent}>
+                  배틀 레이팅 : {userInfo?.representRepo?.repoRating} ({userInfo?.representRepo?.battleRank}위)
+                </p>
+              </div>
+            )}
           </div>
 
           {/* 우측 바디 */}
