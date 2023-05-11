@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import styles from "./page.module.scss";
 import RepositoryCard from "@/components/RepositoryCard";
@@ -78,10 +79,11 @@ const Page = ({ params }: { params: { userId: string } }) => {
             loop
             animationData={Ballon}
             play
-            style={{ width: 400, height: 400 }}
+            style={{ width: "30vh", height: "30vh", marginTop: "-3%" }}
           />
         </div>
         <div className={styles.bodyContainer}>
+          {/* 좌측 유저 정보 */}
           <div className={styles.sideProfile}>
             <div>
               <div
@@ -90,26 +92,102 @@ const Page = ({ params }: { params: { userId: string } }) => {
                   backgroundImage: `url('${userInfo?.avatarUrl}')`,
                 }}
               />
-              <p className={styles.boxTitle}>
-                {userInfo?.nickname}({userInfo?.username})
-              </p>
-              <p className={styles.boxContent}>
-                총 경험치 : {userInfo?.totalExp}({userInfo?.userRank}위)
-              </p>
-            </div>
-            <div>
-              <p className={styles.boxTitle}>대표 레포몬</p>
-              <p
-                className={styles.boxTitle}
-                style={{ fontWeight: "800", marginBottom: "1em" }}
+              <p className={styles.boxTitle}>{userInfo?.username}</p>
+              <p className="py-2">{userInfo?.userDescription}</p>
+              <div className="border-2 rounded-lg flex justify-center my-2 py-1 font-bold">
+                <p>Export User Card</p>
+              </div>
+              <div className={`${styles.boxContent} flex items-center`}>
+                <div className="pr-3 py-1.5">
+                  <Image
+                    src="/static/images/github.png"
+                    alt="logo"
+                    width={24}
+                    height={24}
+                  />
+                </div>
+                <div>github.com/{userInfo?.username.toLowerCase()}</div>
+              </div>
+              <div className={`${styles.boxContent} flex items-center`}>
+                <div className="pr-3 py-1.5">
+                  <Image
+                    src="/static/images/pokeball.png"
+                    alt="logo"
+                    width={24}
+                    height={24}
+                  />
+                </div>
+                <div>{userInfo?.activeRepoCnt || 0} 마리</div>
+              </div>
+              <div className={`${styles.boxContent} flex items-center`}>
+                <div className="pr-3 py-1.5">
+                  <Image
+                    src="/static/images/trophy.png"
+                    alt="logo"
+                    width={24}
+                    height={24}
+                  />
+                </div>
+                <div>{userInfo?.userRank} 위</div>
+              </div>
+              <div
+                className={`${styles.boxContent} flex items-center border-b-4 pb-3`}
               >
-                도슴고치
-              </p>
-              <div className={styles.charaterDiv} />
-              <p className={styles.boxContent}>경험치 : 18502 (14위)</p>
-              <p className={styles.boxContent}>배틀 레이팅 : 1850 (12위)</p>
+                <div
+                  className="pr-3 py-1.5"
+                  style={{
+                    fontWeight: "1000",
+                    fontFamily: "SUIT-Bold",
+                    color: "grey",
+                  }}
+                >
+                  Exp
+                </div>
+                <div>{userInfo?.totalExp}</div>
+              </div>
             </div>
+
+            {/* 대표 레포몬 */}
+            {userInfo?.representRepo == null ? (
+              <div className="flex flex-col pt-10 items-center">
+                <Image
+                  src="/static/images/forbidden.png"
+                  alt="없음"
+                  width={288}
+                  height={288}
+                />
+                <p>대표 레포몬을 설정해 주세요!</p>
+              </div>
+            ) : (
+              <div className="flex flex-col pt-10">
+                <p>대표 레포지터리</p>
+                <p
+                  className={styles.boxContent}
+                  style={{ color: "black", fontWeight: "bold" }}
+                >
+                  {userInfo?.representRepo?.repoName}
+                </p>
+                <p>대표 레포몬</p>
+                <p
+                  className={styles.boxContent}
+                  style={{ color: "black", fontWeight: "bold" }}
+                >
+                  {userInfo?.representRepo?.repomon?.repomonName}
+                </p>
+                <div></div>
+                <p className={styles.boxContent}>
+                  경험치 : {userInfo?.representRepo?.repoExp} (
+                  {userInfo?.representRepo?.repoRank}위)
+                </p>
+                <p className={styles.boxContent}>
+                  배틀 레이팅 : {userInfo?.representRepo?.repoRating} (
+                  {userInfo?.representRepo?.battleRank}위)
+                </p>
+              </div>
+            )}
           </div>
+
+          {/* 우측 바디 */}
           <div className={styles.bodyList}>
             <div className={styles.listTitle} style={{ display: "block" }}>
               <div
@@ -117,7 +195,6 @@ const Page = ({ params }: { params: { userId: string } }) => {
                   display: "flex",
                   width: "50%",
                   alignItems: "center",
-                  marginLeft: "10%",
                 }}
               >
                 <p style={{ width: "7em" }} id={styles.repoListTitle}>
@@ -148,7 +225,6 @@ const Page = ({ params }: { params: { userId: string } }) => {
                 style={{
                   fontSize: "1em",
                   opacity: "0.7",
-                  marginLeft: "10%",
                   marginBlock: "1%",
                 }}
                 id={styles.reposubtitle}
@@ -157,8 +233,10 @@ const Page = ({ params }: { params: { userId: string } }) => {
                 로드 시, 리스트가 보이지 않을 때 갱신 버튼을 눌러주세요
               </p>
             </div>
+
+            {/* 레포카드 리스트 */}
             <div className={styles.listCards}>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4 h-200">
                 {Array(repoInfo?.totalElements)
                   .fill(null)
                   .map((items, i) =>
@@ -176,6 +254,9 @@ const Page = ({ params }: { params: { userId: string } }) => {
                         isSameUser={isSameUser}
                         setIsSameUser={setIsSameUser}
                         isLoaded={isLoaded}
+                        repomonName={
+                          repoInfo.repoListItems.at(i)?.repomonName || ""
+                        }
                         repomonId={repoInfo.repoListItems.at(i)?.repomonId || 0}
                         repomonUrl={
                           repoInfo.repoListItems.at(i)?.repomonUrl || ""
