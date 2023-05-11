@@ -26,6 +26,7 @@ import InputField from "@/components/UI/InputField";
 import { RepoInitType } from "@/types/repoRegist";
 import Modal from "react-modal";
 import { useRouter } from "next/navigation";
+import ArrowDown from "@/components/UI/ArrowDown";
 
 const Page: NextPage<PageProps> = ({ params }) => {
   const [numArr, setNumArr] = useState([0, 0, 0, 0, 0]);
@@ -211,8 +212,6 @@ const Page: NextPage<PageProps> = ({ params }) => {
   const [isHoveredOne, setIsHoveredOne] = useState<boolean>(false);
   const [isHoveredTwo, setIsHoveredTwo] = useState<boolean>(false);
   const [isHoveredThree, setIsHoveredThree] = useState<boolean>(false);
-  const [selectedRef, setSelectedRef] =
-    useState<React.RefObject<HTMLDivElement>>();
   const monRef1 = useRef<HTMLDivElement>(null);
   const monRef2 = useRef<HTMLDivElement>(null);
   const monRef3 = useRef<HTMLDivElement>(null);
@@ -322,7 +321,27 @@ const Page: NextPage<PageProps> = ({ params }) => {
         </p>
       </Modal>
       <div className={styles.selectBox}>
-        <p className={styles.repoTitle}>함께할 레포몬을 선택해주세요!</p>
+        <p
+          className={
+            isClickOne || isClickTwo || isClickThree
+              ? styles.repoTitleSelected
+              : styles.repoTitle
+          }
+        >
+          {isClickOne || isClickTwo || isClickThree ? (
+            <div style={{ display: "flex" }}>
+              <div id={styles.arrowDown}>
+                <ArrowDown num={12} />
+              </div>
+              <p>아래로 이동해 특성을 설정하세요</p>
+              <div id={styles.arrowDown}>
+                <ArrowDown num={12} />
+              </div>
+            </div>
+          ) : (
+            "함께할 레포몬을 선택해주세요!"
+          )}
+        </p>
         <div style={{ display: "flex" }}>
           <div
             className={styles.monChar}
