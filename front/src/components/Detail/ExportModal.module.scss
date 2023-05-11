@@ -1,22 +1,41 @@
 @import "@/styles/variables.scss";
 
-.kind {
-  margin: 2rem 0 0 0;
+.open {
+  border-radius: 5px;
+  // margin: 0 1rem 0 0;
+  font-size: 1.125rem;
+  padding: 0.3rem 0.7rem;
+  background-color: $second;
+  color: white;
 
-  .kind-title {
-    font-size: 1.25rem;
-    font-weight: bold;
+  @include desktop125 {
+    margin: 0 0.7rem 0 0;
+    font-size: 1rem;
   }
 
-  .kind-select {
-    position: relative;
+  &:hover {
+    background-color: $sub;
+  }
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.kind-select {
+  position: relative;
+
+  .btn-div {
+    margin: 0.5rem 0 0 0;
+    display: flex;
+    justify-content: space-between;
 
     .cur-kind {
       display: flex;
       align-items: center;
       justify-content: center;
       width: 160px;
-      margin: 0.5rem 0 0 0;
       padding: 0.6rem 1rem;
       font-size: 1.125rem;
       background-color: $second;
@@ -43,37 +62,138 @@
       }
     }
 
-    .option {
-      position: absolute;
-      width: 160px;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(3px);
-      box-shadow: 0 8px 20px 0 rgba(31, 38, 135, 0.1);
+    .copy {
+      padding: 0 1rem;
+      background-color: $sub;
+      color: white;
+      border-radius: 5px;
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+
+  .option {
+    position: absolute;
+    width: 160px;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(3px);
+    box-shadow: 0 8px 20px 0 rgba(31, 38, 135, 0.1);
+
+    @include desktop125 {
+      width: 150px;
+    }
+
+    & li {
+      display: flex;
+      padding: 0.3rem 1.5rem;
+      font-size: 1.125rem;
+      transform: translateX(8%);
 
       @include desktop125 {
-        width: 150px;
+        padding: 0.3rem 1.2rem;
+        font-size: 1rem;
       }
 
-      & li {
-        display: flex;
-        padding: 0.3rem 1.5rem;
-        font-size: 1.125rem;
-        transform: translateX(8%);
-
-        @include desktop125 {
-          padding: 0.3rem 1.2rem;
-          font-size: 1rem;
-        }
-
-        &:hover {
-          color: rgb(117, 117, 117);
-          cursor: pointer;
-        }
+      &:hover {
+        color: rgb(117, 117, 117);
+        cursor: pointer;
       }
     }
   }
 }
 
 .comment {
+  margin: 0.5rem 0 0 0;
+  color: rgb(114, 114, 114);
+}
+
+.set-lan-title {
+  margin: 2rem 0 0 0;
+  font-size: 1.125rem;
+  font-weight: bold;
+}
+
+.set-lan-com {
+  margin: 0 0 0.5rem 0;
+}
+
+.set-lan-div {
+  display: flex;
+  width: 500px;
+  flex-wrap: wrap;
+
+  & span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid $highlight;
+    border-radius: 20px;
+    padding: 0.2rem 0.8rem;
+    margin: 0 0.3rem 0.4rem 0;
+    color: $highlight;
+    font-size: 0.9rem;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .selected {
+    background-color: $highlight;
+    color: white;
+  }
+}
+
+.btn-div {
   margin: 1rem 0 0 0;
+
+  & button {
+    padding: 0.1rem 1rem;
+    border-radius: 5px;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  .clear {
+    margin: 0 0.5rem 0 0;
+    background-color: white;
+  }
+
+  .apply {
+    background-color: $sub;
+    color: white;
+  }
+}
+
+.exam {
+  margin: 3rem 0 0.2rem 0.2rem;
+  color: rgb(90, 90, 90);
+
+  & span {
+    color: rgb(255, 56, 56);
+  }
+}
+
+.card-div {
+  &:hover {
+    cursor: pointer;
+    opacity: 0.7;
+  }
+}
+
+.docs {
+  margin: 0.5rem 0 0 0;
+  text-align: end;
+
+  & a {
+    color: $highlight;
+
+    &:hover {
+      color: $primary;
+    }
+  }
 }

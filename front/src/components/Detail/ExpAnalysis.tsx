@@ -27,12 +27,12 @@ const labelMap: { [key: string]: string } = {
   머지: "MERGE",
   이슈: "ISSUE",
   리뷰: "REVIEW",
-  보안성: "SECURITY",
-  효율성: "EFFICIENCY",
+  포크: "FORK",
+  스타: "STAR",
 };
 
 const ExpAnalysis = ({ growthFactor }: { growthFactor: GrowthFactorType }) => {
-  const labels = ["커밋", "머지", "이슈", "리뷰", "보안성", "효율성"];
+  const labels = ["커밋", "머지", "이슈", "리뷰", "포크", "스타"];
   const [chartData, setChartData] = useState<ExpAnaysisChartType>({
     labels,
     datasets: [

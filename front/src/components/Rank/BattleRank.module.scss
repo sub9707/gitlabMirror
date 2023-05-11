@@ -17,10 +17,6 @@
     font-size: 18px;
     overflow: hidden;
 
-    &:hover {
-      cursor: pointer;
-    }
-
     @include desktop125 {
       height: 190px;
       font-size: 16px;
