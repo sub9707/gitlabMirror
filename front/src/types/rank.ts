@@ -29,6 +29,7 @@ export type RepoRankContentType = {
   repoRank?: number;
   repomonRank?: number;
   repomonUrl: string;
+  userId: number;
 };
 
 export type UserRankContentType = {

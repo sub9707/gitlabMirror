@@ -5,6 +5,8 @@ import React, { useEffect, useState } from "react";
 import styles from "./page.module.scss";
 import Modal from "react-modal";
 import ExportModal from "@/components/Detail/ExportModal";
+import Spinner from "@/components/Spinner";
+import LoadingSpinner from "@/components/Skeletons/LoadingSpinner";
 
 function Page() {
   const [repomonUrl, setRepomonUrl] = useState(
@@ -21,11 +23,29 @@ function Page() {
       <div className={styles.info}>
         <div className={styles["repo-mon-card-div"]}>
           <div className={styles["repo-mon-card"]}>
-            <DetailRepomon repomonUrl={repomonUrl} repomonTier={repomonTier} />
+            {/* <DetailRepomon repomonUrl={repomonUrl} repomonTier={repomonTier} /> */}
           </div>
         </div>
       </div>
-      <ExportModal repoId={1} userId={1} isTeam={true} />
+      <button className={styles.btn}>
+        <LoadingSpinner ml={4} mr={4} size={6} />
+      </button>
+
+      {/* <ExportModal
+        repoId={4}
+        userId={3}
+        isTeam={true}
+        lans={[
+          "TypeScript",
+          "Java",
+          "Dockerfile",
+          "CSS",
+          "Shell",
+          "SCSS",
+          "JavaScript",
+          "HTML",
+        ]}
+      /> */}
     </div>
   );
 }

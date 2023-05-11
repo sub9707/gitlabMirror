@@ -43,6 +43,10 @@ const RepomonRank = ({
     router.push(`/repo/${repoId}`);
   };
 
+  const onClickUserItem = (userId: number) => {
+    router.push(`/user/${userId}`);
+  };
+
   const requestRepoRank = async () => {
     try {
       const res = await axiosRequestRepoRank(page - 1, searchInput);
@@ -114,25 +118,31 @@ const RepomonRank = ({
               <span>경험치</span>
             </div>
             {repomonRankInfo?.content.map((item, index) => (
-              <div
-                key={index}
-                className={styles["list-item"]}
-                onClick={() => onClickRepoItem(item.repoId)}
-              >
+              <div key={index} className={styles["list-item"]}>
                 <span>{item.repoRank}</span>
-                <span>
+                <span
+                  style={{
+                    justifyContent: "flex-start",
+                    transform: "translateX(35%)",
+                  }}
+                  onClick={() => onClickRepoItem(item.repoId)}
+                >
                   <Image
                     alt="레포몬"
                     src={`/static/models_png/${pretreatModelUrl(
                       item.repomonUrl
                     )}.png`}
-                    width={40}
-                    height={40}
+                    width={35}
+                    height={35}
                   ></Image>
                   {item.repomonNickname}
                 </span>
-                <span>{item.repoName}</span>
-                <span>{item.repoOwner}</span>
+                <span onClick={() => onClickRepoItem(item.repoId)}>
+                  {item.repoName}
+                </span>
+                <span onClick={() => onClickUserItem(item.userId)}>
+                  {item.repoOwner}
+                </span>
                 <span>
                   {item.repoExp.toLocaleString()}
                   <span

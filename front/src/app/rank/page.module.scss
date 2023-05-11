@@ -1,8 +1,12 @@
 @import "@/styles/variables.scss";
 
 .banner {
-  height: 400px;
+  height: 350px;
   background-color: $second;
+
+  @include desktop125 {
+    height: 300px;
+  }
 
   .banner-inner {
     position: relative;
@@ -86,11 +90,11 @@
 
     .banner-lottie {
       position: absolute;
-      top: -10%;
+      top: -20%;
       right: -5%;
 
       @include desktop125 {
-        width: 450px;
+        width: 400px;
       }
     }
   }
