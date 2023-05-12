@@ -43,6 +43,10 @@ const BattleRank = ({
     router.push(`/repo/${repoId}`);
   };
 
+  const onClickUserItem = (userId: number) => {
+    router.push(`/user/${userId}`);
+  };
+
   const requestBattleRank = async () => {
     try {
       const res = await axiosRequestBattleRank(page - 1, searchInput);
@@ -64,11 +68,7 @@ const BattleRank = ({
         <div>
           <div className={styles["top-3-div"]}>
             {top3.map((data, index) => (
-              <div
-                key={index}
-                className={styles[`top-${index + 1}`]}
-                onClick={() => onClickRepoItem(data.repoId)}
-              >
+              <div key={index} className={styles[`top-${index + 1}`]}>
                 <div className={styles.border} />
                 <div className={styles["main-element"]} />
                 <Image
@@ -114,25 +114,39 @@ const BattleRank = ({
               <span>레이팅</span>
             </div>
             {battleRankInfo?.content.map((item, index) => (
-              <div
-                key={index}
-                className={styles["list-item"]}
-                onClick={() => onClickRepoItem(item.repoId)}
-              >
+              <div key={index} className={styles["list-item"]}>
                 <span>{item.repomonRank}</span>
-                <span>
+                <span
+                  style={{
+                    justifyContent: "flex-start",
+                    transform: "translateX(35%)",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => onClickRepoItem(item.repoId)}
+                  className={styles.hover}
+                >
                   <Image
                     alt="레포몬"
                     src={`/static/models_png/${pretreatModelUrl(
                       item.repomonUrl
                     )}.png`}
-                    width={40}
-                    height={40}
+                    width={35}
+                    height={35}
                   ></Image>
                   {item.repomonNickname}
                 </span>
-                <span>{item.repoName}</span>
-                <span>{item.repoOwner}</span>
+                <span
+                  onClick={() => onClickRepoItem(item.repoId)}
+                  className={styles.hover}
+                >
+                  {item.repoName}
+                </span>
+                <span
+                  onClick={() => onClickUserItem(item.userId)}
+                  className={styles.hover}
+                >
+                  {item.repoOwner}
+                </span>
                 <span>
                   {item.rating.toLocaleString()}
                   <span

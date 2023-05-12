@@ -123,7 +123,13 @@ const Page = ({ params }: { params: { userId: string } }) => {
                 <div className='text-base ps-2'> 위</div>
               </div>
               <div className={`${styles.boxContent} flex items-center border-b-4 pb-3`}>
-                <div className='pr-3 py-1.5' style={{ fontWeight: '1000', fontFamily: 'SUIT-Bold', color: 'grey' }}>
+                <div
+                  className='pr-3 py-1.5'
+                  style={{
+                    fontWeight: '1000',
+                    fontFamily: 'SUIT-Bold',
+                    color: 'grey',
+                  }}>
                   Exp
                 </div>
                 <div>{userInfo?.totalExp}</div>
