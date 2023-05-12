@@ -1,5 +1,6 @@
-import { StatType } from "@/types/repoDetail";
+import { EditConventionType, StatType } from "@/types/repoDetail";
 import { http } from "./axios";
+import { conventionType } from "@/types/repoRegist";
 
 export const axiosRequestRepoDetail = async (
   repoId: number,
@@ -123,6 +124,29 @@ export const axiosRequestSetPersonalLans = async (
   };
 
   const res = await http.put(`repo/${repoId}/card/personal`, data);
+
+  return res;
+};
+
+export const axiosRequestPersonalLans = async (repoId: number) => {
+  const res = await http.get(`repo/${repoId}/card/personal`);
+
+  return res;
+};
+
+export const axiosRequestEditConventions = async (
+  repoId: string,
+  exConventions: EditConventionType[]
+) => {
+  const newConventions: conventionType[] = exConventions.map((con) => {
+    return { type: con.prefix, desc: con.description };
+  });
+
+  const data = {
+    conventions: newConventions,
+  };
+
+  const res = http.put(`repo/${repoId}/info/convention`, data);
 
   return res;
 };

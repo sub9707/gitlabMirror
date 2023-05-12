@@ -18,6 +18,35 @@
   }
 }
 
+.edit-div {
+  width: 63%;
+
+  .edit-btn {
+    margin: 0.2rem;
+    padding: 0.3rem 0.5rem;
+    font-size: 1.125rem;
+    border: 1px solid $sub;
+    border-radius: 7px;
+    color: $sub;
+
+    @include desktop125 {
+      font-size: 0.95rem;
+    }
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+
+  .edit-comment {
+    margin: 0 0 1rem 0;
+
+    @include desktop125 {
+      font-size: 0.9rem;
+    }
+  }
+}
+
 .left {
   width: 65%;
 
@@ -64,4 +93,9 @@
   .comment {
     font-size: 1.5rem;
   }
+}
+
+.loading {
+  margin: 2rem auto 0 auto;
+  width: 4%;
 }
