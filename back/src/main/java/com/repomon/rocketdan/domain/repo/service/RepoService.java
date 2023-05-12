@@ -29,7 +29,6 @@ import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHRepositoryStatistics;
 import org.kohsuke.github.PagedIterable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -660,7 +659,12 @@ public class RepoService {
 	/**
 	 * 레포 card detail
 	 */
-	public RepoRedisCardResponseDto RepoCardDetail(Long repoId) {
+	public RepoRedisCardResponseDto repoCardDetail(Long repoId) {
+		//레디스에서 찾아보고 있으면 삭제
+		repoRedisCardRepository.findByRepoId(repoId).ifPresent(dto -> {
+			repoRedisCardRepository.delete(dto);
+		});
+
 		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
 			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 		});
@@ -706,7 +710,7 @@ public class RepoService {
 	/**
 	 * 레포 personal card detail
 	 */
-	public RepoPersonalCardResponseDto RepoPersonalCardDetail(Long repoId, Long userId) throws IOException, InterruptedException {
+	public RepoPersonalCardResponseDto repoPersonalCardDetail(Long repoId, Long userId) throws IOException, InterruptedException {
 		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
 			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 		});
@@ -778,4 +782,24 @@ public class RepoService {
 		return RepoPersonalCardResponseDto.fromEntityAndOthers(repoEntity, historyEntityList, contributers, userInfo, contributeResponse, myIssue, mytotalcode, myMerges, conventionrate, languages);
 	}
 
+	/**
+	 * django용 요청
+	 */
+	public RepoRedisCardResponseDto findRepoCardDetail(Long repoId) {
+		RepoRedisCardResponseDto responseDto =  repoRedisCardRepository.findByRepoId(repoId).orElseThrow(
+				() -> {throw new CustomException(ErrorCode.NOT_FOUND_REPOSITORY);}
+		);
+		return responseDto;
+	}
+
+//	/**
+//	 * django용 요청
+//	 */
+//	public RepoPersonalCardResponseDto findRepoPersonalCardDetail(Long repoId) {
+//		//레디스에서 찾아보고 있으면 삭제
+//		RepoPersonalCardResponseDto responseDto =  repoRedisCardRepository.findByRepoId(repoId).orElseThrow(
+//				() -> {throw new CustomException(ErrorCode.NOT_FOUND_REPOSITORY);}
+//		);
+//		return responseDto;
+//	}
 }
