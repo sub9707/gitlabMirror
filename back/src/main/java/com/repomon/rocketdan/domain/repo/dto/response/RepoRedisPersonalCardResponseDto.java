@@ -4,11 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.repomon.rocketdan.domain.repo.app.GrowthFactor;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import com.repomon.rocketdan.domain.repo.entity.RepoHistoryEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -20,9 +18,9 @@ import java.util.Map;
 @Getter
 @Builder
 @RedisHash(value = "repo-personal-card")
-@ToString
+@ToString @NoArgsConstructor
 @AllArgsConstructor
-public class RepoPersonalCardResponseDto {
+public class RepoRedisPersonalCardResponseDto {
     /**
      * -------레포 개인 카드 detail------
      * 레포 이름 repoName
@@ -54,8 +52,10 @@ public class RepoPersonalCardResponseDto {
     @JsonIgnore
     private Long id;
     @Column(unique = true)
+    @Indexed
     private Long repoId;
     @Column(unique = true)
+    @Indexed
     private Long userId;
     private Long repomonId;
     private Long repoExp;
@@ -90,7 +90,7 @@ public class RepoPersonalCardResponseDto {
     private String avatarUrl;
 
 
-    public static RepoPersonalCardResponseDto fromEntityAndOthers(RepoEntity repoEntity, List<RepoHistoryEntity> historyEntityList, Integer contributers, Map<String, String> userInfo, RepoContributeResponseDto contributeResponse,Integer myissue, Long mytotalcode, List<Integer> mymerges, Double conventionrate, List<String> languages) {
+    public static RepoRedisPersonalCardResponseDto fromEntityAndOthers(Long userId, RepoEntity repoEntity, List<RepoHistoryEntity> historyEntityList, Integer contributers, Map<String, String> userInfo, RepoContributeResponseDto contributeResponse, Integer myissue, Long mytotalcode, List<Integer> mymerges, Double conventionrate, List<String> languages) {
         Long commitsExp = 0L;
         Long mergesExp = 0L;
         Long issuesExp = 0L;
@@ -134,7 +134,9 @@ public class RepoPersonalCardResponseDto {
         int myMergeExp = (int) (mymerges.get(0) * GrowthFactor.idxToEnum(2).getExp());
         int myReviewExp = (int) (mymerges.get(1) * GrowthFactor.idxToEnum(4).getExp());
 
-return RepoPersonalCardResponseDto.builder()
+return RepoRedisPersonalCardResponseDto.builder()
+                .repoId(repoEntity.getRepoId())
+                .userId(userId)
                 .repomonId(repoEntity.getRepomon().getRepomonId())
                 .repomonTier(repoEntity.getRepomon().getRepomonTier())
                 .contribution(myContribution)

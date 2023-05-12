@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 import static com.repomon.rocketdan.exception.ErrorCode.DATA_CONVENTION_TOO_SHORT;
 import static com.repomon.rocketdan.exception.ErrorCode.DUPLICATE_RESOURCE;
@@ -138,6 +137,13 @@ public class RepoController {
 		return ResponseEntity.ok(responseDto);
 	}
 
+	@ApiOperation(value = "래포개인카드 정보")
+	@GetMapping("/{repoId}/card/personal/{userId}")
+	public ResponseEntity<RepoRedisPersonalCardResponseDto> getPersonalRepoCard(@PathVariable Long repoId, @PathVariable Long userId) throws IOException, InterruptedException {
+		RepoRedisPersonalCardResponseDto responseDto = repoService.repoPersonalCardDetail(repoId, userId);
+		return ResponseEntity.ok(responseDto);
+	}
+
 	@ApiOperation(value = "레포카드 정보 Django")
 	@GetMapping("/{repoId}/card/detail/django")
 	public ResponseEntity<RepoRedisCardResponseDto> getRepoCardDetailRedis(@PathVariable Long repoId) {
@@ -145,20 +151,12 @@ public class RepoController {
 		return ResponseEntity.ok(responseDto);
 	}
 
-
-	@ApiOperation(value = "래포개인카드 정보")
-	@GetMapping("/{repoId}/card/personal/{userId}")
-	public ResponseEntity<RepoPersonalCardResponseDto> getPersonalRepoCard(@PathVariable Long repoId, @PathVariable Long userId) throws IOException, InterruptedException {
-		RepoPersonalCardResponseDto responseDto = repoService.repoPersonalCardDetail(repoId, userId);
+	@ApiOperation(value = "래포개인카드 정보 Django")
+	@GetMapping("/{repoId}/card/personal/{userId}/django")
+	public ResponseEntity<RepoRedisPersonalCardResponseDto> getPersonalRepoCardRedis(@PathVariable Long repoId, @PathVariable Long userId) {
+		RepoRedisPersonalCardResponseDto responseDto = repoService.findRepoPersonalCardDetail(repoId, userId);
 		return ResponseEntity.ok(responseDto);
 	}
-
-//	@ApiOperation(value = "래포개인카드 정보 Django")
-//	@GetMapping("/{repoId}/card/personal/{userId}/django")
-//	public ResponseEntity<RepoPersonalCardResponseDto> getPersonalRepoCardRedis(@PathVariable Long repoId, @PathVariable Long userId) throws IOException, InterruptedException {
-//		RepoPersonalCardResponseDto responseDto = repoService.findRepoPersonalCardDetail(repoId, userId);
-//		return ResponseEntity.ok(responseDto);
-//	}
 
 	@ApiOperation(value = "레포개인카드 현재 설정된 언어 조회")
 	@GetMapping("/{repoId}/card/personal")
