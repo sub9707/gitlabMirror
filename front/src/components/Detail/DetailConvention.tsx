@@ -82,6 +82,7 @@ function DetailConvention({
                 </div>
                 <div className={styles.right}>
                   <ConventionChart
+                    conventionInfo={conventionInfo.conventionInfo}
                     total={conventionInfo.totalCnt}
                     obey={conventionInfo.collectCnt}
                   />

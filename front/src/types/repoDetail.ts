@@ -154,6 +154,9 @@ export type RepoDetailConventionInfoType = {
   conventions: RepoDetailConventionType[];
   repoOwner: string;
   totalCnt: number;
+  conventionInfo: {
+    [prefix: string]: number;
+  }
 };
 
 export type RepoDetailContributionInfoType = {
@@ -168,6 +171,15 @@ export type RepoDetailContributionInfoType = {
 };
 
 export type ContributionChartType = {
+  labels: string[];
+  datasets: {
+    data: number[];
+    backgroundColor: string[];
+    borderWidth: number;
+  }[];
+};
+
+export type ConventionChartType = {
   labels: string[];
   datasets: {
     data: number[];

@@ -112,6 +112,12 @@ const Page = ({ params }: { params: { userId: string } }) => {
               <p className={styles.boxTitle}>{userInfo?.username}</p>
               <p className="py-2">{userInfo?.userDescription}</p>
               <UserExportModal userId={params.userId} />
+              <div
+                className={`${styles.userCardExport} border-2 rounded-lg flex justify-center my-2 py-1 font-bold`}
+                onClick={copyUserCardUrl}
+              >
+                <p>Export User Card</p>
+              </div>
               <a
                 href={`https://github.com/${userInfo?.username.toLowerCase()}`}
               >
