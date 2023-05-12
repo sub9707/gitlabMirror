@@ -1,56 +1,81 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie } from "react-chartjs-2";
+import { ConventionChartType } from "@/types/repoDetail";
+import styles from "react-day-picker/dist/style.css";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export function ConventionChart({
+  conventionInfo,
   total,
   obey,
 }: {
+  conventionInfo: { [key: string]: number };
   total: number;
   obey: number;
 }) {
-  const data = {
-    labels:
-      obey === 0
-        ? ["컨벤션 몰라"]
-        : total - obey === 0
-        ? ["컨벤션 좋아"]
-        : ["컨벤션 좋아", "컨벤션 몰라"],
+  const [data, setData] = useState<ConventionChartType>({
+    labels: [],
     datasets: [
       {
-        data:
-          obey === 0
-            ? [total - obey]
-            : total - obey === 0
-            ? [obey]
-            : [obey, total - obey],
-        backgroundColor: ["rgba(109, 130, 250, 0.2)", "rgba(255, 111, 0, 0.2)"],
+        data: [12, 19, 3, 5, 2, 3],
+        backgroundColor: [
+          "rgba(255, 99, 132, 0.2)",
+          "rgba(54, 162, 235, 0.2)",
+          "rgba(255, 206, 86, 0.2)",
+          "rgba(75, 192, 192, 0.2)",
+          "rgba(153, 102, 255, 0.2)",
+          "rgba(255, 159, 64, 0.2)",
+          "rgba(255, 164, 217, 0.2)",
+        ],
         borderWidth: 0,
       },
     ],
-  };
+  });
+
+  useEffect(() => {
+    const apiLabels: string[] = [];
+    const apiData: number[] = [];
+
+    console.log(total);
+    console.log(obey);
+    console.log(conventionInfo);
+    for (let prefix in conventionInfo) {
+      apiLabels.push(prefix);
+      apiData.push(conventionInfo[prefix]);
+    }
+
+    console.log(apiData);
+    setData((prevState) => ({
+      labels: apiLabels,
+      datasets: [
+        {
+          ...prevState.datasets[0],
+          data: apiData,
+          backgroundColor: apiLabels.map((label, index) =>
+            label === "미 준수"
+              ? "rgba(128, 128, 128, 0.2)"
+              : prevState.datasets[0].backgroundColor[index]
+          ),
+        },
+      ],
+    }));
+  }, []);
 
   return (
-    <Pie
-      data={data}
-      options={{
-        plugins: {
-          legend: {
-            onClick: () => {},
-            position: "bottom" as const,
-            labels: {
-              font: {
-                size: 15,
-                family: "SUIT-Thin",
-                weight: "bold",
-              },
-              color: "rgb(50, 50, 50)",
+    <div>
+      <Pie
+        data={data}
+        options={{
+          plugins: {
+            legend: {
+              display: false,
             },
           },
-        },
-      }}
-    />
+        }}
+      />
+      <p>컨벤션 준수율 {((obey / total) * 100.0).toFixed(2)} %</p>
+    </div>
   );
 }
