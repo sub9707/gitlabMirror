@@ -176,6 +176,15 @@ export type ContributionChartType = {
   }[];
 };
 
+export type ConventionChartType = {
+  labels: string[];
+  datasets: {
+    data: number[];
+    backgroundColor: string[];
+    borderWidth: number;
+  }[];
+};
+
 export type EditConventionType = {
   id: number;
   prefix: string;
