@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
 import styles from './page.module.scss';
-import RepositoryCard from '@/components/RepositoryCard';
+import RepositoryCard, { modelProps } from '@/components/RepositoryCard';
 import { useRouter } from 'next/navigation';
 import { getTotalRepoList, getUserDetail, refreshAllRepo } from '@/api/userRepo';
 import { RepoListType, UserInfoType } from '@/types/repoInfo';
@@ -13,6 +13,9 @@ import Modal from 'react-modal';
 import LoadingSpinner from '@/components/Skeletons/LoadingSpinner';
 import Ballon from 'public/static/lotties/balloon.json';
 import Lottie from 'react-lottie-player';
+import { Canvas, useFrame, useLoader } from '@react-three/fiber';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import * as THREE from 'three';
 
 const Page = ({ params }: { params: { userId: string } }) => {
   // 레포지토리 유저 정보 GET
@@ -63,6 +66,19 @@ const Page = ({ params }: { params: { userId: string } }) => {
   // 동일 유저 체크
   const [isSameUser, setIsSameUser] = useState<boolean>();
 
+  // 카드 추출 이벤트
+  function copyUserCardUrl() {
+    const stringToCopy = `https://repomon.kr/card/user?userId=${userInfo?.userId}`;
+    navigator.clipboard
+      .writeText(stringToCopy)
+      .then(() => {
+        window.alert('복사 완료 ✅');
+      })
+      .catch((error) => {
+        window.alert('복사 실패 ❌');
+      });
+  }
+
   return (
     <div id='pageContainer'>
       <div className={styles.pageContainer}>
@@ -81,26 +97,30 @@ const Page = ({ params }: { params: { userId: string } }) => {
               />
               <p className={styles.boxTitle}>{userInfo?.username}</p>
               <p className='py-2'>{userInfo?.userDescription}</p>
-              <div className='border-2 rounded-lg flex justify-center my-2 py-1 font-bold'>
+              <div className={`${styles.userCardExport} border-2 rounded-lg flex justify-center my-2 py-1 font-bold`} onClick={copyUserCardUrl}>
                 <p>Export User Card</p>
               </div>
-              <div className={`${styles.boxContent} flex items-center`}>
-                <div className='pr-3 py-1.5'>
-                  <Image src='/static/images/github.png' alt='logo' width={24} height={24} />
+              <a href={`https://github.com/${userInfo?.username.toLowerCase()}`}>
+                <div className={`${styles.boxContent} flex items-center`}>
+                  <div className='pr-3 py-1.5'>
+                    <Image src='/static/images/github.png' alt='logo' width={24} height={24} />
+                  </div>
+                  <div>github.com/{userInfo?.username.toLowerCase()}</div>
                 </div>
-                <div>github.com/{userInfo?.username.toLowerCase()}</div>
-              </div>
+              </a>
               <div className={`${styles.boxContent} flex items-center`}>
                 <div className='pr-3 py-1.5'>
                   <Image src='/static/images/pokeball.png' alt='logo' width={24} height={24} />
                 </div>
-                <div>{userInfo?.activeRepoCnt || 0} 마리</div>
+                <div>{userInfo?.activeRepoCnt || 0} </div>
+                <div className='text-base ps-2'> 몬</div>
               </div>
               <div className={`${styles.boxContent} flex items-center`}>
                 <div className='pr-3 py-1.5'>
                   <Image src='/static/images/trophy.png' alt='logo' width={24} height={24} />
                 </div>
-                <div>{userInfo?.userRank} 위</div>
+                <div>{userInfo?.userRank}</div>
+                <div className='text-base ps-2'> 위</div>
               </div>
               <div className={`${styles.boxContent} flex items-center border-b-4 pb-3`}>
                 <div className='pr-3 py-1.5' style={{ fontWeight: '1000', fontFamily: 'SUIT-Bold', color: 'grey' }}>
@@ -118,15 +138,24 @@ const Page = ({ params }: { params: { userId: string } }) => {
               </div>
             ) : (
               <div className='flex flex-col pt-10'>
-                <p>대표 레포지터리</p>
-                <p className={styles.boxContent} style={{ color: 'black', fontWeight: 'bold' }}>
+                <p className='text-sm'>대표 레포지토리</p>
+                <p className={`${styles.boxContent} pb-3`} style={{ color: 'black', fontWeight: 'bold' }}>
                   {userInfo?.representRepo?.repoName}
                 </p>
-                <p>대표 레포몬</p>
+                <p className='text-sm'>대표 레포몬</p>
                 <p className={styles.boxContent} style={{ color: 'black', fontWeight: 'bold' }}>
-                  {userInfo?.representRepo?.repomon?.repomonName}
+                  {userInfo?.representRepo?.repomonNickName}
                 </p>
-                <div></div>
+                <div className='flex flex-col relative items-center' style={{ width: '18em', height: '18em' }}>
+                  <Canvas>
+                    <directionalLight color='white' position={[0, 0, 5]} intensity={0.5} />
+                    <directionalLight color='white' position={[-5, 0, -5]} intensity={0.5} />
+                    <Model repomonUrl={userInfo?.representRepo?.repomon.repomonUrl} repoId={userInfo?.representRepo?.repoId} />
+                  </Canvas>
+                  <div
+                    className='bg-indigo-300 py-5 rounded-full'
+                    style={{ position: 'absolute', bottom: '30px', width: '15em', borderRadius: `50% / 50%`, zIndex: '-1' }}></div>
+                </div>
                 <p className={styles.boxContent}>
                   경험치 : {userInfo?.representRepo?.repoExp} ({userInfo?.representRepo?.repoRank}위)
                 </p>
@@ -223,3 +252,55 @@ const Page = ({ params }: { params: { userId: string } }) => {
 };
 
 export default Page;
+
+const Model = (props: modelProps) => {
+  const [repomonURL, setRepomonURL] = useState<string>(props.repomonUrl);
+  const [repoId, setRepoId] = useState<number>(props.repoId);
+  // 기본값은 알 크기
+  const filename = repomonURL.slice(repomonURL.lastIndexOf('/') + 1);
+  const num = filename.slice(-5, filename.length - 4);
+  const str = num.toString();
+  // console.log(repomonURL + "?id=" + repoId);
+  const getModelLevel = (str: string): number[] => {
+    switch (str) {
+      case '2':
+        return [4.5, 4.5, 4.5];
+      case '3':
+        return [4, 4, 4];
+      default:
+        return [5, 5, 5];
+    }
+  };
+  const getModelPosition = (str: string): number[] => {
+    switch (str) {
+      case '2':
+        return [1, -2, 0];
+      case '3':
+        return [1, -2, 0];
+      default:
+        return [0, -2, 0];
+    }
+  };
+
+  const [scaleState, setScaleState] = useState<number[]>(getModelLevel(str));
+  const [positionState, setPositionState] = useState<number[]>(getModelPosition(str));
+
+  const gltf = useLoader(GLTFLoader, repomonURL + '?id=' + repoId + 'representive');
+
+  let mixer: THREE.AnimationMixer | undefined;
+
+  if (gltf.animations.length) {
+    mixer = new THREE.AnimationMixer(gltf.scene);
+    mixer.timeScale = 0.4;
+    const action = mixer.clipAction(gltf.animations[0]);
+    action.clampWhenFinished = true;
+    action.play();
+  }
+
+  useFrame((state, delta) => {
+    mixer?.update(delta);
+    // gltf.scene.rotation.y += delta * 0.05; // 회전 속도를 조절할 수 있습니다.
+  });
+
+  return <primitive object={gltf.scene} scale={scaleState} position={positionState} rotation={[0.2, -0.8, 0]} />;
+};
