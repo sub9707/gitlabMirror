@@ -13,7 +13,6 @@ import {
 } from "@/api/userRepo";
 import { RepoListType, UserInfoType } from "@/types/repoInfo";
 import Paging from "@/components/UI/Pagination";
-import Modal from "react-modal";
 import LoadingSpinner from "@/components/Skeletons/LoadingSpinner";
 import Ballon from "public/static/lotties/balloon.json";
 import Lottie from "react-lottie-player";
