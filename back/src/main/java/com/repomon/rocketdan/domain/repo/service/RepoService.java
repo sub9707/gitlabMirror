@@ -11,6 +11,7 @@ import com.repomon.rocketdan.domain.repo.dto.request.RepoPeriodRequestDto;
 import com.repomon.rocketdan.domain.repo.dto.response.*;
 import com.repomon.rocketdan.domain.repo.entity.*;
 import com.repomon.rocketdan.domain.repo.repository.*;
+import com.repomon.rocketdan.domain.repo.repository.redis.RepoRedisCardRepository;
 import com.repomon.rocketdan.domain.repo.repository.redis.RepoRedisContributeRepository;
 import com.repomon.rocketdan.domain.repo.repository.redis.RepoRedisConventionRepository;
 import com.repomon.rocketdan.domain.repo.repository.redis.RepoRedisListRepository;
@@ -45,6 +46,7 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 public class RepoService {
+	private final RepoRedisCardRepository repoRedisCardRepository;
 
 	private final GHUtils ghUtils;
 	private final RankService rankService;
@@ -660,7 +662,7 @@ public class RepoService {
 	/**
 	 * 레포 card detail
 	 */
-	public RepoCardResponseDto RepoCardDetail(Long repoId) {
+	public RepoRedisCardResponseDto RepoCardDetail(Long repoId) {
 		RepoEntity repoEntity = repoRepository.findById(repoId).orElseThrow(() -> {
 			throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
 		});
@@ -697,7 +699,9 @@ public class RepoService {
 			conventionrate = conventionDto.getCollectCnt() / conventionDto.getTotalCnt() * 100;
 		}
 
-		return RepoCardResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository, historyEntityList, totalLineCount, contributers, conventionrate);
+		RepoRedisCardResponseDto responseDto =  RepoRedisCardResponseDto.fromEntityAndGHRepository(repoId, repoEntity, ghRepository, historyEntityList, totalLineCount, contributers, conventionrate);
+		repoRedisCardRepository.save(responseDto);
+		return responseDto;
 	}
 
 

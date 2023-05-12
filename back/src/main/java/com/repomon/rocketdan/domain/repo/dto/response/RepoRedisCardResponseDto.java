@@ -1,5 +1,6 @@
 package com.repomon.rocketdan.domain.repo.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.repomon.rocketdan.domain.repo.app.GrowthFactor;
 import com.repomon.rocketdan.domain.repo.entity.RepoEntity;
 import java.io.IOException;
@@ -12,14 +13,18 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.kohsuke.github.GHRepository;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
+
+import javax.persistence.Id;
 
 
-
-    @AllArgsConstructor
-    @Getter
-    @ToString
+@Getter
     @Builder
-    public class RepoCardResponseDto {
+    @RedisHash(value = "repo-card")
+    @ToString
+    @AllArgsConstructor
+    public class RepoRedisCardResponseDto {
         /**
          * -------레포카드 detail------
          * 레포 이름 repoName
@@ -38,6 +43,11 @@ import org.kohsuke.github.GHRepository;
          * 전체 경험치 repoExp
          * 컨트리뷰터 수 contributers
          */
+        @Id
+        @JsonIgnore
+        private Long id;
+        @Indexed
+        private Long repoId;
         private Long repomonId;
         private Long repoExp;
         private int repomonTier;
@@ -59,7 +69,7 @@ import org.kohsuke.github.GHRepository;
         private Long merges;
         private Long reviews;
 
-        public static RepoCardResponseDto fromEntityAndGHRepository(RepoEntity repoEntity, GHRepository ghRepository, List<RepoHistoryEntity> historyEntityList, Long totalcode, Integer contributers, Double conventionrate) {
+        public static RepoRedisCardResponseDto fromEntityAndGHRepository(Long repoId,RepoEntity repoEntity, GHRepository ghRepository, List<RepoHistoryEntity> historyEntityList, Long totalcode, Integer contributers, Double conventionrate) {
             try {
                 Map<String, Long> languageMap = ghRepository.listLanguages();
                 List<String> languages = new ArrayList<>();
@@ -92,7 +102,8 @@ import org.kohsuke.github.GHRepository;
                     }
                 }
                 int convention = (int) Math.round(conventionrate);
-                return RepoCardResponseDto.builder()
+                return RepoRedisCardResponseDto.builder()
+                        .repoId(repoId)
                         .repomonId(repoEntity.getRepomon().getRepomonId())
                         .repoExp(repoEntity.getRepoExp())
                         .repomonTier(repoEntity.getRepomon().getRepomonTier())

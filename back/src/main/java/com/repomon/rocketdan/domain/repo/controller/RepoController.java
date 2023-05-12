@@ -132,8 +132,8 @@ public class RepoController {
 
 	@ApiOperation(value = "레포카드 정보")
 	@GetMapping("/{repoId}/card/detail")
-	public ResponseEntity<RepoCardResponseDto> getRepoCardDetail(@PathVariable Long repoId) {
-		RepoCardResponseDto responseDto = repoService.RepoCardDetail(repoId);
+	public ResponseEntity<RepoRedisCardResponseDto> getRepoCardDetail(@PathVariable Long repoId) {
+		RepoRedisCardResponseDto responseDto = repoService.RepoCardDetail(repoId);
 		return ResponseEntity.ok(responseDto);
 	}
 
