@@ -593,6 +593,7 @@ public class RepoService {
 				() -> new CustomException(ErrorCode.NOT_FOUND_ENTITY)
 			);
 			repoEntity.updateRepomon(newRepomon);
+			repomon = repoEntity.getRepomon();
 		}
 		log.info("======================== 진화 여부 확인 종료 ============================");
 	}
