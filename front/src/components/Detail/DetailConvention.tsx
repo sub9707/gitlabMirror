@@ -72,10 +72,12 @@ function DetailConvention({
               <div style={{ display: "flex", marginTop: "0.5rem" }}>
                 <div className={styles.left}>
                   {conventionInfo.conventions.map((con, index) => (
-                    <div key={index} className={styles["con-div"]}>
-                      <span className={styles.prefix}>{con.prefix}</span>
-                      <span className={styles.des}>{con.description}</span>
-                    </div>
+                    <>
+                      <div key={index} className={styles["con-div"]}>
+                        <span className={styles.prefix}>{con.prefix}</span>
+                        <span className={styles.des}>{con.description}</span>
+                      </div>
+                    </>
                   ))}
                 </div>
                 <div className={styles.right}>

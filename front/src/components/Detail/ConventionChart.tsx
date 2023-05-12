@@ -14,10 +14,10 @@ export function ConventionChart({
   const data = {
     labels:
       obey === 0
-        ? ["컨벤션 몰라"]
+        ? ["컨벤션 미준수"]
         : total - obey === 0
-        ? ["컨벤션 좋아"]
-        : ["컨벤션 좋아", "컨벤션 몰라"],
+        ? ["컨벤션 준수"]
+        : ["컨벤션 준수", "컨벤션 미준수"],
     datasets: [
       {
         data:

@@ -48,7 +48,14 @@
 }
 
 .left {
-  width: 65%;
+  width: 70%;
+  padding: 0.5rem;
+  height: 400px;
+  overflow-y: scroll;
+
+  &::-webkit-scrollbar {
+    width: 7px;
+  }
 
   .con-div {
     position: relative;
@@ -79,7 +86,7 @@
 }
 
 .right {
-  margin-left: 10%;
+  margin-left: 3%;
   width: 27%;
 }
 
