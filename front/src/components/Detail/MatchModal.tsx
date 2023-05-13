@@ -35,22 +35,22 @@ const MatchModal = ({ repoId }: { repoId: string }) => {
 
   /** ============================== useEffect ============================== */
   useEffect(() => {
-    if (oppoInfo) {
+    if (oppoRepoId && oppoInfo) {
       setIsOpen(true);
     }
-  }, [oppoInfo]);
+  }, [oppoRepoId, oppoInfo]);
 
-  useEffect(() => {
-    if (modalIsOpen && oppoRepoId) {
-      setTimeout(() => {
-        router.push(`./repoBattle/${oppoRepoId}`);
-      }, 2000);
-    }
-  }, [modalIsOpen, oppoRepoId]);
+  useEffect(() => {}, []);
 
   /** ============================== 함수, Event Handler ============================== */
   const closeModal = () => {
     setIsOpen(false);
+  };
+
+  const afterOpenModal = () => {
+    setTimeout(() => {
+      router.push(`repo/${repoId}/repoBattle/${oppoRepoId}`);
+    }, 2000);
   };
 
   const onClickMatchBtn = async () => {
@@ -82,6 +82,7 @@ const MatchModal = ({ repoId }: { repoId: string }) => {
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
+        onAfterOpen={afterOpenModal}
         style={customStyles}
         contentLabel=""
       >
