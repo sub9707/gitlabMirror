@@ -154,6 +154,9 @@ export type RepoDetailConventionInfoType = {
   conventions: RepoDetailConventionType[];
   repoOwner: string;
   totalCnt: number;
+  conventionInfo: {
+    [prefix: string]: number;
+  }
 };
 
 export type RepoDetailContributionInfoType = {
