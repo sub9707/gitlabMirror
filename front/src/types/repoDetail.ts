@@ -24,7 +24,7 @@ export type HistoryType = {
 
 export type RepoDetailResearchType = {
   growthFactor: GrowthFactorType;
-  histories: HistoryType[];
+  histories: HistoryType;
   rank: number;
   repoExp: number;
   totalGetExp: number;
