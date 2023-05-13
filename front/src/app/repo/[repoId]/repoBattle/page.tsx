@@ -450,9 +450,23 @@ const Page = () => {
                     position={[5, 0, 5]}
                     intensity={0.6}
                   />
-                  <Model url={matchData?.data.attackRepo.repomon.repomonUrl} />
+                  <Model
+                    url={
+                      matchData?.data.attackRepo.repomon.repomonUrl.includes(
+                        "Egg"
+                      )
+                        ? `https://repomon.s3.ap-northeast-2.amazonaws.com/models/Egg.glb`
+                        : matchData?.data.attackRepo.repomon.repomonUrl
+                    }
+                  />
                   <SecondModel
-                    url={matchData?.data.defenseRepo.repomon.repomonUrl}
+                    url={
+                      matchData?.data.attackRepo.repomon.repomonUrl.includes(
+                        "Egg"
+                      )
+                        ? `https://repomon.s3.ap-northeast-2.amazonaws.com/models/Egg.glb`
+                        : matchData?.data.attackRepo.repomon.repomonUrl
+                    }
                   />
                   <MyUI />
                   <OpUI />
