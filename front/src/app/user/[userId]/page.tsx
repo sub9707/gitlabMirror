@@ -96,7 +96,7 @@ const Page = ({ params }: { params: { userId: string } }) => {
             loop
             animationData={Ballon}
             play
-            style={{ width: "30vh", height: "30vh", marginTop: "-3%" }}
+            style={{ width: "30vh", height: "30vh", marginTop: "-3.3%" }}
           />
         </div>
         <div className={styles.bodyContainer}>
@@ -214,8 +214,7 @@ const Page = ({ params }: { params: { userId: string } }) => {
                   {userInfo?.representRepo?.repomonNickName}
                 </p>
                 <div
-                  className="flex flex-col relative items-center border rounded-full overflow-hidden bg-white"
-                  style={{ width: "18em", height: "18em" }}
+                  className={`flex flex-col relative items-center border rounded-full overflow-hidden bg-white ${styles["repomon-div"]}`}
                 >
                   <Canvas style={{ zIndex: "100" }}>
                     <directionalLight
@@ -244,7 +243,7 @@ const Page = ({ params }: { params: { userId: string } }) => {
                     }}
                   ></div>
                 </div>
-                <p className={styles.boxContent}>
+                <p className={styles.boxContent} style={{ marginTop: "1rem" }}>
                   경험치 : {userInfo?.representRepo?.repoExp} (
                   {userInfo?.representRepo?.repoRank}위)
                 </p>
@@ -275,7 +274,7 @@ const Page = ({ params }: { params: { userId: string } }) => {
                   </p>
                 ) : (
                   <ArrowPathIcon
-                    width="2rem"
+                    width="1.75rem"
                     style={{ marginLeft: "2%" }}
                     className={styles.arrow}
                     ref={arrowRef}
