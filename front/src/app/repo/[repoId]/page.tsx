@@ -1,20 +1,19 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   StarIcon,
   ShareIcon,
   ArrowUturnLeftIcon,
+  PresentationChartLineIcon,
+  ClipboardDocumentListIcon,
+  ChartPieIcon,
+  HeartIcon,
 } from "@heroicons/react/24/outline";
 import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import DetailRepomon from "@/components/Detail/DetailRepomon";
 import ProgressBar from "@/components/Detail/ProgressBar";
 import styles from "./page.module.scss";
-import {
-  PresentationChartLineIcon,
-  ClipboardDocumentListIcon,
-  ChartPieIcon,
-} from "@heroicons/react/24/outline";
 import DetailAnalysis from "@/components/Detail/DetailAnalysis";
 import DetailBattle from "@/components/Detail/DetailBattle";
 import {
@@ -73,6 +72,7 @@ function Page({ params }: { params: { repoId: string } }) {
   const [isTeam, setIsTeam] = useState<boolean>(false);
   const [conventionLoading, setConventionLoading] = useState<boolean>(false);
   const router = useRouter();
+  const lanRef = useRef<HTMLDivElement>(null);
 
   /** =============================================== useEffect =============================================== */
 
@@ -275,8 +275,29 @@ function Page({ params }: { params: { repoId: string } }) {
     try {
       const res = await axiosRequestSetRepresent(repoId, userId);
       console.log("대표 레포 설정: ", res);
+      customAlert("대표 레포지토리로 설정되었습니다.");
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const [scrollPos, setScrollPos] = useState(0);
+
+  const scrollLeft = () => {
+    if (lanRef.current) {
+      lanRef.current.scrollBy({
+        left: -lanRef.current.offsetWidth,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const scrollRight = () => {
+    if (lanRef.current) {
+      lanRef.current.scrollBy({
+        left: lanRef.current.offsetWidth,
+        behavior: "smooth",
+      });
     }
   };
 
@@ -287,11 +308,12 @@ function Page({ params }: { params: { repoId: string } }) {
         <div className={styles.pageContainer}>
           <div className={styles["top-btn-div"]}>
             <button onClick={onClickBack}>
-              <ArrowUturnLeftIcon />
+              <ArrowUturnLeftIcon style={{ width: "12px" }} />
               뒤로가기
             </button>
             {repoDetailInfo.myRepo && (
               <button onClick={onClickRepresentBtn}>
+                <HeartIcon />
                 대표 레포지토리 설정
               </button>
             )}
@@ -379,22 +401,34 @@ function Page({ params }: { params: { repoId: string } }) {
                   />
                 )}
               </p>
-              <div className={styles["lan-div"]}>
-                {repoDetailInfo.languages &&
-                  repoDetailInfo.languages.slice(0, 7).map((lan, index) => (
-                    <span
-                      key={index}
-                      style={{
-                        backgroundColor: languageColor[lan].color
-                          ? (languageColor[lan].color as string)
-                          : "gray",
-                      }}
-                    >
-                      {lan}
-                    </span>
-                  ))}
-                {repoDetailInfo.languages &&
-                  repoDetailInfo.languages.length > 7 && <span>...</span>}
+              <div className={styles["lan-div-container"]}>
+                <button
+                  className={styles["scroll-btn-left"]}
+                  onClick={scrollLeft}
+                >
+                  &lt;
+                </button>
+                <div className={styles["lan-div"]} ref={lanRef}>
+                  {repoDetailInfo.languages &&
+                    repoDetailInfo.languages.map((lan, index) => (
+                      <span
+                        key={index}
+                        style={{
+                          backgroundColor: languageColor[lan].color
+                            ? (languageColor[lan].color as string)
+                            : "gray",
+                        }}
+                      >
+                        {lan}
+                      </span>
+                    ))}
+                </div>
+                <button
+                  className={styles["scroll-btn-right"]}
+                  onClick={scrollRight}
+                >
+                  &gt;
+                </button>
               </div>
               <p className={styles.des}>
                 {repoDetailInfo.repoDescription ? (
