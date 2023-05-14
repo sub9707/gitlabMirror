@@ -41,11 +41,11 @@ import DetailContribution from "@/components/Detail/DetailContribution";
 import { languageColor } from "@/styles/colors";
 import { customAlert } from "@/app/utils/CustomAlert";
 import LoadingSpinner from "@/components/Skeletons/LoadingSpinner";
-import { useRouter } from "next/navigation";
 import ExportModal from "@/components/Detail/ExportModal";
 
 function Page({ params }: { params: { repoId: string } }) {
-  let loginUserId: string;
+  const loginUserId: string | null =
+    sessionStorage && sessionStorage.getItem("userId");
   const [repoDetailInfo, setRepoDetailInfo] = useState<RepoDetailType>();
   const [tabIndex, setTabIndex] = useState<number>(0);
   const [isUpdated, setIsUpdated] = useState<boolean>(false);
@@ -64,7 +64,6 @@ function Page({ params }: { params: { repoId: string } }) {
   const [repoDetailContributionInfo, setRepoDetailContributionInfo] =
     useState<RepoDetailContributionInfoType>();
   const [updateLoading, setUpdateLoading] = useState<boolean>(false);
-  const router = useRouter();
   const [isTeam, setIsTeam] = useState<boolean>(false);
   const [conventionLoading, setConventionLoading] = useState<boolean>(false);
 
@@ -72,10 +71,6 @@ function Page({ params }: { params: { repoId: string } }) {
 
   /** 레포 기본 정보 불러오기 + 레포몬 닉네임, 기간 업데이트 시 정보 재요청 */
   useEffect(() => {
-    if (sessionStorage) {
-      loginUserId = sessionStorage.getItem("userId") as string;
-    }
-
     requestRepoDetail(
       parseInt(params.repoId, 10),
       parseInt(loginUserId as string, 10)
@@ -138,6 +133,7 @@ function Page({ params }: { params: { repoId: string } }) {
   useEffect(() => {
     if (document.referrer !== window.location.href) {
       setTabIndex(1);
+      sessionStorage.setItem("tabIndex", "1");
     } else {
       setTabIndex(parseInt(sessionStorage.getItem("tabIndex") as string, 10));
     }
@@ -317,10 +313,10 @@ function Page({ params }: { params: { repoId: string } }) {
                     <span>레포지토리 갱신</span>
                   )}
                 </button>
-                {repoDetailInfo.myRepo && (
+                {loginUserId && repoDetailInfo.myRepo && (
                   <ExportModal
                     repoId={parseInt(params.repoId, 10)}
-                    userId={parseInt(loginUserId as string, 10)}
+                    userId={parseInt(loginUserId, 10)}
                     isTeam={isTeam}
                     lans={repoDetailInfo.languages}
                   />
@@ -361,7 +357,13 @@ function Page({ params }: { params: { repoId: string } }) {
                 {repoDetailInfo.languages &&
                   repoDetailInfo.languages.length > 7 && <span>...</span>}
               </div>
-              <p className={styles.des}>{repoDetailInfo.repoDescription}</p>
+              <p className={styles.des}>
+                {repoDetailInfo.repoDescription ? (
+                  repoDetailInfo.repoDescription
+                ) : (
+                  <span style={{ color: "gray" }}>프로젝트 설명이 없어요.</span>
+                )}
+              </p>
               <div className={styles.tab}>
                 <button
                   id="1"
