@@ -4,7 +4,7 @@ import { conventionType } from "@/types/repoRegist";
 
 export const axiosRequestRepoDetail = async (
   repoId: number,
-  userId?: number
+  userId: number
 ) => {
   if (userId) {
     const res = await http.get(`repo/${repoId}/info/${userId}`);

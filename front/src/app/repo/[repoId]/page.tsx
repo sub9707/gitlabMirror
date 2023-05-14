@@ -45,7 +45,7 @@ import { useRouter } from "next/navigation";
 import ExportModal from "@/components/Detail/ExportModal";
 
 function Page({ params }: { params: { repoId: string } }) {
-  const [loginUserId, setLoginUserId] = useState<string>();
+  let loginUserId: string;
   const [repoDetailInfo, setRepoDetailInfo] = useState<RepoDetailType>();
   const [tabIndex, setTabIndex] = useState<number>(0);
   const [isUpdated, setIsUpdated] = useState<boolean>(false);
@@ -69,20 +69,18 @@ function Page({ params }: { params: { repoId: string } }) {
   const [conventionLoading, setConventionLoading] = useState<boolean>(false);
 
   /** =============================================== useEffect =============================================== */
-  useEffect(() => {
-    const localUserId = sessionStorage.getItem("userId");
-    if (localUserId) {
-      setLoginUserId(localUserId);
-    }
-  }, []);
 
   /** 레포 기본 정보 불러오기 + 레포몬 닉네임, 기간 업데이트 시 정보 재요청 */
   useEffect(() => {
+    if (sessionStorage) {
+      loginUserId = sessionStorage.getItem("userId") as string;
+    }
+
     requestRepoDetail(
       parseInt(params.repoId, 10),
       parseInt(loginUserId as string, 10)
     );
-  }, [loginUserId, isUpdated]);
+  }, [isUpdated]);
 
   /** 배틀 정보 불러오기 + 스탯 변경 시 재요청 */
   useEffect(() => {
@@ -162,13 +160,8 @@ function Page({ params }: { params: { repoId: string } }) {
   /** =============================================== Axios =============================================== */
   /** 레포 디테일 기본 정보 */
   const requestRepoDetail = async (repoId: number, userId: number) => {
-    let res;
     try {
-      if (userId) {
-        res = await axiosRequestRepoDetail(repoId, userId);
-      } else {
-        res = await axiosRequestRepoDetail(repoId);
-      }
+      const res = await axiosRequestRepoDetail(repoId, userId);
       console.log("레포 디테일 기본: ", res);
       setRepoDetailInfo(res.data);
     } catch (err) {
