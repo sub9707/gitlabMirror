@@ -3,16 +3,40 @@
 .pageContainer {
   width: 1300px;
   min-height: 100vh;
-  margin: 0 auto 5rem auto;
-  padding: 30px 0 0 0;
+  margin: 8rem auto 5rem auto;
+  padding: 2rem 0 0 0;
   background: rgb(228, 239, 255);
-  box-shadow: 0 8px 20px rgb(240, 240, 240);
+  box-shadow: 0 0px 20px rgb(240, 240, 240);
+  border-radius: 20px;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
 
   @include desktop125 {
     width: 1060px;
     font-size: 16px;
+  }
+
+  .top-btn-div {
+    margin: 0 0 1.5rem 4rem;
+
+    @include desktop125 {
+      margin: 0 0 1.5rem 3rem;
+    }
+
+    & button {
+      margin: 0 2rem 0 0;
+      font-size: 1.125rem;
+
+      & svg {
+        display: inline;
+        width: 15px;
+        margin: 0 0.2rem 0.3rem 0;
+      }
+
+      &:hover {
+        color: $highlight;
+      }
+    }
   }
 
   .info {
@@ -53,10 +77,12 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            font-size: 1.75rem;
+            font-size: 1.5rem;
+            margin: 0 0 0.5rem 0;
 
             @include desktop125 {
-              font-size: 1.5rem;
+              margin: 0 0 0.2rem 0;
+              font-size: 1.25rem;
             }
 
             .lv {
@@ -104,6 +130,7 @@
           text-overflow: ellipsis;
           white-space: nowrap;
           overflow: hidden;
+          font-weight: bold;
 
           @include desktop125 {
             max-width: 370px;

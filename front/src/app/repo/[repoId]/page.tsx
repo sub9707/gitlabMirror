@@ -1,7 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { StarIcon, ShareIcon } from "@heroicons/react/24/outline";
+import {
+  StarIcon,
+  ShareIcon,
+  ArrowUturnLeftIcon,
+} from "@heroicons/react/24/outline";
 import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import DetailRepomon from "@/components/Detail/DetailRepomon";
 import ProgressBar from "@/components/Detail/ProgressBar";
@@ -29,6 +33,7 @@ import {
   axiosRequestRepoDetailContribution,
   axiosRequestRepoDetailConvention,
   axiosRequestRepoDetailUpdate,
+  axiosRequestSetRepresent,
 } from "@/api/repoDetail";
 import { axiosRequestRepoDetailResearch } from "@/api/repoDetail";
 import { pretreatDate } from "@/app/utils/PretreatDate";
@@ -42,6 +47,7 @@ import { languageColor } from "@/styles/colors";
 import { customAlert } from "@/app/utils/CustomAlert";
 import LoadingSpinner from "@/components/Skeletons/LoadingSpinner";
 import ExportModal from "@/components/Detail/ExportModal";
+import { useRouter } from "next/navigation";
 
 function Page({ params }: { params: { repoId: string } }) {
   const loginUserId: string | null =
@@ -66,6 +72,7 @@ function Page({ params }: { params: { repoId: string } }) {
   const [updateLoading, setUpdateLoading] = useState<boolean>(false);
   const [isTeam, setIsTeam] = useState<boolean>(false);
   const [conventionLoading, setConventionLoading] = useState<boolean>(false);
+  const router = useRouter();
 
   /** =============================================== useEffect =============================================== */
 
@@ -151,6 +158,17 @@ function Page({ params }: { params: { repoId: string } }) {
 
   const onClickUpdateBtn = () => {
     requestRepoDetailUpdate(parseInt(params.repoId, 10));
+  };
+
+  const onClickBack = () => {
+    router.back();
+  };
+
+  const onClickRepresentBtn = () => {
+    requestSetRepresent(
+      parseInt(params.repoId, 10),
+      parseInt(loginUserId!, 10)
+    );
   };
 
   /** =============================================== Axios =============================================== */
@@ -252,11 +270,32 @@ function Page({ params }: { params: { repoId: string } }) {
     }
   };
 
+  /** 대표 레포지토리 설정 */
+  const requestSetRepresent = async (repoId: number, userId: number) => {
+    try {
+      const res = await axiosRequestSetRepresent(repoId, userId);
+      console.log("대표 레포 설정: ", res);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div id="repo-detail">
       {!showPage && <Loading />}
       {repoDetailInfo && showPage && (
         <div className={styles.pageContainer}>
+          <div className={styles["top-btn-div"]}>
+            <button onClick={onClickBack}>
+              <ArrowUturnLeftIcon />
+              뒤로가기
+            </button>
+            {repoDetailInfo.myRepo && (
+              <button onClick={onClickRepresentBtn}>
+                대표 레포지토리 설정
+              </button>
+            )}
+          </div>
           <div className={styles.info}>
             <div className={styles["repo-mon-card-div"]}>
               <div className={styles["repo-mon-card"]}>

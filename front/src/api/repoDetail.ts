@@ -165,3 +165,12 @@ export const axiosRequestUpdateRepoPersonalCard = async (
 
   return res;
 };
+
+export const axiosRequestSetRepresent = async (
+  repoId: number,
+  userId: number
+) => {
+  const res = http.put(`user/${userId}/represent?repoId=${repoId}`);
+
+  return res;
+};
