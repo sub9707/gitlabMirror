@@ -30,11 +30,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["repomon.kr"]
 
-CSP = {
-    'default-src': "'self'",
-    'img-src': ["'self'", "*"]
-}
-
 
 # Application definition
 
@@ -123,3 +118,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+CSP = {
+    'default-src': "'self' *",
+    'script-src': "'self' *",
+    'style-src': "'self' *",
+    'img-src': "'self' *",
+    # 추가적인 CSP 지시문들을 필요에 따라 설정합니다.
+}
