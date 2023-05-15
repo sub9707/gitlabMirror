@@ -30,6 +30,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["repomon.kr"]
 
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'", 'https://fonts.googleapis.com', 'https://camo.githubusercontent.com')
+CSP_IMG_SRC = ("'self'", 'https://avatars.githubusercontent.com', 'https://camo.githubusercontent.com')
+CSP_SCRIPT_SRC = ("'self'", 'https://fonts.googleapis.com', 'https://camo.githubusercontent.com')
 
 # Application definition
 
@@ -119,10 +123,3 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-
-
-CSP_DEFAULT_SRC = ("'self'",)
-CSP_STYLE_SRC = ("'self'", 'https://fonts.googleapis.com', 'https://camo.githubusercontent.com/')
-CSP_IMG_SRC = ("'self'", 'https://avatars.githubusercontent.com', 'https://camo.githubusercontent.com/')
-CSP_SCRIPT_SRC = ("'self'", 'https://fonts.googleapis.com')
-
