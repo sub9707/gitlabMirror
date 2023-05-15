@@ -80,6 +80,34 @@ const Model = ({ isClicked, onIsClickedChange }: any) => {
   );
 };
 
+const Particle = () => {
+  const gltf = useLoader(GLTFLoader, "/static/models/Particle.glb");
+
+  console.log("particle: ", gltf.animations);
+  let mixer: THREE.AnimationMixer | undefined;
+
+  // if (gltf.animations.length) {
+  //   mixer = new THREE.AnimationMixer(gltf.scene);
+  //   mixer.timeScale = 0.4;
+  //   const action = mixer.clipAction(gltf.animations[8]);
+  //   action.clampWhenFinished = true;
+  //   action.play();
+  // }
+
+  useFrame((state, delta) => {
+    mixer?.update(delta);
+  });
+
+  return (
+    <primitive
+      object={gltf.scene}
+      scale={[5, 5, 5]}
+      position={[1, -2, 0]}
+      rotation={[0, -0.8, 0]}
+    />
+  );
+};
+
 const Home = () => {
   const [scrollY, setScrollY] = useState<number>(0);
   const fpRef = useRef<HTMLImageElement>(null);
@@ -140,32 +168,6 @@ const Home = () => {
     }
   }, []);
 
-  // useEffect(() => {
-  //   const handleScroll = () => {
-  //     setScrollY(window.scrollY);
-  //   };
-
-  //   window.addEventListener("scroll", handleScroll);
-
-  //   return () => {
-  //     window.removeEventListener("scroll", handleScroll);
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   if (fpRef.current && spRef.current && tpRef.current) {
-  //     if (scrollY < 550) {
-  //       fpRef.current.style.opacity = "0";
-  //       spRef.current.style.opacity = "0";
-  //       tpRef.current.style.opacity = "0";
-  //     } else {
-  //       fpRef.current.style.opacity = "1";
-  //       spRef.current.style.opacity = "1";
-  //       tpRef.current.style.opacity = "1";
-  //     }
-  //   }
-  // }, [scrollY]);
-
   return (
     <div className={styles.container}>
       <div className={styles.banner}>
@@ -197,6 +199,7 @@ const Home = () => {
               position={[-5, 0, -5]}
               intensity={0.5}
             />
+            <Particle />
             <Model
               isClicked={isClicked}
               onIsClickedChange={handleIsClickedChange}
