@@ -11,7 +11,7 @@ COPY . /app
 WORKDIR /app
 
 # Install dependencies
-RUN pip install django-cors-headers
+RUN pip install django-csp
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose the port

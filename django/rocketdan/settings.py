@@ -51,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'csp.middleware.CSPMiddleware',
 ]
 
 ROOT_URLCONF = 'rocketdan.urls'
@@ -119,10 +120,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-CSP = {
-    'default-src': "'self'",
-    'script-src': ["'self'", "https://fonts.googleapis.com"],
-    'style-src': ["'self'", "https://fonts.googleapis.com"],
-    'img-src': ["'self'", "https://avatars.githubusercontent.com/u/76030391?v=4"],
-    # 추가적인 CSP 지시문들을 필요에 따라 설정합니다.
-}
+
+# Content Security Policy
+
+CSP_IMG_SRC = ("'self'", 'https://avatars.githubusercontent.com')
+
+CSP_STYLE_SRC = ("'self'", 'https://fonts.googleapis.com')
+
+CSP_SCRIPT_SRC = ("'self'", 'https://fonts.googleapis.com')
