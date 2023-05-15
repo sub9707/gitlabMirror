@@ -332,10 +332,10 @@ def repo_card(request):
                 fill: white;
                 font-family: 'Noto Sans KR', sans-serif;
             }}
-            text.boj-handle {{
+            text.repo_title {{
                 font-weight: 700;
                 font-size: 1.30em;
-                animation: fadeIn 1s ease-in-out forwards;
+                animation: delayFadeIn 1.5s ease-in-out forwards;
 
             }}
             text.tier-text {{
@@ -348,7 +348,7 @@ def repo_card(request):
                 font-size: 0.8em;
                 font-weight: 700;
                 text-anchor: middle;
-                animation: delayFadeIn 1.8s ease-in-out forwards;
+                animation: delayFadeIn 0.8s ease-in-out forwards;
             }}
             .subtitle {{
                 font-weight: 500;
@@ -375,7 +375,13 @@ def repo_card(request):
                 animation: delayFadeIn 2s ease-in-out forwards;
             }}
             .repomon-img {{
-                animation: delayFadeIn 1s ease-in-out forwards;
+                animation: fadeIn 1s ease-in-out forwards;
+            }}
+            .per_day {{
+                animation: delayFadeIn 1.7s ease-in-out forwards;
+            }}
+            .language_pop {{
+                animation: delayFadeIn 1.8s ease-in-out forwards;
             }}
             .repo-detail {{
                 font-weight: 80;
@@ -387,8 +393,12 @@ def repo_card(request):
                 flex-wrap: wrap;
                 justify-content: center;
             }}
+            .chartmain {{
+                animation: delayFadeIn 3s ease-in-out forwards;
+            }}
             .charttitle {{
                 font-size: 0.4em;
+                animation: delayFadeIn 3.2s ease-in-out forwards;
             }}
             .repo-percent {{
                 fill: #000000;
@@ -434,15 +444,15 @@ def repo_card(request):
         </linearGradient>
     </defs>
     <rect width="600" height="200" rx="10" ry="10" class="background"/>
-    <ellipse class="{ellipsetype}"/>
+    <ellipse class="{ellipsetype}" style="animation-delay: 200ms"/>
     
     <image href="{img}" x="25" y="25" width="140px" height="112px" class="repomon-img"/>
     <line x1="40" y1="170" x2="150" y2="170" stroke-width="20" stroke="floralwhite" stroke-linecap="round"/>
     <text x="100" y="175" dz="-20" class="repo-exp">Exp | {repoExp}</text>
 
-    <text x="190" y="40" class="boj-handle">{repoName}</text>
-    <image href="{per}" x="190" y="50" height="13px" width="10px"/><text x="203" y="61" font-size="0.7em">{contributers}</text>
-    <text x="225" y="61" font-size="0.7em">{repoStart} ~ {repoEnd}</text>
+    <text x="190" y="40" class="repo_title">{repoName}</text>
+    <image href="{per}" x="190" y="50" height="13px" width="10px" class="per_day"/><text x="203" y="61" font-size="0.7em" class="per_day">{contributers}</text>
+    <text x="225" y="61" font-size="0.7em" class="per_day">{repoStart} ~ {repoEnd}</text>
 
     <g class="item" style="animation-delay: 200ms">
         <text x="190" y="134" class="subtitle">Total Commit</text><text x="270" y="134" class="rate value">{totalcommit} 회</text>
@@ -458,26 +468,26 @@ def repo_card(request):
     </g>
 
 
-    <rect x="{lang0_2}" y="70" rx="5" ry="5" width="{lang0_3}" height="18" style="fill:{lang0_1};"/>
-    <text x="{lang0_2t}" y="82" class="language">{lang0_0}</text>
+    <rect x="{lang0_2}" y="70" rx="5" ry="5" width="{lang0_3}" height="18" style="fill:{lang0_1};" class="language_pop"/>
+    <text x="{lang0_2t}" y="82" class="language language_pop">{lang0_0}</text>
 
-    <rect x="{lang1_2}" y="70" rx="5" ry="5" width="{lang1_3}" height="18" style="fill:{lang1_1};"/>
-    <text x="{lang1_2t}" y="82" class="language">{lang1_0}</text>
+    <rect x="{lang1_2}" y="70" rx="5" ry="5" width="{lang1_3}" height="18" style="fill:{lang1_1};" class="language_pop"/>
+    <text x="{lang1_2t}" y="82" class="language language_pop">{lang1_0}</text>
 
-    <rect x="{lang2_2}" y="70" rx="5" ry="5" width="{lang2_3}" height="18" style="fill:{lang2_1};"/>
-    <text x="{lang2_2t}" y="82" class="language">{lang2_0}</text>
+    <rect x="{lang2_2}" y="70" rx="5" ry="5" width="{lang2_3}" height="18" style="fill:{lang2_1};" class="language_pop"/>
+    <text x="{lang2_2t}" y="82" class="language language_pop">{lang2_0}</text>
 
-    <rect x="{lang3_2}" y="95" rx="5" ry="5" width="{lang3_3}" height="18" style="fill:{lang3_1};"/>
-    <text x="{lang3_2t}" y="107" class="language">{lang3_0}</text>
+    <rect x="{lang3_2}" y="95" rx="5" ry="5" width="{lang3_3}" height="18" style="fill:{lang3_1};" class="language_pop"/>
+    <text x="{lang3_2t}" y="107" class="language language_pop">{lang3_0}</text>
 
-    <rect x="{lang4_2}" y="95" rx="5" ry="5" width="{lang4_3}" height="18" style="fill:{lang4_1};"/>
-    <text x="{lang4_2t}" y="107" class="language">{lang4_0}</text>
+    <rect x="{lang4_2}" y="95" rx="5" ry="5" width="{lang4_3}" height="18" style="fill:{lang4_1};" class="language_pop"/>
+    <text x="{lang4_2t}" y="107" class="language  language_pop">{lang4_0}</text>
 
-    <rect x="{lang5_2}" y="95" rx="5" ry="5" width="{lang5_3}" height="18" style="fill:{lang5_1};"/>
-    <text x="{lang5_2t}" y="107" class="language">{lang5_0}</text>
+    <rect x="{lang5_2}" y="95" rx="5" ry="5" width="{lang5_3}" height="18" style="fill:{lang5_1};" class="language_pop"/>
+    <text x="{lang5_2t}" y="107" class="language  language_pop">{lang5_0}</text>
 
 
-    <image href="{chart}" x="425" y="25" height="160px" class="repomon-img"/>
+    <image href="{chart}" x="425" y="25" height="160px" class="chartmain"/>
     <text x="502" y="28" class="charttitle">Commit</text>
     <text x="575" y="70" class="charttitle">Merge</text>
     <text x="432" y="70" class="charttitle">Issue</text>
