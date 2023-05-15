@@ -30,6 +30,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["repomon.kr"]
 
+CSP = {
+    'default-src': "'self'",
+    'img-src': ["'self'", "*"]
+}
+
 
 # Application definition
 
