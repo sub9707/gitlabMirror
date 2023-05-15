@@ -120,9 +120,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 CSP = {
-    'default-src': "'self' *",
-    'script-src': "'self' *",
-    'style-src': "'self' *",
-    'img-src': "'self' *",
+    'default-src': "'self'",
+    'script-src': ["'self'", "https://fonts.googleapis.com"],
+    'style-src': ["'self'", "https://fonts.googleapis.com"],
+    'img-src': ["'self'", "https://avatars.githubusercontent.com/u/76030391?v=4"],
     # 추가적인 CSP 지시문들을 필요에 따라 설정합니다.
 }
