@@ -17,6 +17,10 @@ import { GitTipType, RepoInfo } from "@/types/repomons";
 import { getModelLists } from "@/api/modelLoader";
 import "@/styles/speechBubble.scss";
 import { gitTipData } from "./dashboard/gitData";
+import Banner01 from "@/components/Banner/Banner01";
+import Banner02 from "@/components/Banner/Banner02";
+import Banner03 from "@/components/Banner/Banner03";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 
 const Model = ({ isClicked, onIsClickedChange }: any) => {
   // const [isClicked, SetIsClicked] = useState<boolean>(false);
@@ -117,6 +121,13 @@ const Home = () => {
   const params = useSearchParams();
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const [bannerCurPage, setBannerCurPage] = useState<number>(1);
+  const [bannerComponent, setBannerComponent] = useState<JSX.Element>(
+    <Banner01 />
+  );
+  const [firstRendering, setFirstRendering] = useState<boolean>(true);
+  const [isMovedRight, setIsMovedRight] = useState<boolean>(true);
+  // let firstRendering = true;
 
   // git tips
   const [isClicked, setIsClicked] = useState(false);
@@ -168,23 +179,56 @@ const Home = () => {
     }
   }, []);
 
+  // 우측버튼
+  const banner = [Banner01, Banner02, Banner03];
+  function getNextBanner() {
+    setFirstRendering(false);
+    setIsMovedRight(true);
+    if (bannerCurPage == banner.length) {
+      setBannerCurPage(1);
+    } else {
+      setBannerCurPage(bannerCurPage + 1);
+    }
+    console.log(bannerCurPage);
+  }
+
+  // 좌측버튼
+  function getPrevBanner() {
+    setFirstRendering(false);
+    setIsMovedRight(false);
+    if (bannerCurPage == 1) {
+      setBannerCurPage(banner.length);
+    } else {
+      setBannerCurPage(bannerCurPage - 1);
+    }
+    console.log(bannerCurPage);
+  }
+
+  useEffect(() => {
+    if (bannerCurPage === 1) {
+      setBannerComponent(<Banner01 />);
+    } else if (bannerCurPage === 2) {
+      setBannerComponent(<Banner02 />);
+    } else if (bannerCurPage === 3) {
+      setBannerComponent(<Banner03 />);
+    }
+  }, [bannerCurPage]);
+
   return (
     <div className={styles.container}>
-      <div className={styles.banner}>
-        <div className={styles.left}>
-          <h1 className={styles.title}>REPOMON</h1>
-          <p className={styles.comment}>
-            당신의 프로젝트와 함께할 레포몬은 무엇인가요?
-          </p>
-        </div>
-        <div className={styles.right}>
+      <div
+        className={`relative `}
+        style={{ width: "100%", background: `rgb(90, 167, 255)` }}
+      >
+        <div
+          className=" absolute bottom-0 right-0 m-5 flex"
+          style={{ zIndex: "100" }}
+        >
           <div
-            className="bubble shadow large bottom"
-            id={styles.speechBubble}
-            style={{ opacity: "0", zIndex: "999" }}
-            ref={speech}
+            className={`${styles.pageBtn} px-1 py-1 rounded-full bg-white mr-2 flex justify-center items-center`}
+            onClick={getPrevBanner}
           >
-            {gitTipsString?.msg}
+            <ChevronLeftIcon width="2rem" />
           </div>
           <Canvas className={styles.rightCanvas}>
             <ambientLight intensity={0.1} />
@@ -205,8 +249,27 @@ const Home = () => {
               onIsClickedChange={handleIsClickedChange}
             />
           </Canvas>
+          <div
+            className={`${styles.pageBtn} px-1 py-1 rounded-full bg-white flex justify-center items-center`}
+            onClick={getNextBanner}
+          >
+            <ChevronRightIcon width="2rem" />
+          </div>
+        </div>
+        <div
+          className={` ${
+            firstRendering
+              ? ""
+              : isMovedRight
+              ? styles.bannerContainer
+              : styles.bannerContainerReverse
+          } `}
+          key={bannerCurPage}
+        >
+          {bannerComponent}
         </div>
       </div>
+
       <div className={styles.service}>
         <h2 className={styles["service-title"]}>
           <span>레포몬</span> 서비스 둘러보기

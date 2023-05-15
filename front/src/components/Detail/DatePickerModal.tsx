@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
-import { Cog8ToothIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { XMarkIcon, CalendarDaysIcon } from "@heroicons/react/24/solid";
 import styles from "./DatePickerModal.module.scss";
 import { dateFormat } from "@/app/utils/DateFormat";
 import { ko } from "date-fns/locale";
@@ -40,7 +40,7 @@ const DatePickerModal = ({
   let footer = (
     <p
       style={{
-        margin: "1rem 0 0 -0.5rem",
+        margin: "1rem 0 0 0.5rem",
         fontWeight: "bold",
         color: "rgb(223, 62, 62)",
       }}
@@ -53,7 +53,7 @@ const DatePickerModal = ({
       footer = (
         <p
           style={{
-            margin: "1rem 0 0 -0.5rem",
+            margin: "1rem 0 0 0.5rem",
           }}
         >
           시작일:
@@ -126,7 +126,7 @@ const DatePickerModal = ({
 
   return (
     <div>
-      <Cog8ToothIcon
+      <CalendarDaysIcon
         onClick={openModal}
         type="button"
         className={styles.open}

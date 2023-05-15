@@ -21,8 +21,6 @@ import SoundOff from "@/components/UI/SoundOff";
 import SoundOn from "@/components/UI/SoundOn";
 import Modal from "react-modal";
 import { useRouter } from "next/navigation";
-import { ShadowCircle } from "./ShadowCircle";
-import Grass from "./Grass";
 
 const Page = () => {
   const [loadData, setLoadData] = useState<boolean>(false);
@@ -37,78 +35,24 @@ const Page = () => {
   );
   const router = useRouter();
 
-  // 새로고침 방지
-  const preventClose = (e: BeforeUnloadEvent) => {
-    e.preventDefault();
-    e.returnValue = "";
-  };
-
-  useEffect(() => {
-    (() => {
-      window.addEventListener("beforeunload", preventClose);
-    })();
-
-    return () => {
-      window.removeEventListener("beforeunload", preventClose);
-    };
-  }, []);
-
   // 내 레포몬 출력
-  const Model = (props: { url: string }) => {
-    const filename = props.url.slice(props.url.lastIndexOf("/") + 1);
-    const num = filename.slice(-5, filename.length - 4);
-    const str = num.toString();
-    const getModelLevel = (str: string): number[] => {
-      switch (str) {
-        case "2":
-          return [4, 4, 4];
-        case "3":
-          return [3, 3, 3];
-        default:
-          return [9, 9, 9];
-      }
-    };
-    const getModelPosition = (str: string): number[] => {
-      switch (str) {
-        case "2":
-          return [-4, -3, 0];
-        case "3":
-          return [-4, -4, 0];
-        default:
-          return [-4, -6, 0];
-      }
-    };
-    const [scaleState, setScaleState] = useState<number[]>(getModelLevel(str));
-    const [positionState, setPositionState] = useState<number[]>(
-      getModelPosition(str)
-    );
+  const Model = (props: { url?: string }) => {
     const gltf = useLoader(GLTFLoader, props.url + "?id=1" ?? "");
-    console.log(gltf.animations);
+
     let mixer: THREE.AnimationMixer | undefined;
     if (gltf.animations.length) {
       mixer = new THREE.AnimationMixer(gltf.scene);
       mixer.timeScale = 1;
-      if (isMyAttack) {
-        const action = mixer.clipAction(gltf.animations[11]);
-        action.setLoop(THREE.LoopOnce, 1);
-        mixer.timeScale = 0.5;
-        action.play();
-      } else if (isMyHurt) {
-        const action = mixer.clipAction(gltf.animations[3]);
-        action.setLoop(THREE.LoopOnce, 0);
-        action.clampWhenFinished = true;
-        mixer.timeScale = 1;
-        action.play();
-      } else if (isMyAvoid) {
-        const action = mixer.clipAction(gltf.animations[15]);
-        action.setLoop(THREE.LoopOnce, 0);
-        action.clampWhenFinished = true;
-        mixer.timeScale = 1;
+
+      let clipIndex = 8;
+      if (gltf.animations.length > clipIndex) {
+        const action = mixer.clipAction(gltf.animations[clipIndex]);
+        if (doMyAttack) {
+          clipIndex = 11;
+        }
         action.play();
       } else {
-        const action = mixer.clipAction(gltf.animations[8]);
-        action.play();
-        action.clampWhenFinished = true;
+        console.warn("Animation clip not found");
       }
     }
 
@@ -119,72 +63,32 @@ const Page = () => {
     return (
       <primitive
         object={gltf.scene}
-        scale={scaleState}
-        position={positionState}
+        scale={[9, 9, 9]}
+        position={[-4, -6, 0]}
         rotation={[0, 15, 0]}
       />
     );
   };
 
   // 상대 레포몬 출력
-  const SecondModel = (props: { url: string }) => {
-    const filename = props.url.slice(props.url.lastIndexOf("/") + 1);
-    const num = filename.slice(-5, filename.length - 4);
-    const str = num.toString();
-    const getModelLevel = (str: string): number[] => {
-      switch (str) {
-        case "2":
-          return [2.5, 2.5, 2.5];
-        case "3":
-          return [2.5, 2.5, 2.5];
-        default:
-          return [9, 9, 9];
-      }
-    };
-    const getModelPosition = (str: string): number[] => {
-      switch (str) {
-        case "2":
-          return [5, 0, 0];
-        case "3":
-          return [5, -0.5, 0];
-        default:
-          return [5, 0, 0];
-      }
-    };
-    const [scaleState, setScaleState] = useState<number[]>(getModelLevel(str));
-    const [positionState, setPositionState] = useState<number[]>(
-      getModelPosition(str)
-    );
+  const SecondModel = (props: { url?: string }) => {
     const gltf = useLoader(GLTFLoader, props.url + "?id=2" ?? "");
 
     let mixer: THREE.AnimationMixer | undefined;
-    let action: THREE.AnimationAction | undefined;
 
     if (gltf.animations.length) {
       mixer = new THREE.AnimationMixer(gltf.scene);
       mixer.timeScale = 1;
 
-      if (isOpAttack) {
-        action = mixer.clipAction(gltf.animations[11]);
-        action.setLoop(THREE.LoopOnce, 1);
-        mixer.timeScale = 0.5;
-        action.play();
-      } else if (isOpHurt) {
-        const action = mixer.clipAction(gltf.animations[3]);
-        action.setLoop(THREE.LoopOnce, 0);
-        action.clampWhenFinished = true;
-        mixer.timeScale = 1;
-        action.play();
-      } else if (isOpAvoid) {
-        const action = mixer.clipAction(gltf.animations[15]);
-        action.setLoop(THREE.LoopOnce, 0);
-        action.clampWhenFinished = true;
-        mixer.timeScale = 1;
+      let clipIndex = 8;
+      if (gltf.animations.length > clipIndex) {
+        const action = mixer.clipAction(gltf.animations[clipIndex]);
+        if (doMyAttack) {
+          clipIndex = 11;
+        }
         action.play();
       } else {
-        const action = mixer.clipAction(gltf.animations[8]);
-        action.play();
-        action.clampWhenFinished = true;
+        console.warn("Animation clip not found");
       }
     }
 
@@ -195,8 +99,8 @@ const Page = () => {
     return (
       <primitive
         object={gltf.scene}
-        scale={scaleState}
-        position={positionState}
+        scale={[3, 3, 3]}
+        position={[5, 0, 0]}
         rotation={[0, 5, 0]}
       />
     );
@@ -211,13 +115,12 @@ const Page = () => {
       bottom: "auto",
       marginRight: "-50%",
       transform: "translate(-50%, -50%)",
-      width: "650px",
-      height: "300px",
+      width: "600px",
+      height: "250px",
       display: "flex",
       flexDirection: "column",
       justifyContent: "center",
       alignItems: "center",
-      overflow: "hidden",
     },
   };
 
@@ -232,7 +135,6 @@ const Page = () => {
               onRequestClose={closeModal}
               style={customStyles}
               contentLabel=""
-              shouldCloseOnOverlayClick={false}
             >
               <div>
                 <p
@@ -257,33 +159,18 @@ const Page = () => {
                       top: "5.5em",
                     }}
                   />
-                  <div style={{ display: "flex", flexDirection: "column" }}>
-                    <p
-                      style={{
-                        fontSize: "2.5em",
-                        textAlign: "center",
-                        fontWeight: "700",
-                        color: matchData?.data.isWin ? "#1dbabf" : "red",
-                      }}
-                    >
-                      {matchData?.data.isWin
-                        ? `승리했습니다!`
-                        : "패배했습니다..."}
-                    </p>
-                    <p
-                      style={{
-                        fontSize: "1.5em",
-                        textAlign: "center",
-                        fontWeight: "700",
-                        marginTop: "1em",
-                      }}
-                    >
-                      Rating: {matchData?.data.attackRepo.rating}
-                      {matchData?.data.isWin
-                        ? `(+${matchData?.data.attackPoint})`
-                        : `(${matchData?.data.attackPoint})`}
-                    </p>
-                  </div>
+                  <p
+                    style={{
+                      fontSize: "2.5em",
+                      textAlign: "center",
+                      fontWeight: "700",
+                      color: matchData?.data.isWin ? "#1dbabf" : "red",
+                    }}
+                  >
+                    {matchData?.data.isWin
+                      ? "승리했습니다!"
+                      : "패배했습니다..."}
+                  </p>
                   <Lottie
                     loop={true}
                     animationData={matchData?.data.isWin ? Panpare : GhostOne}
@@ -302,7 +189,7 @@ const Page = () => {
               <button
                 type="button"
                 onClick={() => {
-                  router.push(`/repo/${myId}`);
+                  router.push("/");
                 }}
                 style={{ fontWeight: "600", marginTop: "2em", width: "auto" }}
               >
@@ -334,8 +221,7 @@ const Page = () => {
           }}
         >
           내 레포명: {matchData?.data.attackRepo.repomonNickname} <br />
-          HP :{myHp && Math.ceil(myHp) < 0 ? 0 : myHp && Math.ceil(myHp)} /{" "}
-          {firstMyHp}
+          HP :{myHp && Math.ceil(myHp)} / {firstMyHp}
           <HpBar
             HP={Number(myHp)}
             maxHP={Number(matchData?.data.attackRepo.hp)}
@@ -375,8 +261,10 @@ const Page = () => {
   };
 
   // 애니메이션 제어 테스트
-  let oppoId = 7;
-  let myId = 1;
+  const [doMyAttack, setDoMyAttack] = useState<boolean>(false);
+  const [doAttack, setDoAttack] = useState<boolean>(false);
+  let oppoId = 3;
+  let myId = 6;
   function getMatchResult() {
     // oppo - my
     return requestMatchResult(oppoId, myId);
@@ -443,12 +331,9 @@ const Page = () => {
   const [logIndex, setLogIndex] = useState(0);
   const [currentLog, setCurrentLog] = useState<string>("");
   const [modalIsOpen, setIsOpen] = useState<boolean>(false);
-  const [isMyAttack, setIsMyAttack] = useState<boolean>(false);
-  const [isOpAttack, setIsOpAttack] = useState<boolean>(false);
-  const [isMyHurt, setIsMyHurt] = useState<boolean>(false);
-  const [isOpHurt, setIsOpHurt] = useState<boolean>(false);
-  const [isMyAvoid, setIsMyAvoid] = useState<boolean>(false);
-  const [isOpAvoid, setIsOpAvoid] = useState<boolean>(false);
+  const myNick = matchData?.data.attackRepo.repomonNickname;
+  const oppoNick = matchData?.data.defenseRepo.repomonNickname;
+
   const initialState: ScriptType[] =
     matchData?.data?.battleLog?.map((log: BattleLogType) => ({
       turn: `${log.turn}번째 턴!`,
@@ -464,65 +349,31 @@ const Page = () => {
         setCurrentLog(currentScript.turn);
       } else if (logIndex === 1) {
         setCurrentLog(currentScript.attackerScript);
-        if (matchData?.data.battleLog[currentIndex].attacker === myId) {
-          setIsMyAttack(true);
-        } else if (
-          matchData?.data.battleLog[currentIndex].attacker === oppoId
-        ) {
-          setIsOpAttack(true);
-        }
       } else if (logIndex === 2) {
         setCurrentLog(currentScript.defenderScript);
-        if (matchData?.data.battleLog[currentIndex].defender === oppoId) {
-          if (opHp && matchData) {
-            if (
-              matchData.data.battleLog[currentIndex].defense_log.includes(
-                "회피"
-              )
-            ) {
-              setIsOpAvoid(true);
-            } else {
-              setIsOpHurt(true);
-            }
-          }
-        } else if (matchData?.data.battleLog[currentIndex].defender === myId) {
-          {
-            if (
-              matchData.data.battleLog[currentIndex].defense_log.includes(
-                "회피"
-              )
-            ) {
-              setIsMyAvoid(true);
-            } else {
-              setIsMyHurt(true);
-            }
-          }
-        }
       } else if (logIndex === 3) {
         setCurrentLog(currentScript.damageScript);
         if (matchData?.data.battleLog[currentIndex].defender === oppoId) {
           // 상대 HP 깎기
-          if (opHp && matchData) {
+          if (opHp && matchData)
             setopHp(opHp - matchData.data.battleLog[currentIndex].damage);
-            if (opHp - matchData.data.battleLog[currentIndex].damage <= 0)
-              setIsOpen(true);
-          }
           setLogIndex(-1);
         } else if (matchData?.data.battleLog[currentIndex].defender === myId) {
           // 내 HP 깎기
-          if (myHp && matchData) {
+          if (myHp && matchData)
             setmyHp(myHp - matchData.data.battleLog[currentIndex].damage);
-            if (myHp - matchData.data.battleLog[currentIndex].damage <= 0) {
-              setIsOpen(true);
-            }
-          }
           setLogIndex(-1);
         }
       }
     }
   }, [logIndex, currentScript]);
 
+  useEffect(() => {
+    console.log("체력 비교: ", opHp, " : ", myHp);
+  }, [opHp, myHp]);
+
   function handleNext() {
+    console.log("cur_index", currentIndex);
     if ((logIndex + 1) % 4 == 0) {
       if (currentIndex !== 9) setCurrentIndex(currentIndex + 1);
       else {
@@ -530,14 +381,8 @@ const Page = () => {
         return;
       }
     }
+
     setLogIndex((logIndex + 1) % 4);
-    // 애니메이션 클릭시 IDLE 상태로 다시 초기화
-    setIsMyAttack(false);
-    setIsMyHurt(false);
-    setIsMyAvoid(false);
-    setIsOpAttack(false);
-    setIsOpHurt(false);
-    setIsOpAvoid(false);
   }
   console.log("스크립트 데이터 확인: ", initialState);
   // 종료 모달
@@ -593,6 +438,7 @@ const Page = () => {
               </div>
               <Canvas
                 style={{
+                  // backgroundImage: `url('/static/images/forestBack.jpg')`,
                   position: "relative",
                   zIndex: 10,
                 }}
@@ -610,20 +456,18 @@ const Page = () => {
                         "Egg"
                       )
                         ? `https://repomon.s3.ap-northeast-2.amazonaws.com/models/Egg.glb`
-                        : matchData?.data.attackRepo.repomon.repomonUrl || ""
+                        : matchData?.data.attackRepo.repomon.repomonUrl
                     }
                   />
                   <SecondModel
                     url={
-                      matchData?.data.defenseRepo.repomon.repomonUrl.includes(
+                      matchData?.data.attackRepo.repomon.repomonUrl.includes(
                         "Egg"
                       )
                         ? `https://repomon.s3.ap-northeast-2.amazonaws.com/models/Egg.glb`
-                        : matchData?.data.defenseRepo.repomon.repomonUrl || ""
+                        : matchData?.data.attackRepo.repomon.repomonUrl
                     }
                   />
-                  {/* <ShadowCircle /> */}
-                  <Grass />
                   <MyUI />
                   <OpUI />
                   <EndModal />
