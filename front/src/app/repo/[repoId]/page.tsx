@@ -77,7 +77,6 @@ function Page({ params }: { params: { repoId: string } }) {
   const lanRef = useRef<HTMLDivElement>(null);
 
   /** =============================================== useEffect =============================================== */
-
   /** 레포 기본 정보 불러오기 + 레포몬 닉네임, 기간 업데이트 시 정보 재요청 */
   useEffect(() => {
     requestRepoDetail(
@@ -174,6 +173,24 @@ function Page({ params }: { params: { repoId: string } }) {
       parseInt(params.repoId, 10),
       parseInt(loginUserId!, 10)
     );
+  };
+
+  const scrollLeft = () => {
+    if (lanRef.current) {
+      lanRef.current.scrollBy({
+        left: -lanRef.current.offsetWidth,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const scrollRight = () => {
+    if (lanRef.current) {
+      lanRef.current.scrollBy({
+        left: lanRef.current.offsetWidth,
+        behavior: "smooth",
+      });
+    }
   };
 
   /** =============================================== Axios =============================================== */
@@ -283,26 +300,6 @@ function Page({ params }: { params: { repoId: string } }) {
       customAlert("대표 레포지토리로 설정되었습니다.");
     } catch (err) {
       console.error(err);
-    }
-  };
-
-  const [scrollPos, setScrollPos] = useState(0);
-
-  const scrollLeft = () => {
-    if (lanRef.current) {
-      lanRef.current.scrollBy({
-        left: -lanRef.current.offsetWidth,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  const scrollRight = () => {
-    if (lanRef.current) {
-      lanRef.current.scrollBy({
-        left: lanRef.current.offsetWidth,
-        behavior: "smooth",
-      });
     }
   };
 
