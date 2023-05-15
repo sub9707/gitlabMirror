@@ -4,7 +4,7 @@ package com.repomon.rocketdan.domain.user.controller;
 import com.repomon.rocketdan.common.dto.ResultDto;
 import com.repomon.rocketdan.domain.repo.dto.request.RepoCardRequestDto;
 import com.repomon.rocketdan.domain.user.dto.request.RepresentRepomonRequestDto;
-import com.repomon.rocketdan.domain.user.dto.response.UserCardResponseDto;
+import com.repomon.rocketdan.domain.user.dto.response.UserRedisCardResponseDto;
 import com.repomon.rocketdan.domain.user.dto.response.UserResponseDto;
 import com.repomon.rocketdan.domain.user.service.UserService;
 import io.swagger.annotations.ApiOperation;
@@ -40,11 +40,17 @@ public class UserController {
 		return ResponseEntity.ok().body(ResultDto.ofSuccess());
 	}
 
-
 	@ApiOperation(value = "유저 카드 정보")
 	@GetMapping("/{userId}/card")
-	public ResponseEntity<UserCardResponseDto> getUserCard(@PathVariable("userId") Long userId) {
-		UserCardResponseDto responseDto = userService.getUserCard(userId);
+	public ResponseEntity<UserRedisCardResponseDto> getUserCard(@PathVariable("userId") Long userId) {
+		UserRedisCardResponseDto responseDto = userService.getUserCard(userId);
+		return ResponseEntity.ok(responseDto);
+	}
+
+	@ApiOperation(value = "유저 카드 정보 Django")
+	@GetMapping("/{userId}/card/django")
+	public ResponseEntity<UserRedisCardResponseDto> getUserCardRedis(@PathVariable("userId") Long userId) {
+		UserRedisCardResponseDto responseDto = userService.findUserCard(userId);
 		return ResponseEntity.ok(responseDto);
 	}
 
@@ -62,9 +68,10 @@ public class UserController {
 		return ResponseEntity.ok().body(ResultDto.of(responseDto));
 	}
 
+
 	@ApiOperation(value = "유저카드 언어설정")
 	@PutMapping("/{userId}/card/language")
-	public ResponseEntity<ResultDto> modifyPersonalRepoCard(@PathVariable Long userId, @RequestBody RepoCardRequestDto requestDto) {
+	public ResponseEntity<ResultDto<Boolean>> modifyPersonalRepoCard(@PathVariable Long userId, @RequestBody RepoCardRequestDto requestDto) {
 		userService.modifyUserRepo(userId, requestDto);
 		return ResponseEntity.ok(ResultDto.ofSuccess());
 	}
