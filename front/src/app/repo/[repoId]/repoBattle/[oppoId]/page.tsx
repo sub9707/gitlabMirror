@@ -75,7 +75,7 @@ const Page = ({ params }: { params: { repoId: string; oppoId: string } }) => {
         case "3":
           return [3, 3, 3];
         default:
-          return [4, 4, 4];
+          return [6, 6, 6];
       }
     };
     const getModelPosition = (str: string): number[] => {
@@ -85,14 +85,14 @@ const Page = ({ params }: { params: { repoId: string; oppoId: string } }) => {
         case "3":
           return [-4, -4, 0];
         default:
-          return [-4, -6, 0];
+          return [-4, -4, 0];
       }
     };
     const [scaleState, setScaleState] = useState<number[]>(getModelLevel(str));
     const [positionState, setPositionState] = useState<number[]>(
       getModelPosition(str)
     );
-    const gltf = useLoader(GLTFLoader, props.url + "?id=1" ?? "");
+    const gltf = useLoader(GLTFLoader, props.url + `?id=${myId}` ?? "");
     console.log(gltf.animations);
     let mixer: THREE.AnimationMixer | undefined;
     if (gltf.animations.length) {
@@ -165,7 +165,7 @@ const Page = ({ params }: { params: { repoId: string; oppoId: string } }) => {
     const [positionState, setPositionState] = useState<number[]>(
       getModelPosition(str)
     );
-    const gltf = useLoader(GLTFLoader, props.url + "?id=2" ?? "");
+    const gltf = useLoader(GLTFLoader, props.url ?? "");
 
     let mixer: THREE.AnimationMixer | undefined;
     let action: THREE.AnimationAction | undefined;
@@ -312,7 +312,7 @@ const Page = ({ params }: { params: { repoId: string; oppoId: string } }) => {
               <button
                 type="button"
                 onClick={() => {
-                  router.push(`/repo/${myId}`);
+                  router.back();
                 }}
                 style={{ fontWeight: "600", marginTop: "2em", width: "auto" }}
               >
