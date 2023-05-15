@@ -1177,6 +1177,9 @@ def user_card(request):
                 font-size: 0.5em;
                 animation: delayFadeIn 3.2s ease-in-out forwards;
             }}
+            .language_pop {{
+                animation: delayFadeIn 1.9s ease-in-out forwards;
+            }}
             .repo-percent {{
                 fill: #000000;
                 font-size: 0.6em;
@@ -1257,23 +1260,23 @@ def user_card(request):
     </g>
 
     
-    <rect x="{lang0_2}" y="74" rx="5" ry="5" width="{lang0_3}" height="18" style="fill:{lang0_1};"/>
-    <text x="{lang0_2t}" y="86" class="language">{lang0_0}</text>
+    <rect x="{lang0_2}" y="74" rx="5" ry="5" width="{lang0_3}" height="18" style="fill:{lang0_1};" class="language_pop"/>
+    <text x="{lang0_2t}" y="86" class="language language_pop">{lang0_0}</text>
 
-    <rect x="{lang1_2}" y="74" rx="5" ry="5" width="{lang1_3}" height="18" style="fill:{lang1_1};"/>
-    <text x="{lang1_2t}" y="86" class="language">{lang1_0}</text>
+    <rect x="{lang1_2}" y="74" rx="5" ry="5" width="{lang1_3}" height="18" style="fill:{lang1_1};" class="language_pop"/>
+    <text x="{lang1_2t}" y="86" class="language language_pop">{lang1_0}</text>
 
-    <rect x="{lang2_2}" y="74" rx="5" ry="5" width="{lang2_3}" height="18" style="fill:{lang2_1};"/>
-    <text x="{lang2_2t}" y="86" class="language">{lang2_0}</text>
+    <rect x="{lang2_2}" y="74" rx="5" ry="5" width="{lang2_3}" height="18" style="fill:{lang2_1};" class="language_pop"/>
+    <text x="{lang2_2t}" y="86" class="language language_pop">{lang2_0}</text>
 
-    <rect x="{lang3_2}" y="99" rx="5" ry="5" width="{lang3_3}" height="18" style="fill:{lang3_1};"/>
-    <text x="{lang3_2t}" y="111" class="language">{lang3_0}</text>
+    <rect x="{lang3_2}" y="99" rx="5" ry="5" width="{lang3_3}" height="18" style="fill:{lang3_1};" class="language_pop"/>
+    <text x="{lang3_2t}" y="111" class="language language_pop">{lang3_0}</text>
 
-    <rect x="{lang4_2}" y="99" rx="5" ry="5" width="{lang4_3}" height="18" style="fill:{lang4_1};"/>
-    <text x="{lang4_2t}" y="111" class="language">{lang4_0}</text>
+    <rect x="{lang4_2}" y="99" rx="5" ry="5" width="{lang4_3}" height="18" style="fill:{lang4_1};" class="language_pop"/>
+    <text x="{lang4_2t}" y="111" class="language language_pop">{lang4_0}</text>
 
-    <rect x="{lang5_2}" y="99" rx="5" ry="5" width="{lang5_3}" height="18" style="fill:{lang5_1};"/>
-    <text x="{lang5_2t}" y="111" class="language">{lang5_0}</text>
+    <rect x="{lang5_2}" y="99" rx="5" ry="5" width="{lang5_3}" height="18" style="fill:{lang5_1};" class="language_pop"/>
+    <text x="{lang5_2t}" y="111" class="language language_pop">{lang5_0}</text>
 
 
     <image href="{chart}" x="370" y="12" height="220px" class="chartmain"/>
