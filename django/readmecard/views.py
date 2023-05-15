@@ -1114,8 +1114,10 @@ def user_card(request):
             text.repo-handle {{
                 font-weight: 700;
                 font-size: 1.30em;
-                animation: fadeIn 1s ease-in-out forwards;
-
+                animation: delayFadeIn 1.4s ease-in-out forwards;
+            }}
+            .per_desc {{
+                animation: delayFadeIn 1.4s ease-in-out forwards;
             }}
             text.tier-text {{
                 font-weight: 700;
@@ -1127,7 +1129,10 @@ def user_card(request):
                 font-size: 0.8em;
                 font-weight: 700;
                 text-anchor: middle;
-                animation: delayFadeIn 1.8s ease-in-out forwards;
+                animation: delayFadeIn 0.7s ease-in-out forwards;
+            }}
+            .reponame {{
+                animation: delayFadeIn 1s ease-in-out forwards;
             }}
             .subtitle {{
                 font-weight: 500;
@@ -1154,7 +1159,7 @@ def user_card(request):
                 animation: delayFadeIn 2s ease-in-out forwards;
             }}
             .repomon-img {{
-                animation: delayFadeIn 0.5s ease-in-out forwards;
+                animation: fadeIn 1s ease-in-out forwards;
             }}
             .repo-detail {{
                 font-size: 0.8em;
@@ -1165,8 +1170,12 @@ def user_card(request):
                 flex-wrap: wrap;
                 justify-content: center;
             }}
+            .chartmain {{
+                animation: delayFadeIn 3s ease-in-out forwards;
+            }}
             .charttitle {{
                 font-size: 0.5em;
+                animation: delayFadeIn 3.2s ease-in-out forwards;
             }}
             .repo-percent {{
                 fill: #000000;
@@ -1218,10 +1227,10 @@ def user_card(request):
     </defs>
     <rect width="600" height="230" rx="10" ry="10" class="background"/>
     
-    <circle cx="213" cy="43" r="22" fill="url(#avatarUrl)"/>
+    <circle cx="213" cy="43" r="22" fill="url(#avatarUrl)"  class="per_desc"/>
     <text x="241" y="41" class="repo-handle">{gitname}</text>
-    <image href="{pocket}" x="241" y="50" width="14px"/><text x="259" y="61" font-size="0.6em">{repoCount}</text>
-    <text x="275" y="62" font-size="0.75em">{introduce}</text>
+    <image href="{pocket}" x="241" y="50" width="14px" class="per_desc"/><text x="259" y="61" font-size="0.6em" class="per_desc">{repoCount}</text>
+    <text x="275" y="62" font-size="0.75em" class="per_desc">{introduce}</text>
 
     <ellipse class="{ellipsetype}"/>
 
@@ -1229,18 +1238,18 @@ def user_card(request):
     <image href="{img}" x="25" y="45" width="140px" height="112px" class="repomon-img"/>
     <line x1="40" y1="183" x2="150" y2="183" stroke-width="20" stroke="floralwhite" stroke-linecap="round"/>
     <text x="95" y="188" dz="-20" class="repo-exp" text-anchor="middle">Exp | {repoExp}</text>
-    <text font-size="0.9em" font-weight="800" x="95" y="211" text-anchor="middle">{repoName}</text>
+    <text font-size="0.9em" font-weight="800" x="95" y="211" text-anchor="middle" class="reponame">{repoName}</text>
 
     <g class="item" style="animation-delay: 200ms">
         <text x="195" y="136" class="subtitle">Total Exp</text><text x="270" y="136" class="rate value">{totalexp} 점</text>
     </g>
-    <g class="item" style="animation-delay: 200ms">
+    <g class="item" style="animation-delay: 400ms">
         <text x="195" y="159" class="subtitle">Total Code</text><text x="270" y="159" class="rate value">{totalcode} 줄</text>
     </g>
-    <g class="item" style="animation-delay: 400ms">
+    <g class="item" style="animation-delay: 600ms">
         <text x="195" y="182" class="subtitle">Total Commit</text><text x="275" y="182" class="solved value">{totalcommit} 회</text>
     </g>
-    <g class="item" style="animation-delay: 600ms">
+    <g class="item" style="animation-delay: 800ms">
         <text x="195" y="205" class="subtitle">Average Contribution</text><text x="260" y="205" class="class value"></text>
         <line x1="320" y1="201" x2="{conventionrate_percent}" y2="201" stroke-width="10" stroke="floralwhite" stroke-linecap="round"/>
         <line x1="320" y1="201" x2="400" y2="201" stroke-width="10" stroke-opacity="40%" stroke="floralwhite" stroke-linecap="round"/>
@@ -1267,9 +1276,9 @@ def user_card(request):
     <text x="{lang5_2t}" y="111" class="language">{lang5_0}</text>
 
 
-    <image href="{chart}" x="370" y="12" height="220px" class="repomon-img"/>
+    <image href="{chart}" x="370" y="12" height="220px" class="chartmain"/>
     <text x="479" y="22" class="charttitle">Commit</text>
-    <text x="572" y="73" class="charttitle">Merge</text>
+    <text x="570" y="73" class="charttitle">Merge</text>
     <text x="395" y="73" class="charttitle">Issue</text>
     <text x="393" y="165" class="charttitle">Review</text>
     <text x="572" y="165" class="charttitle">Star</text>
