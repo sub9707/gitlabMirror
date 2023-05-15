@@ -30,11 +30,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["repomon.kr"]
 
-CSP_DEFAULT_SRC = ("'self'",)
-CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://avatars.githubusercontent.com")
-CSP_IMG_SRC = ("'self'", 'https://avatars.githubusercontent.com', 'https://camo.githubusercontent.com')
-CSP_SCRIPT_SRC = ("'self'", 'https://fonts.googleapis.com', 'https://camo.githubusercontent.com')
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -55,7 +50,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'csp.middleware.CSPMiddleware',
 ]
 
 ROOT_URLCONF = 'rocketdan.urls'
