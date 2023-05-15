@@ -122,9 +122,6 @@ STATIC_URL = '/static/'
 
 
 # Content Security Policy
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "'data:'", 'https://fonts.googleapis.com')
+CSP_IMG_SRC = ("'self'", "'unsafe-inline'", "'data:'", 'https://avatars.githubusercontent.com')
 
-CSP_IMG_SRC = ("'self'", 'https://avatars.githubusercontent.com')
-
-CSP_STYLE_SRC = ("'self'", 'https://fonts.googleapis.com')
-
-CSP_SCRIPT_SRC = ("'self'", 'https://fonts.googleapis.com')
