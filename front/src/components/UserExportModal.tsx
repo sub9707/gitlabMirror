@@ -14,6 +14,7 @@ import {
 } from "@/api/userRepo";
 import LoadingSpinner from "./Skeletons/LoadingSpinner";
 import Link from "next/link";
+import { customAlert } from "@/app/utils/CustomAlert";
 
 const customStyles = {
   content: {
@@ -51,6 +52,9 @@ const UserExportModal = ({ userId }: { userId: string }) => {
     if (updateLoading) {
       return;
     }
+
+    customAlert("카드 갱신에 최대 3분 소요될 수 있습니다.");
+
     updateUserCard(parseInt(userId, 10));
     getUserLan(parseInt(userId, 10));
     getUserCardLan(parseInt(userId, 10));
