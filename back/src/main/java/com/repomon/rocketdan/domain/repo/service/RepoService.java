@@ -115,6 +115,7 @@ public class RepoService {
 	 * 레포 이름, 스타, 포크 수
 	 * 레포몬 이름, 레포 시작날짜, 종료날짜
 	 * 경험치, 랭킹, 성장요소 ( 히스토리 분석 ), 히스토리
+	 * 대표 레포 여부
 	 *
 	 * @param repoId
 	 * @return
@@ -137,9 +138,19 @@ public class RepoService {
 			throw new CustomException(ErrorCode.NOT_FOUND_PUBLIC_REPOSITORY);
 		}
 
-		boolean myRepo = userEntity == null ? false : activeRepoRepository.existsByUserAndRepo(userEntity, repoEntity);
+		boolean myRepo = false;
+		boolean myPresentRepo = false;
+		if(userEntity != null){
+			myRepo = activeRepoRepository.existsByUserAndRepo(userEntity, repoEntity);
+			if(myRepo){
+				ActiveRepoEntity activeRepoEntity = userEntity.getRepresentRepo().orElse(null);
+				if(activeRepoEntity != null){
+					myPresentRepo = repoEntity.getRepoId() == activeRepoEntity.getRepo().getRepoId();
+				}
 
-		return RepoResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository, myRepo);
+			}
+		}
+		return RepoResponseDto.fromEntityAndGHRepository(repoEntity, ghRepository, myRepo, myPresentRepo);
 	}
 
 
@@ -388,20 +399,24 @@ public class RepoService {
 					updateRepositoryInfo(repoEntity, ghRepository, List.of(userEntity));
 				},
 				() -> {
-					RepomonEntity repomonEntity = repomonRepository.findById(9999L).orElseThrow(() -> {
-						throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
-					});
+					if(ghRepository.getSize() > 0) {
+						RepomonEntity repomonEntity = repomonRepository.findById(9999L)
+							.orElseThrow(() -> {
+								throw new CustomException(ErrorCode.NOT_FOUND_ENTITY);
+							});
 
-					String orgName = ghRepository.getOwnerName();
-					if (!orgName.equals(userEntity.getUserName())) {
-						orgName = ghUtils.getOrganizationFirstOwner(orgName);
+						String orgName = ghRepository.getOwnerName();
+						if (!orgName.equals(userEntity.getUserName())) {
+							orgName = ghUtils.getOrganizationFirstOwner(orgName);
+						}
+
+						RepomonStatusEntity repomonStatusEntity = RepomonStatusEntity.fromGHRepository(
+							orgName, ghRepository, repomonEntity);
+						repomonStatusRepository.save(repomonStatusEntity);
+						activeRepoRepository.save(ActiveRepoEntity.of(userEntity, repomonStatusEntity));
+
+						initRepositoryInfo(repomonStatusEntity, ghRepository, null);
 					}
-
-					RepomonStatusEntity repomonStatusEntity = RepomonStatusEntity.fromGHRepository(orgName, ghRepository, repomonEntity);
-					repomonStatusRepository.save(repomonStatusEntity);
-					activeRepoRepository.save(ActiveRepoEntity.of(userEntity, repomonStatusEntity));
-
-					initRepositoryInfo(repomonStatusEntity, ghRepository, null);
 				});
 		});
 	}
@@ -461,7 +476,7 @@ public class RepoService {
 			}
 
 			RepoHistoryEntity history = repoHistoryRepository.findFirstByRepoOrderByWorkedAtDesc(
-				repoEntity).orElseGet(null);
+				repoEntity).orElse(null);
 
 			try {
 				PagedIterable<GHCommit> ghCommits = history == null ? ghRepository.queryCommits().list()
@@ -556,17 +571,21 @@ public class RepoService {
 				});
 			}
 		}, () -> {
-			Long exp = initRepositoryInfo(repoEntity, ghRepository, null);
 
-			if (repoEntity.getIsActive()) {
-				userEntities.forEach(userEntity -> {
+			if(ghRepository.getSize() > 0) {
+				Long exp = initRepositoryInfo(repoEntity, ghRepository, null);
 
-					redisListRepository.findAllByUserName(userEntity.getUserName()).forEach(repoListResponseDto -> {
-						redisListRepository.delete(repoListResponseDto);
+				if (repoEntity.getIsActive()) {
+					userEntities.forEach(userEntity -> {
+
+						redisListRepository.findAllByUserName(userEntity.getUserName())
+							.forEach(repoListResponseDto -> {
+								redisListRepository.delete(repoListResponseDto);
+							});
+
+						userEntity.updateTotalExp(exp);
 					});
-
-					userEntity.updateTotalExp(exp);
-				});
+				}
 			}
 		});
 
@@ -770,7 +789,7 @@ public class RepoService {
 		//내 이슈, 머지, 리뷰 가져오기 >> 깃유틸에 넣기 째(getMyIssueToHistory)는 프라이빗, 예는 퍼블릭
 		Integer myIssue;
 		List<Integer> myMerges;
-		RepoHistoryEntity history = repoHistoryRepository.findFirstByRepoOrderByWorkedAtDesc(repoEntity).orElseGet(null);
+		RepoHistoryEntity history = repoHistoryRepository.findFirstByRepoOrderByWorkedAtDesc(repoEntity).orElse(null);
 		if (history != null) {
 			LocalDate workedAt = history.getWorkedAt();
 			Date workDate = DateUtils.LocalDateToDate(workedAt);

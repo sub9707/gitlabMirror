@@ -29,7 +29,7 @@ import java.util.*;
 public class GHUtils {
 
 	@Value("${github.accessToken}")
-	private String accessToken;
+	private List<String> accessTokens;
 	public GitHub gitHub;
 
 	private final Integer maxStarAndFork = 200;
@@ -40,7 +40,20 @@ public class GHUtils {
 	@PostConstruct
 	private void init() throws IOException {
 		RateLimitChecker limitChecker = RateLimitChecker.NONE;
-		gitHub = new GitHubBuilder().withOAuthToken(accessToken).withRateLimitChecker(limitChecker).build();
+		for(String accessToken : accessTokens){
+			gitHub = new GitHubBuilder().withOAuthToken(accessToken).withRateLimitChecker(limitChecker).build();
+			GHRateLimit rateLimit = gitHub.getRateLimit();
+			if(rateLimit.getCore().getRemaining() > 0) break;
+		}
+	}
+
+	public void changeUserToken() throws IOException {
+		RateLimitChecker limitChecker = RateLimitChecker.NONE;
+		for(String accessToken : accessTokens){
+			gitHub = new GitHubBuilder().withOAuthToken(accessToken).withRateLimitChecker(limitChecker).build();
+			GHRateLimit rateLimit = gitHub.getRateLimit();
+			if(rateLimit.getCore().getRemaining() > 0) break;
+		}
 	}
 
 
@@ -66,7 +79,7 @@ public class GHUtils {
 
 
 	private Map<String, GHRepository> getRepositories(GHUser user) throws IOException {
-		String name = user.getLogin();
+		String name = user.getLogin().toLowerCase();
 
 		Map<String, GHRepository> repositories = new HashMap<>(user.getRepositories());
 		Map<String, GHRepository> repositoriesWithNodeKey = new HashMap<>();
@@ -587,5 +600,4 @@ public class GHUtils {
 
 		return userCardInfo;
 	}
-
 }
