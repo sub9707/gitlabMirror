@@ -164,7 +164,12 @@ const UserExportModal = ({ userId }: { userId: string }) => {
         className={`${styles.userCardExport} border-2 rounded-lg flex justify-center my-2 py-1 font-bold`}
         onClick={onClickExportBtn}
       >
-        {!updateLoading && <p>Export User Card</p>}
+        {!updateLoading && (
+          <div className="flex">
+            <p className="pr-2">Export User Card</p>
+            <FolderArrowDownIcon width="1.25rem" />
+          </div>
+        )}
         {updateLoading && <LoadingSpinner ml={2} mr={2} size={4} />}
       </div>
       <Modal
