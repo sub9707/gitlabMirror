@@ -65,11 +65,11 @@
     justify-content: center;
     align-items: center;
     position: relative;
-    border: 1px solid #464444;
+    border: 2px solid #818181;
     & .titlebox {
       position: absolute;
-      top: 0;
-      left: 0;
+      top: -0.1em;
+      left: -0.1em;
       width: 8em;
       height: 2em;
       background-color: #a1cdff;
@@ -81,11 +81,13 @@
       color: white;
       font-weight: 700;
     }
-    & .charWrapper {
+    & .chartWrapper {
       width: 55%;
       height: 80%;
-      background-color: blueviolet;
       margin-right: 5%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     & .statsWrapper {
       width: 30%;
@@ -191,7 +193,7 @@
 }
 
 #ranNumber {
-  color: black !important;
+  color: black;
 }
 
 #tableBody {
@@ -212,6 +214,15 @@
 #arrowDown {
   animation: arrowDownMove 1.5s ease-in-out infinite;
 }
+
+#repomonConventionTitle {
+  color: #7291fa;
+  font-size: 1.7em;
+  font-weight: 700;
+  margin-left: 10%;
+  margin-top: 5%;
+}
+
 @keyframes arrowDownMove {
   0% {
     transform: translateY(0);

@@ -29,6 +29,8 @@ import Modal from "react-modal";
 import { useRouter } from "next/navigation";
 import ArrowDown from "@/components/UI/ArrowDown";
 import { ModelSel } from "./ModelSel";
+import StatsChart from "./StatsChart";
+import { statsData } from "@/types/repoInfo";
 
 const Page: NextPage<PageProps> = ({ params }) => {
   const [numArr, setNumArr] = useState([0, 0, 0, 0, 0]);
@@ -67,6 +69,7 @@ const Page: NextPage<PageProps> = ({ params }) => {
       });
   }, []);
 
+  // 이름 설정 시 유효성 검사
   async function handlePostClick() {
     if (isReady && selectedChar !== 0) {
       setRepoInit(repoInitData);
@@ -85,6 +88,7 @@ const Page: NextPage<PageProps> = ({ params }) => {
     }
   }
 
+  // 레포지토리 초기 설정값
   useEffect(() => {
     setRepoInitData({
       repoId: parseInt(params.repoId),
@@ -102,6 +106,7 @@ const Page: NextPage<PageProps> = ({ params }) => {
     console.log("레포데이터", repoInitData);
   }, [repoInitData]);
 
+  // 난수 생성 후 Stats 설정
   function generateRandomNumArr() {
     const MAX_VALUE = 10;
     const MIN_VALUE = 1;
@@ -149,7 +154,7 @@ const Page: NextPage<PageProps> = ({ params }) => {
     generateRandomNumArr();
 
     if (dice.current && diceShadow.current) {
-      dice.current.style.transform = `translate(-50%, -250%) rotate(720deg)`;
+      dice.current.style.transform = `translate(-50%, -300%) rotate(720deg)`;
       dice.current.style.filter = `blur(0.1em)`;
       diceShadow.current.style.transform = "translate(-50%, -50%) scaleX(0.7)";
 
@@ -190,7 +195,8 @@ const Page: NextPage<PageProps> = ({ params }) => {
       statRef: React.MutableRefObject<any | null>
     ) => {
       const isMax = stat === 10;
-      statRef.current!.style.color = isMax ? "red" : "white";
+      statRef.current!.style.color = isMax ? "red" : "black";
+      statRef.current!.style.fontWeight = isMax ? "700" : "500";
       statRef.current!.style.fontSize = isMax ? "1.2em" : "1em";
       if (isMax) {
         statRef.current!.classList.add("animate__animated", "animate__shakeX");
@@ -337,6 +343,15 @@ const Page: NextPage<PageProps> = ({ params }) => {
       }
     }
   }, [isClickOne, isClickTwo, isClickThree]);
+
+  // props consts 모음
+  const stats: statsData = {
+    attackStat: numArr[0],
+    avoidStat: numArr[1],
+    enduranceStat: numArr[2],
+    criticalStat: numArr[3],
+    hitStat: numArr[4],
+  };
 
   return (
     <div className={styles.pageContainer} id="pageContainer">
@@ -526,13 +541,20 @@ const Page: NextPage<PageProps> = ({ params }) => {
             </p>
             <InputField setRepoName={setRepoName} setIsReady={setIsReady} />
           </div>
-          <GitTable setConventionData={setConventionData} />
+          <div>
+            <p style={{ width: "25%" }} id={styles.repomonConventionTitle}>
+              컨벤션 초기 등록
+            </p>
+            <GitTable setConventionData={setConventionData} />
+          </div>
         </div>
       </div>
       <div className={styles.diceBlock}>
         <div className={styles.chartBox}>
           <div className={styles.titlebox}>스탯 설정하기</div>
-          <div className={styles.charWrapper}></div>
+          <div className={styles.chartWrapper}>
+            <StatsChart {...stats} />
+          </div>
           <div className={styles.statsWrapper}>
             <div className="flex flex-col" style={{ width: "100%" }}>
               <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
