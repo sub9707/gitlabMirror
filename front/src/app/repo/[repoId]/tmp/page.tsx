@@ -1,7 +1,7 @@
 "use client";
 
 import DetailRepomon from "@/components/Detail/DetailRepomon";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./page.module.scss";
 import Modal from "react-modal";
 import ExportModal from "@/components/Detail/ExportModal";
@@ -11,6 +11,7 @@ import DetailConvention from "@/components/Detail/DetailConvention";
 import { RepoDetailConventionInfoType } from "@/types/repoDetail";
 import { axiosRequestRepoDetailConvention } from "@/api/repoDetail";
 import MatchModal from "@/components/Detail/MatchModal";
+import { HeartIcon } from "@heroicons/react/24/solid";
 
 function Page() {
   const [repomonUrl, setRepomonUrl] = useState(
@@ -30,6 +31,8 @@ function Page() {
     setExportModalIsOpen(false);
   };
 
+  const divRef = useRef<HTMLDivElement>(null);
+
   // useEffect(() => {
   //   Modal.setAppElement("#repo-detail");
   //   requestRepoDetailConvention(4);
@@ -44,9 +47,10 @@ function Page() {
   //     console.error(err);
   //   }
   // };
-
+  
   return (
     <div className={styles.pageContainer} id="repo-detail">
+      <HeartIcon style={{ color: "red" }} />
       {/* <div className={styles.info}>
         <div className={styles["repo-mon-card-div"]}>
           <div className={styles["repo-mon-card"]}> */}
@@ -73,6 +77,11 @@ function Page() {
         ]}
       /> */}
       <MatchModal repoId={"4"} />
+      <div style={{ height: "500px" }}></div>
+      <div
+        ref={divRef}
+        style={{ height: "500px", backgroundColor: "skyblue" }}
+      ></div>
     </div>
   );
 }

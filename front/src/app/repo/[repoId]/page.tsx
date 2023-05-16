@@ -10,7 +10,10 @@ import {
   ChartPieIcon,
   HeartIcon,
 } from "@heroicons/react/24/outline";
-import { ArrowPathIcon } from "@heroicons/react/24/solid";
+import {
+  ArrowPathIcon,
+  HeartIcon as SolidHeartIcon,
+} from "@heroicons/react/24/solid";
 import DetailRepomon from "@/components/Detail/DetailRepomon";
 import ProgressBar from "@/components/Detail/ProgressBar";
 import styles from "./page.module.scss";
@@ -54,8 +57,7 @@ function Page({ params }: { params: { repoId: string } }) {
   const [repoDetailInfo, setRepoDetailInfo] = useState<RepoDetailType>();
   const [tabIndex, setTabIndex] = useState<number>(0);
   const [isUpdated, setIsUpdated] = useState<boolean>(false);
-  /** 갱신 버튼 업데이트 */
-  const [isUpdated2, setIsUpdated2] = useState<boolean>(false);
+  const [isUpdated2, setIsUpdated2] = useState<boolean>(false); // 갱신 버튼
   const [repoDetailResearchInfo, setRepoDetailResearchInfo] =
     useState<RepoDetailResearchType>();
   const [repoDetailBattleInfo, setRepoDetailBattleInfo] =
@@ -75,9 +77,9 @@ function Page({ params }: { params: { repoId: string } }) {
   const [conventionLoading, setConventionLoading] = useState<boolean>(false);
   const router = useRouter();
   const lanRef = useRef<HTMLDivElement>(null);
+  const tabRef = useRef<HTMLDivElement>(null);
 
   /** =============================================== useEffect =============================================== */
-
   /** 레포 기본 정보 불러오기 + 레포몬 닉네임, 기간 업데이트 시 정보 재요청 */
   useEffect(() => {
     requestRepoDetail(
@@ -94,7 +96,7 @@ function Page({ params }: { params: { repoId: string } }) {
   /** 배틀 정보 불러오기 + 스탯 변경 시 재요청 */
   useEffect(() => {
     requestRepoDetailBattleInfo(parseInt(params.repoId, 10));
-  }, [statUpdated]);
+  }, [statUpdated, isUpdated2]);
 
   /** 컨벤션 정보 불러오기 + 컨벤션 수정 시 재요청 */
   useEffect(() => {
@@ -159,6 +161,7 @@ function Page({ params }: { params: { repoId: string } }) {
 
     setTabIndex(parseInt(target.id, 10));
     sessionStorage.setItem("tabIndex", target.id);
+    window.scrollTo(0, 410);
   };
 
   const onClickUpdateBtn = () => {
@@ -174,6 +177,24 @@ function Page({ params }: { params: { repoId: string } }) {
       parseInt(params.repoId, 10),
       parseInt(loginUserId!, 10)
     );
+  };
+
+  const scrollLeft = () => {
+    if (lanRef.current) {
+      lanRef.current.scrollBy({
+        left: -lanRef.current.offsetWidth,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const scrollRight = () => {
+    if (lanRef.current) {
+      lanRef.current.scrollBy({
+        left: lanRef.current.offsetWidth,
+        behavior: "smooth",
+      });
+    }
   };
 
   /** =============================================== Axios =============================================== */
@@ -277,32 +298,17 @@ function Page({ params }: { params: { repoId: string } }) {
 
   /** 대표 레포지토리 설정 */
   const requestSetRepresent = async (repoId: number, userId: number) => {
+    if (repoDetailInfo?.myPresentRepo) {
+      customAlert("이미 대표로 등록된 레포지토리입니다.");
+      return;
+    }
+
     try {
       const res = await axiosRequestSetRepresent(repoId, userId);
       console.log("대표 레포 설정: ", res);
       customAlert("대표 레포지토리로 설정되었습니다.");
     } catch (err) {
       console.error(err);
-    }
-  };
-
-  const [scrollPos, setScrollPos] = useState(0);
-
-  const scrollLeft = () => {
-    if (lanRef.current) {
-      lanRef.current.scrollBy({
-        left: -lanRef.current.offsetWidth,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  const scrollRight = () => {
-    if (lanRef.current) {
-      lanRef.current.scrollBy({
-        left: lanRef.current.offsetWidth,
-        behavior: "smooth",
-      });
     }
   };
 
@@ -318,7 +324,10 @@ function Page({ params }: { params: { repoId: string } }) {
             </button>
             {repoDetailInfo.myRepo && (
               <button onClick={onClickRepresentBtn}>
-                <HeartIcon />
+                {repoDetailInfo.myPresentRepo && (
+                  <SolidHeartIcon className={styles["color-heart"]} />
+                )}
+                {!repoDetailInfo.myPresentRepo && <HeartIcon />}
                 대표 레포지토리 설정
               </button>
             )}
@@ -374,7 +383,7 @@ function Page({ params }: { params: { repoId: string } }) {
               <div className={styles["btn-div"]}>
                 <button onClick={onClickUpdateBtn} className={styles.update}>
                   {updateLoading ? (
-                    <LoadingSpinner ml={4} mr={4} size={6} />
+                    <LoadingSpinner ml={4} mr={4} size={4} />
                   ) : (
                     <span>레포지토리 갱신</span>
                   )}
@@ -480,7 +489,7 @@ function Page({ params }: { params: { repoId: string } }) {
               </div>
             </div>
           </div>
-          <div className={styles["tab-content"]}>
+          <div className={styles["tab-content"]} ref={tabRef}>
             {tabIndex === 1 && (
               <DetailAnalysis researchInfo={repoDetailResearchInfo} />
             )}
