@@ -2,6 +2,8 @@ package com.repomon.rocketdan.domain.user.controller;
 
 
 import com.repomon.rocketdan.common.dto.AuthResponseDto;
+import com.repomon.rocketdan.domain.user.dto.request.ExtensionUserRequestDto;
+import com.repomon.rocketdan.domain.user.dto.response.ExtensionUserResponseDto;
 import com.repomon.rocketdan.domain.user.service.AuthService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -48,5 +50,12 @@ public class AuthController {
             httpHeaders.add("accessToken", authResponseDto.getAccessToken());
             httpHeaders.add("refreshToken", authResponseDto.getRefreshToken());
         }).build();
+    }
+
+    @ApiOperation(value = "Extension 로그인")
+    @PostMapping("/ex")
+    public ResponseEntity extensionLogin(@RequestBody ExtensionUserRequestDto requestDto){
+        ExtensionUserResponseDto responseDto = authService.exLogin(requestDto);
+        return ResponseEntity.ok(responseDto);
     }
 }
