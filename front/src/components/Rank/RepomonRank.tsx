@@ -60,7 +60,7 @@ const RepomonRank = ({ searchInput, searchRequestSign }: { searchInput: string; 
       {isLoading && <Loading />}
       {!isLoading && (
         <div>
-          <div className={`${styles['top-3-div']} hidden md:block`}>
+          <div className={`${styles['top-3-div']} hidden md:flex`}>
             {top3.map((data, index) => (
               <div key={index} className={styles[`top-${index + 1}`]} onClick={() => onClickRepoItem(data.repoId)}>
                 <div className={styles.border} />

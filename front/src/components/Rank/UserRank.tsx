@@ -56,7 +56,7 @@ const UserRank = ({ searchInput, searchRequestSign }: { searchInput: string; sea
       {isLoading && <Loading />}
       {!isLoading && (
         <div>
-          <div className={`${styles['top-3-div']} hidden md:block`}>
+          <div className={`${styles['top-3-div']} hidden md:flex`}>
             {top3.map((data, index) => (
               <div key={index} className={styles[`top-${index + 1}`]} onClick={() => onClickUserItem(data.userId)}>
                 <div className={styles.border} />
