@@ -57,7 +57,6 @@ const Page = ({ params }: { params: { repoId: string; oppoId: string } }) => {
         setopHp(data?.data.defenseRepo.hp);
         setmyHp(data?.data.attackRepo.hp);
         setLoadData(true);
-        console.log("매치 정보", data);
       } catch (error) {
         console.error(error);
       }
@@ -119,7 +118,6 @@ const Page = ({ params }: { params: { repoId: string; oppoId: string } }) => {
       getModelPosition(str)
     );
     const gltf = useLoader(GLTFLoader, props.url + `?id=${myId}` ?? "");
-    console.log(gltf.animations);
     let mixer: THREE.AnimationMixer | undefined;
     if (gltf.animations.length) {
       mixer = new THREE.AnimationMixer(gltf.scene);
@@ -556,7 +554,6 @@ const Page = ({ params }: { params: { repoId: string; oppoId: string } }) => {
     setIsOpHurt(false);
     setIsOpAvoid(false);
   }
-  console.log("스크립트 데이터 확인: ", initialState);
   // 종료 모달
 
   const afterOpenModal = () => {};

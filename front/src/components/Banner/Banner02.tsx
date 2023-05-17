@@ -7,7 +7,7 @@ const Banner02 = () => {
     <div className={`${styles.container} `}>
       <div className={`${styles.banner} `}>
         <div className='flex w-full  '>
-          <div className='w-2/4 h-full'>
+          <div className='w-2/4 h-full pb-10'>
             <img src='/static/images/banner_02.png' alt='' style={{ height: '100%', paddingTop: '5%', paddingBottom: '6%' }} />
           </div>
           <div className={`${styles.left} flex flex-col items-end`}>
