@@ -919,7 +919,7 @@ def repo_personal_card(request):
                gitname = handle_set.gitname,
                avatarUrl = handle_set.avatarUrl,
                mytotalcommit = format(int(handle_set.mytotalcommit),','),
-               mytotalcode = format(int(handle_set.mytotalcommit),','),
+               mytotalcode = format(int(handle_set.mytotalcode),','),
                per=per,
                img=IMG['img'+str(handle_set.repomonId)],
                ellipsetype=ELLIPSE_TYPE[handle_set.repomonTier],                
