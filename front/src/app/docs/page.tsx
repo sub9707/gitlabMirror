@@ -472,7 +472,7 @@ function Page() {
               <a href='https://chrome.google.com/webstore/category/extensions?hl=ko' className='text-indigo-500'>
                 크롬 웹스토어
               </a>
-              에서 <strong>Repomon</strong> 을 검색합니다.
+              에서 <strong>Repomon Battle Device</strong> 을 검색합니다.
             </li>
             <li>
               <strong>Chrome에 추가 버튼</strong>을 클릭하여 설치합니다.
