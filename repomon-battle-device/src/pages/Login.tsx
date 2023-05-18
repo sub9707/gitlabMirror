@@ -8,7 +8,7 @@ import { UserType } from "../types/type";
 
 function Login() {
   const [userName, setUserName] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [key, setKey] = useState<string>("");
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(false);
 
@@ -34,18 +34,18 @@ function Login() {
     setUserName(e.target.value);
   };
 
-  const onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
+  const onChangeKey = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setKey(e.target.value);
   };
 
   const onClickLogin = async () => {
     try {
-      const res1 = await aixosRequestLogin(userName, password);
+      const res1 = await aixosRequestLogin(userName, key);
       console.log("로그인: ", res1);
       setUserInfo(res1.data).then(() => setIsLogin(true));
     } catch (err) {
       console.error(err);
-      alert("repomon에 가입된 유저명이 아닙니다.");
+      alert("유저명 또는 키를 다시 확인해주세요.");
     }
   };
 
@@ -66,12 +66,14 @@ function Login() {
           onChange={onChangeUserName}
           style={{ margin: "0 0 0.5rem 0" }}
         />
-        <input
-          type="password"
-          value={password}
-          placeholder="Github 비밀번호를 입력해주세요."
-          onChange={onChangePassword}
-        />
+        <div>
+          <input
+            type="password"
+            value={key}
+            placeholder="발급받은 Key를 입력해주세요."
+            onChange={onChangeKey}
+          />
+        </div>
       </div>
       <img
         alt="github login button"
