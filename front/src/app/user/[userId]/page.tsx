@@ -124,8 +124,9 @@ const Page = ({ params }: { params: { userId: string } }) => {
                 />
                 <p className={styles.tooltip}>
                   <p>
-                    크롬 확장 프로그램의 로그인에 필요한 Key입니다. <br />
-                    클릭 시 복사됩니다.
+                    크롬 확장 프로그램 <span>Repomon Battle Device</span>의{" "}
+                    <br />
+                    로그인에 필요한 Key입니다. 클릭 시 복사됩니다.
                   </p>
                 </p>
               </p>

@@ -159,7 +159,7 @@
   & svg {
     margin: 0 0 0 0.5rem;
     width: 25px;
-    color: #b7ba23;
+    color: #d6d92f;
 
     &:hover {
       cursor: pointer;
@@ -167,8 +167,7 @@
 
       & ~ .tooltip {
         display: flex;
-        flex-direction: column;
-        justify-content: center;
+        align-items: center;
       }
     }
   }
@@ -184,15 +183,15 @@
     background-color: rgb(239, 247, 255);
     border-radius: 10px;
     font-size: 1rem;
+    padding: 0 0 0 1rem;
 
     &:hover {
       display: flex;
-      flex-direction: column;
-      justify-content: center;
+      align-items: center;
     }
 
-    & p {
-      padding: 0 0 0 1rem;
+    & span {
+      color: $highlight;
     }
   }
 }
