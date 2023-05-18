@@ -151,3 +151,48 @@
     height: 13em;
   }
 }
+
+.username {
+  position: relative;
+  display: flex;
+
+  & svg {
+    margin: 0 0 0 0.5rem;
+    width: 25px;
+    color: #b7ba23;
+
+    &:hover {
+      cursor: pointer;
+      opacity: 0.8;
+
+      & ~ .tooltip {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+    }
+  }
+
+  .tooltip {
+    z-index: 100;
+    position: absolute;
+    width: 350px;
+    height: 85px;
+    bottom: -70px;
+    right: -215px;
+    display: none;
+    background-color: rgb(239, 247, 255);
+    border-radius: 10px;
+    font-size: 1rem;
+
+    &:hover {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    & p {
+      padding: 0 0 0 1rem;
+    }
+  }
+}
