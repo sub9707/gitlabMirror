@@ -563,7 +563,7 @@ const Page: NextPage<PageProps> = ({ params }) => {
                       id={styles.tableText}
                     >
                       <tbody
-                        style={{ textAlign: "center", fontSize: "1.2em" }}
+                        style={{ textAlign: "center", fontSize: "1.1em" }}
                         id={styles.tableBody}
                       >
                         <tr
@@ -689,15 +689,15 @@ const Page: NextPage<PageProps> = ({ params }) => {
         </div>
       </div>
       <div style={{ display: "flex", marginBlock: "3%" }}>
-        <div onClick={handlePostClick}>
-          <Button_OK msg={"결정하기"} />
-        </div>
         <div
           onClick={() => {
             router.push(`/user/${localUserId}`);
           }}
         >
           <Button_NO msg={"취소하기"} />
+        </div>
+        <div onClick={handlePostClick}>
+          <Button_OK msg={"결정하기"} />
         </div>
       </div>
     </div>
