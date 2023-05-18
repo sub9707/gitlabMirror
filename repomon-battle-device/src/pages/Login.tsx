@@ -8,6 +8,7 @@ import { UserType } from "../types/type";
 
 function Login() {
   const [userName, setUserName] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(false);
 
@@ -33,13 +34,18 @@ function Login() {
     setUserName(e.target.value);
   };
 
+  const onChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
   const onClickLogin = async () => {
     try {
-      const res1 = await aixosRequestLogin(userName);
+      const res1 = await aixosRequestLogin(userName, password);
       console.log("로그인: ", res1);
       setUserInfo(res1.data).then(() => setIsLogin(true));
     } catch (err) {
       console.error(err);
+      alert("repomon에 가입된 유저명이 아닙니다.");
     }
   };
 
@@ -48,16 +54,23 @@ function Login() {
       <div className={styles["text-div"]}>
         <h3>Repomon Battle Device</h3>
         <p>
-          레포몬의 배틀 서비스를 <br /> 사이드바 앱에서 편리하게 이용해보세요.
+          레포몬의 배틀 서비스를 <br /> 확장 앱에서 편리하게 이용해보세요.
         </p>
       </div>
       <Repomon />
-      <div className={styles.userName}>
+      <div className={styles.form}>
         <input
           type="text"
           value={userName}
-          placeholder="Github ID를 입력해주세요."
+          placeholder="Github 유저명을 입력해주세요."
           onChange={onChangeUserName}
+          style={{ margin: "0 0 0.5rem 0" }}
+        />
+        <input
+          type="password"
+          value={password}
+          placeholder="Github 비밀번호를 입력해주세요."
+          onChange={onChangePassword}
         />
       </div>
       <img

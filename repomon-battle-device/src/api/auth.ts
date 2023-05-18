@@ -1,8 +1,9 @@
 import { http } from "./axios";
 
-export const aixosRequestLogin = async (userName: string) => {
+export const aixosRequestLogin = async (userName: string, password: string) => {
   const data = {
     userName,
+    password,
   };
 
   const res = await http.post("auth/ex", data);
