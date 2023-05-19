@@ -65,17 +65,35 @@ Github의 사용자는 나날이 증가하는 가운데, 프로젝트의 지표�
 
 
 ## 🐎 프로젝트 구조
-#### Back_디렉토리 구조
+<details>
+<summary><h4>Back_디렉토리 구조</h4></summary>
+<div markdown="1">
 ![BE TREE](./exec/tree/BE_tree.png)
+</div>
+</details>
 
-#### Front_디렉토리 구조
+<details>
+<summary><h4>Front_디렉토리 구조</h4></summary>
+<div markdown="1">
 ![FE TREE](./exec/tree/FE_tree.png)
+</div>
+</details>
 
-#### Extension_디렉토리 구조
+
+<details>
+<summary><h4>Extension_디렉토리 구조</h4></summary>
+<div markdown="1">
 ![Extension TREE](./exec/tree/extension_tree.png)
+</div>
+</details>
 
-#### Django_디렉토리 구조
+
+<details>
+<summary><h4>Django_디렉토리 구조</h4></summary>
+<div markdown="1">
 ![Django TREE](./exec/tree/django_tree.png)
+</div>
+</details>
 
 ## 🐑 아키텍처 구조
 ![arch](./exec/아키텍처.png)
