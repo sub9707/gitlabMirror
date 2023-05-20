@@ -115,6 +115,11 @@ function Main() {
     getOppo(selectedRepo.repoId);
   };
 
+  const onClickLogout = () => {
+    localStorage.clear();
+    navigate("/");
+  };
+
   /** ================================== Axios ================================== */
   const getRepoList = async (userId: string) => {
     try {
@@ -163,6 +168,9 @@ function Main() {
 
   return (
     <div style={{ minHeight: "500px" }}>
+      <p className={styles.logout} onClick={onClickLogout}>
+        로그아웃
+      </p>
       <div className={styles["user-div"]}>
         <img
           alt="profile image"

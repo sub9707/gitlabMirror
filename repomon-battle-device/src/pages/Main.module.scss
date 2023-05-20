@@ -1,8 +1,19 @@
 @import "../styles/variables.scss";
 
+.logout {
+  width: 85%;
+  margin: 1.5rem auto;
+  text-align: end;
+
+  &:hover {
+    cursor: pointer;
+    color: $highlight;
+  }
+}
+
 .user-div {
   width: 90%;
-  margin: 3rem auto 2rem auto;
+  margin: 0 auto 2rem auto;
   padding: 0 0 0 1rem;
   display: flex;
   align-items: center;
