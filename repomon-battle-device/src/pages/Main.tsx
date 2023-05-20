@@ -299,36 +299,44 @@ function Main() {
                       : `${styles["record-item"]} ${styles["lose-record-item"]}`
                   }
                 >
-                  <div
-                    className={styles["result-div"]}
-                    style={{ margin: "0 2rem 0 0" }}
-                  >
-                    {record.attackRepo.repomonNickname ===
-                      selectedRepo.repomonName && (
-                      <>
-                        <p className={record.isWin ? styles.win : styles.lose}>
-                          {record.isWin ? "승리" : "패배"}
-                        </p>
-                        <p className={record.isWin ? styles.win : styles.lose}>
-                          {record.attackPoint > 0 && "+"}
-                          {record.attackPoint}
-                        </p>
-                      </>
-                    )}
-                    {record.defenseRepo.repomonNickname ===
-                      selectedRepo.repomonName && (
-                      <>
-                        <p className={!record.isWin ? styles.win : styles.lose}>
-                          {!record.isWin ? "승리" : "패배"}
-                        </p>
-                        <p className={!record.isWin ? styles.win : styles.lose}>
-                          {record.defensePoint > 0 && "+"}
-                          {record.defensePoint}
-                        </p>
-                      </>
-                    )}
-                  </div>
                   <div id="left">
+                    <div
+                      className={styles["result-div"]}
+                      style={{ margin: "0 2rem 0 0" }}
+                    >
+                      {record.attackRepo.repomonNickname ===
+                        selectedRepo.repomonName && (
+                        <>
+                          <p
+                            className={record.isWin ? styles.win : styles.lose}
+                          >
+                            {record.isWin ? "승리" : "패배"}
+                          </p>
+                          <p
+                            className={record.isWin ? styles.win : styles.lose}
+                          >
+                            {record.attackPoint > 0 && "+"}
+                            {record.attackPoint}
+                          </p>
+                        </>
+                      )}
+                      {record.defenseRepo.repomonNickname ===
+                        selectedRepo.repomonName && (
+                        <>
+                          <p
+                            className={!record.isWin ? styles.win : styles.lose}
+                          >
+                            {!record.isWin ? "승리" : "패배"}
+                          </p>
+                          <p
+                            className={!record.isWin ? styles.win : styles.lose}
+                          >
+                            {record.defensePoint > 0 && "+"}
+                            {record.defensePoint}
+                          </p>
+                        </>
+                      )}
+                    </div>
                     <img
                       src={`/models_png/${pretreatModelUrl(
                         record.attackRepo.repomon.repomonUrl
