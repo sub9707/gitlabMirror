@@ -163,6 +163,7 @@ function RepositoryCard(props: propType) {
           <div>
             {props.repomonId >= 9000 ? (
               <button
+                className={`${styles.overflow}`}
                 style={{
                   display: props.isSameUser ? 'block' : 'none',
                   textAlign: 'center',
