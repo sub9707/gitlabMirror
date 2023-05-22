@@ -26,8 +26,8 @@ public interface RepomonStatusRepository extends JpaRepository<RepomonStatusEnti
 
 	@Query(nativeQuery = true, value = "SELECT * FROM repomon_status INNER JOIN repo"
 		+ "ON repomon_status.repo_id = repo.repo_id "
-		+ "WHERE repo.repomon_id < 9000 and repo.repo_owner != :repomonOwner "
+		+ "WHERE repo.repomon_id < 9000 and repo.repo_owner != :repomonOwner and repo.repo_id != :repoId "
 		+ "ORDER BY RAND() limit 1")
-	RepomonStatusEntity findByRandom(@Param("repomonOwner") String repomonOwner);
+	RepomonStatusEntity findByRandom(@Param("repomonOwner") String repomonOwner, @Param("repoId") Long repoId);
 
 }
