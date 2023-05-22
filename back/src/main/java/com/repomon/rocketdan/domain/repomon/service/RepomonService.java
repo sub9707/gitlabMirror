@@ -162,12 +162,12 @@ public class RepomonService {
 				}
 
 			}
-		
+
 			index += 1;
 
 		}
 
-		throw new CustomException(NOT_FOUND_REPOSITORY);
+		return RepomonStatusResponseDto.fromEntity(repomonStatusRepository.findByRandom(repomonOwner));
 
 	}
 
