@@ -320,10 +320,12 @@ const Page = ({ params }: { params: { userId: string } }) => {
                         }}
                       />
                     </div>
-                    <p className={styles["update-time"]}>
-                      마지막 갱신 시간:
-                      {calcBattleDate(userInfo?.updateTime as string)}
-                    </p>
+                    {userInfo && (
+                      <p className={styles["update-time"]}>
+                        마지막 갱신 시간:
+                        {" " + calcBattleDate(userInfo?.updateTime as string)}
+                      </p>
+                    )}
                   </>
                 )}
               </div>
