@@ -2,7 +2,8 @@
 @import "styles/reset.css";
 
 .App {
-  width: 500px;
+  max-width: 500px;
+  width: 100%;
   background-color: rgb(233, 246, 255);
   color: rgb(50, 50, 50);
   font-family: "SUIT-Regular";
