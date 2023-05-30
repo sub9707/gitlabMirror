@@ -15,91 +15,71 @@ Github의 사용자는 나날이 증가하는 가운데, 프로젝트의 지표�
 
 "레포몬"은 이러한 프로젝트의 정보를 분석 및 요약하여 레포지토리를 대표하는 캐릭터와 함께 한 장의 카드로 만들어 나타낼 수 있게 하는 서비스입니다.
 
- 먼저 **레포지토리 분석 기능**에서는 레포지토리의 정보를 가져와 커밋, 머지, 이슈, 리뷰, 포크, 스타를 점수화 시켜 총 경험치를 나타내줍니다. 또한 컨벤션을 등록하여 준수율을 확인하고, 각 커밋의 기여도를 유저 별로 나타낼 수 있습니다.
+먼저 **레포지토리 분석 기능**에서는 레포지토리의 정보를 가져와 커밋, 머지, 이슈, 리뷰, 포크, 스타를 점수화 시켜 총 경험치를 나타내줍니다. 또한 컨벤션을 등록하여 준수율을 확인하고, 각 커밋의 기여도를 유저 별로 나타낼 수 있습니다.
 
- 다음으로 **정보 카드 생성**입니다. 사용자의 정보를 요약한 유저 카드, 레포지토리의 정보를 요약한 레포 카드, 해당 레포지토리에서 본인의 기여도 및 언어를 선택하여 제작할 수 있는 퍼스널 레포 카드 세 가지를 생성할 수 있습니다.
+다음으로 **정보 카드 생성**입니다. 사용자의 정보를 요약한 유저 카드, 레포지토리의 정보를 요약한 레포 카드, 해당 레포지토리에서 본인의 기여도 및 언어를 선택하여 제작할 수 있는 퍼스널 레포 카드 세 가지를 생성할 수 있습니다.
 
- 마지막으로 **레포몬 배틀**입니다. 앞서 획득했던 경험치를 토대로 레포몬을 진화 및 성장시킬 수 있으며, 나만의 레포몬과 다른 사람의 레포몬을 배틀을 통해 경쟁시킬 수 있습니다.
-
-
+마지막으로 **레포몬 배틀**입니다. 앞서 획득했던 경험치를 토대로 레포몬을 진화 및 성장시킬 수 있으며, 나만의 레포몬과 다른 사람의 레포몬을 배틀을 통해 경쟁시킬 수 있습니다.
 
 이러한 기능을 통해 프로젝트를 활성화하고, 레포지토리의 분석 결과를 리드미에 작성해보세요 ✨
 
-
-
-
-
-
-
-
-
 ## 🐂 소개 영상
+
 ### [구글 드라이브 링크](https://drive.google.com/file/d/17gf3iummO-fu-awmFWhAsgmPPZxklRNe/view?usp=share_link)
 
-
-
 ## 🐅 주요 기능
+
 - 레포지토리 분석
 - 레포지토리 요약 카드
 - 레포몬 육성
 - 레포몬 배틀
 - 랭킹 시스템
 
-
 ## 🐇 기능 명세서
+
 ![기능명세](./exec/기능명세.png)
 
-
-
-
 ## 🐉 API 명세서
+
 ![API](./exec/API명세.png)
 
-
-
-
 ## 🐍 ERD
+
 ![ERD](./exec/ERD.png)
 
-
-
-
 ## 🐎 프로젝트 구조
+
 <details>
 <summary><h4>Back_디렉토리 구조</h4></summary>
 <div markdown="1">
-![BE TREE](./exec/tree/BE_tree.png)
+<img src="./exec/tree/BE_tree.png"></img>
 </div>
 </details>
 
 <details>
 <summary><h4>Front_디렉토리 구조</h4></summary>
 <div markdown="1">
-![FE TREE](./exec/tree/FE_tree.png)
+<img src="./exec/tree/FE_tree.png"></img>
 </div>
 </details>
-
 
 <details>
 <summary><h4>Extension_디렉토리 구조</h4></summary>
 <div markdown="1">
-![Extension TREE](./exec/tree/extension_tree.png)
+<img src="./exec/tree/extension_tree.png"></img>
 </div>
 </details>
-
 
 <details>
 <summary><h4>Django_디렉토리 구조</h4></summary>
 <div markdown="1">
-![Django TREE](./exec/tree/django_tree.png)
+<img src="./exec/tree/django_tree.png"></img>
 </div>
 </details>
 
 ## 🐑 아키텍처 구조
+
 ![arch](./exec/아키텍처.png)
-
-
-
 
 ## 🐒 팀원 소개
 
